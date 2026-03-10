@@ -49,7 +49,7 @@ internal class ChatWatcher : IDisposable {
         if (!Plugin.Config.ListenToChatMessages) return;
         if (isHandled) return;
 
-        var senderName = sender.ToString();
+        var senderName = SanitizeSenderName(sender.ToString());
         if (!AllowedChatTypes.Contains(type)
         || !Plugin.Config.ListenedChatTypes.Contains(type)
         || (Plugin.Config.IsBlockListActive && Plugin.Config.Blocklist.ContainsPlayer(senderName))
@@ -57,18 +57,15 @@ internal class ChatWatcher : IDisposable {
             return;
         }
 
-        DalamudApi.PluginLog.Warning($"OnChatMessage: {senderName}");
         var messageString = message.ToString();
-        if (messageString.Contains(Plugin.Config.FightGame.JoinGamePhrase, StringComparison.InvariantCultureIgnoreCase)) {
-            HandleJoinGame(senderName);
-        }
 
         Plugin.GameManager.ProcessChatMessage(senderName, messageString, type);
     }
 
-    private void HandleJoinGame(string senderName) {
-        DalamudApi.PluginLog.Debug($"{senderName} try join the game");
-        Plugin.GameManager.FightGame.TryRegister(senderName, RegistrationSource.Chat);
+    private static string SanitizeSenderName(string raw) {
+        var i = 0;
+        while (i < raw.Length && !char.IsLetter(raw[i])) i++;
+        return i > 0 ? raw[i..] : raw;
     }
 }
 

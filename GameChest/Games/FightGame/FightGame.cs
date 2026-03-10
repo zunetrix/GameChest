@@ -9,7 +9,7 @@ namespace GameChest;
 
 public record FightResult(string Winner, string Loser, int WinnerHp, DateTime PlayedAt);
 
-public sealed class FightGame : GameBase {
+public sealed class FightGame : GameBase, IChatConsumer {
     public override string Name => "Fight Club";
     public override GameMode Mode => GameMode.FightGame;
     public override FightState State => _state;
@@ -113,6 +113,13 @@ public sealed class FightGame : GameBase {
             ["gm"] = gmName,
         };
         PublishPhrase(FightGamePhraseCategories.RegistrationStart, vars);
+    }
+
+    public void ProcessChatMessage(string senderFullName, string message, XivChatType chatType) {
+        if (message.Contains(Cfg.JoinGamePhrase, StringComparison.InvariantCultureIgnoreCase)) {
+            DalamudApi.PluginLog.Debug($"{senderFullName} try join the game");
+            TryRegister(senderFullName, RegistrationSource.Chat);
+        }
     }
 
     public bool TryRegister(string fullName, RegistrationSource source) {
