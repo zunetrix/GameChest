@@ -22,6 +22,9 @@ public class FightGameSettingsWindow : Window {
 
         Size = ImGuiHelpers.ScaledVector2(400, 460);
         SizeCondition = ImGuiCond.FirstUseEver;
+        SizeConstraints = new WindowSizeConstraints {
+            MinimumSize = ImGuiHelpers.ScaledVector2(100, 100),
+        };
     }
 
     public override void Draw() {

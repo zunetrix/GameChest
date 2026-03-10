@@ -16,6 +16,9 @@ public class WordGuessSettingsWindow : Window {
         Plugin = plugin;
         Size = ImGuiHelpers.ScaledVector2(360, 390);
         SizeCondition = ImGuiCond.FirstUseEver;
+        SizeConstraints = new WindowSizeConstraints {
+            MinimumSize = ImGuiHelpers.ScaledVector2(100, 100),
+        };
     }
 
     public override void Draw() {

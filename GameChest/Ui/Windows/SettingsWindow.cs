@@ -22,6 +22,9 @@ public class SettingsWindow : Window {
         Plugin = plugin;
         Size = ImGuiHelpers.ScaledVector2(400, 390);
         SizeCondition = ImGuiCond.FirstUseEver;
+        SizeConstraints = new WindowSizeConstraints {
+            MinimumSize = ImGuiHelpers.ScaledVector2(100, 100),
+        };
     }
 
     public override void OnOpen() {

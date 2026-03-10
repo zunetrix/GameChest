@@ -44,6 +44,9 @@ public class GamePhrasesWindow : Window {
         _gameNames = _games.Select(g => g.Name).ToArray();
         Size = ImGuiHelpers.ScaledVector2(700, 500);
         SizeCondition = ImGuiCond.FirstUseEver;
+        SizeConstraints = new WindowSizeConstraints {
+            MinimumSize = ImGuiHelpers.ScaledVector2(100, 100),
+        };
     }
 
     public void OpenToGame(GameMode mode, string? categoryId = null) {

@@ -30,6 +30,10 @@ public class MainWindow : Window {
         Flags = ImGuiWindowFlags.None;
         if (!Plugin.Config.AllowMovement) Flags |= ImGuiWindowFlags.NoMove;
         if (!Plugin.Config.AllowResize) Flags |= ImGuiWindowFlags.NoResize;
+
+        SizeConstraints = new WindowSizeConstraints {
+            MinimumSize = ImGuiHelpers.ScaledVector2(100, 100),
+        };
         base.PreDraw();
     }
 

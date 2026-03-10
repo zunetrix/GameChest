@@ -17,6 +17,9 @@ public class DeathRollWindow : Window {
         Plugin = plugin;
         Size = ImGuiHelpers.ScaledVector2(440, 380);
         SizeCondition = ImGuiCond.FirstUseEver;
+        SizeConstraints = new WindowSizeConstraints {
+            MinimumSize = ImGuiHelpers.ScaledVector2(100, 100),
+        };
     }
 
     public override void Draw() {

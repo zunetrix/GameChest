@@ -30,6 +30,9 @@ public class WordGuessQuestionListWindow : Window {
         Plugin = plugin;
         Size = ImGuiHelpers.ScaledVector2(640, 440);
         SizeCondition = ImGuiCond.FirstUseEver;
+        SizeConstraints = new WindowSizeConstraints {
+            MinimumSize = ImGuiHelpers.ScaledVector2(100, 100),
+        };
     }
 
     private List<Configuration.WordGuessQuestion> Questions => Plugin.Config.WordGuess.Questions;

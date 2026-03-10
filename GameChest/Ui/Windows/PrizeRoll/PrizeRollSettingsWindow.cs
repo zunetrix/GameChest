@@ -17,6 +17,9 @@ public class PrizeRollSettingsWindow : Window {
 
         Size = ImGuiHelpers.ScaledVector2(340, 310);
         SizeCondition = ImGuiCond.FirstUseEver;
+        SizeConstraints = new WindowSizeConstraints {
+            MinimumSize = ImGuiHelpers.ScaledVector2(100, 100),
+        };
     }
 
     public override void Draw() {
