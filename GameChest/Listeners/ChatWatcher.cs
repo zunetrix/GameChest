@@ -54,6 +54,7 @@ internal class ChatWatcher : IDisposable {
         || !Plugin.Config.ListenedChatTypes.Contains(type)
         || (Plugin.Config.IsBlockListActive && Plugin.Config.Blocklist.ContainsPlayer(senderName))
         ) {
+            // DalamudApi.PluginLog.Warning($"{senderName} is on the blocklist and will be ignored");
             return;
         }
 

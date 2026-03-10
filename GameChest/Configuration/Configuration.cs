@@ -55,6 +55,8 @@ internal class Configuration : IPluginConfiguration {
         public List<PhrasePool> Phrases { get; set; } = new();
 
         public string JoinGamePhrase { get; set; } = "I want to fight!";
+        public bool RegisterByPhrase { get; set; } = true;
+        public bool RegisterByRoll { get; set; } = true;
         public int PlayerAHealth { get; set; } = 100;
         public int PlayerBHealth { get; set; } = 100;
         public int PlayerAMp { get; set; } = 100;

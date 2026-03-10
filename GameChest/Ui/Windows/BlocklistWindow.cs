@@ -112,6 +112,7 @@ public class BlocklistWindow : Window {
             Plugin.Config.IsBlockListActive = isActive;
             Plugin.Config.Save();
         }
+        ImGuiUtil.HelpMarker("When enabled, players on this list will have all their roll and chat interactions ignored. They cannot register for any game.");
 
         ImGui.Spacing();
 

@@ -92,11 +92,28 @@ public class FightGameSettingsWindow : Window {
 
             ImGui.AlignTextToFramePadding();
             ImGui.Text("Join Game Phrase");
-            var joinPhrase = cfg.JoinGamePhrase;
-            if (ImGui.InputTextWithHint("##JoinGamePhrase", "e.g. I want to fight!", ref joinPhrase, 255, ImGuiInputTextFlags.AutoSelectAll)) {
-                cfg.JoinGamePhrase = joinPhrase;
+
+            var registerByPhrase = cfg.RegisterByPhrase;
+            if (ImGui.Checkbox("Register by phrase##RegisterByPhrase", ref registerByPhrase)) {
+                cfg.RegisterByPhrase = registerByPhrase;
                 Plugin.Config.Save();
             }
+            ImGuiUtil.HelpMarker("Players type the join phrase in chat to register.", sameline: true);
+
+            using (ImRaii.Disabled(!cfg.RegisterByPhrase)) {
+                var joinPhrase = cfg.JoinGamePhrase;
+                if (ImGui.InputTextWithHint("##JoinGamePhrase", "e.g. I want to fight!", ref joinPhrase, 255, ImGuiInputTextFlags.AutoSelectAll)) {
+                    cfg.JoinGamePhrase = joinPhrase;
+                    Plugin.Config.Save();
+                }
+            }
+
+            var registerByRoll = cfg.RegisterByRoll;
+            if (ImGui.Checkbox("Register by roll##RegisterByRoll", ref registerByRoll)) {
+                cfg.RegisterByRoll = registerByRoll;
+                Plugin.Config.Save();
+            }
+            ImGuiUtil.HelpMarker("Players register by using /random with any value, like the Death Roll Tournament.", sameline: true);
         }
 
         ImGui.Spacing();

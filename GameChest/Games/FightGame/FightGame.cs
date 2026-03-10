@@ -89,7 +89,7 @@ public sealed class FightGame : GameBase, IChatConsumer {
     public override void ProcessRoll(Roll roll) {
         switch (_state.Phase) {
             case FightPhase.Registration:
-                TryRegister(roll.PlayerName, RegistrationSource.Chat);
+                if (Cfg.RegisterByRoll) TryRegister(roll.PlayerName, RegistrationSource.Roll);
                 break;
             case FightPhase.Initiative:
                 ProcessInitiative(roll);
@@ -116,20 +116,21 @@ public sealed class FightGame : GameBase, IChatConsumer {
     }
 
     public void ProcessChatMessage(string senderFullName, string message, XivChatType chatType) {
-        if (message.Contains(Cfg.JoinGamePhrase, StringComparison.InvariantCultureIgnoreCase)) {
-            DalamudApi.PluginLog.Debug($"{senderFullName} try join the game");
+        if (Cfg.RegisterByPhrase && message.Contains(Cfg.JoinGamePhrase, StringComparison.InvariantCultureIgnoreCase)) {
+            DalamudApi.PluginLog.Debug($"{senderFullName} try join the game via phrase");
             TryRegister(senderFullName, RegistrationSource.Chat);
         }
     }
 
     public bool TryRegister(string fullName, RegistrationSource source) {
         var isOpenRegistration = _state.Phase == FightPhase.Registration;
-        var isManualSource = source != RegistrationSource.Chat;
+        var isManualSource = source is RegistrationSource.Manual or RegistrationSource.Target;
 
         if (!isOpenRegistration && (!isManualSource || _state.Phase != FightPhase.Idle)) return false;
         if (_state.RegisteredFighters.Count >= 2) return false;
         if (_state.RegisteredFighters.Exists(f => NamesMatch(f.FullName, fullName))) return false;
 
+        // for manual entry
         if (Plugin.Config.IsBlockListActive && Plugin.Config.Blocklist.ContainsPlayer(fullName)) {
             Notification.ShowError($"{fullName} is on the blocklist and cannot be registered.");
             return false;

@@ -13,6 +13,7 @@ public enum FightPhase {
 
 public enum RegistrationSource {
     Chat,
+    Roll,
     Manual,
     Target,
 }
