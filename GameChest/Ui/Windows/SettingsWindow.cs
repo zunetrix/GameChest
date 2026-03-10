@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Numerics;
 
@@ -33,6 +34,9 @@ public class SettingsWindow : Window {
 
     public override void Draw() {
         DrawGeneralSection();
+        ImGui.Spacing();
+        ImGui.Spacing();
+        DrawPhraseDelaySection();
         ImGui.Spacing();
         ImGui.Spacing();
         DrawWindowSection();
@@ -112,6 +116,41 @@ public class SettingsWindow : Window {
                 else
                     Plugin.PluginCommandManager.SetCustomCommand(_customCommandInput);
                 _customCommandInput = Plugin.Config.CustomCommand;
+            }
+        }
+    }
+
+    private void DrawPhraseDelaySection() {
+        using (ImGuiGroupPanel.BeginGroupPanel("Phrase Delay")) {
+            var enabled = Plugin.Config.PhraseDelayEnabled;
+            if (ImGui.Checkbox("Enable random delay##PhraseDelayEnabled", ref enabled)) {
+                Plugin.Config.PhraseDelayEnabled = enabled;
+                Plugin.Config.Save();
+            }
+            ImGuiUtil.HelpMarker("Adds a random delay before sending each phrase, making announcements feel more natural.", sameline: true);
+
+            using (ImRaii.Disabled(!Plugin.Config.PhraseDelayEnabled)) {
+                ImGui.Spacing();
+
+                var minMs = Plugin.Config.PhraseDelayMinMs;
+                ImGui.SetNextItemWidth(150 * ImGuiHelpers.GlobalScale);
+                if (ImGui.InputInt("Min (ms)##PhraseDelayMin", ref minMs, 1, 1)) {
+                    Plugin.Config.PhraseDelayMinMs = Math.Clamp(minMs, 0, Plugin.Config.PhraseDelayMaxMs);
+                    Plugin.Config.Save();
+                }
+
+                var maxMs = Plugin.Config.PhraseDelayMaxMs;
+                ImGui.SetNextItemWidth(150 * ImGuiHelpers.GlobalScale);
+                if (ImGui.InputInt("Max (ms)##PhraseDelayMax", ref maxMs, 1, 1)) {
+                    Plugin.Config.PhraseDelayMaxMs = Math.Clamp(maxMs, Plugin.Config.PhraseDelayMinMs, 10000);
+                    Plugin.Config.Save();
+                }
+
+                using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Gray)) {
+                    var minS = Plugin.Config.PhraseDelayMinMs / 1000f;
+                    var maxS = Plugin.Config.PhraseDelayMaxMs / 1000f;
+                    ImGui.Text($"{minS:0.0}s - {maxS:0.0}s");
+                }
             }
         }
     }

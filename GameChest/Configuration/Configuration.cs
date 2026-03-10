@@ -28,6 +28,11 @@ internal class Configuration : IPluginConfiguration {
     public bool ListenToRollMessages { get; set; } = true;
     public bool IsBlockListActive { get; set; } = true;
     public string CustomCommand { get; set; } = "/gc";
+
+    // Phrase delay
+    public bool PhraseDelayEnabled { get; set; } = false;
+    public int PhraseDelayMinMs { get; set; } = 500;
+    public int PhraseDelayMaxMs { get; set; } = 2000;
     public List<string> Blocklist = new();
 
     // Per-game configuration

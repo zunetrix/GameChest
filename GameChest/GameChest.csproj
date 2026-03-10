@@ -1,54 +1,53 @@
 <Project Sdk="Dalamud.NET.Sdk/14.0.2">
-    <PropertyGroup>
-        <Version>1.0.0.1</Version>
-    </PropertyGroup>
-    <PropertyGroup>
-        <Author>Zune, Mangles, Potatoes</Author>
-        <Name>Game Chest</Name>
-        <InternalName>GameChest</InternalName>
-        <Punchline>A manager for GM-driven, roll-based mini roleplay games</Punchline>
-        <Description>The first and second rules of Fight Club are: you do not talk about Fight Club</Description>
-        <Tags>roleplay;chat;minigame;roll</Tags>
-        <RepoUrl>https://github.com/zunetrix/GameChest</RepoUrl>
-        <IconUrl>https://i.imgur.com/WECX7n9.png</IconUrl>
-    </PropertyGroup>
-    <PropertyGroup>
-        <TargetFramework>net10.0-windows</TargetFramework>
-        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-        <LangVersion>latest</LangVersion>
-        <Nullable>disable</Nullable>
-        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-        <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-        <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
-        <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
-        <!-- <UseWpf>true</UseWpf> -->
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Any CPU'">
-        <Version>1.0.0.1</Version>
-        <InternalName>GameChest</InternalName>
-        <DefineConstants>DEBUG</DefineConstants>
-    </PropertyGroup>
-    <!-- Linux build -->
-    <PropertyGroup
-        Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))'">
-        <DalamudLibPath>$(DALAMUD_HOME)</DalamudLibPath>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(IsCI)' == 'true'">
-        <DalamudLibPath>$(HOME)/dalamud</DalamudLibPath>
-    </PropertyGroup>
-    <ItemGroup>
-        <PackageReference Include="Fody" Version="6.9.3" PrivateAssets="all" />
-        <PackageReference Include="Resourcer.Fody" Version="1.8.1" PrivateAssets="all" />
-    </ItemGroup>
-    <ItemGroup>
-        <EmbeddedResource Update="Resources\Language.resx">
-            <Generator>ResXFileCodeGenerator</Generator>
-            <LastGenOutput>Language.Designer.cs</LastGenOutput>
-        </EmbeddedResource>
-        <Compile Update="Resources\Language.Designer.cs">
-            <DesignTime>True</DesignTime>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>Language.resx</DependentUpon>
-        </Compile>
-    </ItemGroup>
+  <PropertyGroup>
+    <Version>1.0.0.3</Version>
+  </PropertyGroup>
+  <PropertyGroup>
+    <Author>Zune, Mangles, Potatoes</Author>
+    <Name>Game Chest</Name>
+    <InternalName>GameChest</InternalName>
+    <Punchline>A manager for GM-driven, roll-based mini roleplay games</Punchline>
+    <Description>The first and second rules of Fight Club are: you do not talk about Fight Club</Description>
+    <Tags>roleplay;chat;minigame;roll</Tags>
+    <RepoUrl>https://github.com/zunetrix/GameChest</RepoUrl>
+    <IconUrl>https://i.imgur.com/WECX7n9.png</IconUrl>
+  </PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
+    <!-- <UseWpf>true</UseWpf> -->
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Any CPU'">
+    <Version>1.0.0.3</Version>
+    <InternalName>GameChest</InternalName>
+    <DefineConstants>DEBUG</DefineConstants>
+  </PropertyGroup>
+  <!-- Linux build -->
+  <PropertyGroup Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))'">
+    <DalamudLibPath>$(DALAMUD_HOME)</DalamudLibPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(IsCI)' == 'true'">
+    <DalamudLibPath>$(HOME)/dalamud</DalamudLibPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Fody" Version="6.9.3" PrivateAssets="all" />
+    <PackageReference Include="Resourcer.Fody" Version="1.8.1" PrivateAssets="all" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\Language.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Language.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <Compile Update="Resources\Language.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Language.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
 </Project>

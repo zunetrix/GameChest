@@ -62,8 +62,8 @@ A 1v2 turn-based HP combat game driven by `/random` rolls.
 5. The fight ends when a fighter's HP reaches 0.
 
 **Settings:**
-- HP and MP per player (1–9999)
-- Max roll (2–999, default 20)
+- HP and MP per player (1-9999)
+- Max roll (2-999, default 20)
 - Output chat channel
 - Timers: registration reminder, inactivity reminder, out-of-turn cooldown
 - Auto Mode (auto-sends announcements with a configurable delay)

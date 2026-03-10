@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 using Dalamud.Game.Text;
 
@@ -65,7 +67,18 @@ public abstract class GameBase : IGame {
 
     protected void Publish(string text) {
         var prefix = OutputChannel.ToChatPrefix();
-        Chat.SendMessage(prefix.Length > 0 ? $"{prefix} {text}" : text);
+        var fullText = prefix.Length > 0 ? $"{prefix} {text}" : text;
+
+        var cfg = Plugin.Config;
+        if (cfg.PhraseDelayEnabled && cfg.PhraseDelayMaxMs > 0) {
+            var min = Math.Min(cfg.PhraseDelayMinMs, cfg.PhraseDelayMaxMs);
+            var max = cfg.PhraseDelayMaxMs;
+            var delayMs = Random.Shared.Next(min, max + 1);
+            Task.Delay(delayMs).ContinueWith(_ => Chat.SendMessage(fullText));
+            return;
+        }
+
+        Chat.SendMessage(fullText);
     }
 
     protected string? GetPhrase(string categoryId, Dictionary<string, string> vars) {
