@@ -24,7 +24,7 @@ public class DalamudApi {
     // hook
     [PluginService] public static IGameInteropProvider GameInteropProvider { get; private set; } = null;
 
-    private const string PluginPrefixName = $"[FC] ";
+    private const string PluginPrefixName = $"[GameChest] ";
 
     public static void ShowNotification(string message, NotificationType type = NotificationType.None, uint msDelay = 3_000u) => NotificationManager.AddNotification(new Notification { Type = type, Title = PluginPrefixName, Content = message, InitialDuration = TimeSpan.FromMilliseconds(msDelay) });
 }

@@ -21,7 +21,6 @@ public class WordGuessSettingsWindow : Window {
     public override void Draw() {
         var cfg = Plugin.Config.WordGuess;
 
-        // ── Match ─────────────────────────────────────────────
         using (ImGuiGroupPanel.BeginGroupPanel("Match")) {
             ImGui.AlignTextToFramePadding();
             ImGui.Text("Output Channel");
@@ -70,7 +69,6 @@ public class WordGuessSettingsWindow : Window {
 
         ImGui.Spacing();
 
-        // ── Timer ─────────────────────────────────────────────
         using (ImGuiGroupPanel.BeginGroupPanel("Timer")) {
             var useTimer = cfg.UseGlobalTimer;
             if (ImGui.Checkbox("Global Timer##WgUseTimer", ref useTimer)) {
@@ -99,7 +97,6 @@ public class WordGuessSettingsWindow : Window {
 
         ImGui.Spacing();
 
-        // ── Hint ──────────────────────────────────────────────
         using (ImGuiGroupPanel.BeginGroupPanel("Hint")) {
             var revealHint = cfg.RevealHint;
             if (ImGui.Checkbox("Auto Reveal Hint##WgRevealHint", ref revealHint)) {

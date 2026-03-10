@@ -75,7 +75,7 @@ public class WordGuessWindow : Window {
         DrawPhaseBadge(state);
         ImGuiUtil.HelpMarker("""
             Players race to type the correct answer in chat.
-            • GM starts a session — questions are announced one by one.
+            • GM starts a session - questions are announced one by one.
             • First player to type the exact answer wins the round.
             • Single mode: each round has its own winner.
             • Session mode: most correct answers across all rounds wins.
@@ -150,7 +150,7 @@ public class WordGuessWindow : Window {
                         ImGui.Text("(reveal disabled)");
                 } else if (state.HintRevealed) {
                     using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Green))
-                        ImGui.Text($"Sent — {q.Hint}");
+                        ImGui.Text($"Sent - {q.Hint}");
                 } else if (state.HintRevealAt.HasValue) {
                     var secs = (int)Math.Ceiling((state.HintRevealAt.Value - DateTime.Now).TotalSeconds);
                     using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Gray))
@@ -243,7 +243,7 @@ public class WordGuessWindow : Window {
                             ImGui.Text(ShortName(r.Winner));
                     } else {
                         using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Red))
-                            ImGui.Text("—");
+                            ImGui.Text("-");
                     }
                 }
                 ImGui.EndTable();
@@ -276,8 +276,8 @@ public class WordGuessWindow : Window {
             using var id = ImRaii.PushId(i);
 
             var label = r.SessionWinner != null
-                ? $"Session {i + 1}  —  {r.PlayedAt:HH:mm}  —  Winner: {r.SessionWinner}"
-                : $"Session {i + 1}  —  {r.PlayedAt:HH:mm}  —  {r.Rounds.Count}/{r.TotalQuestions} rounds";
+                ? $"Session {i + 1}  -  {r.PlayedAt:HH:mm}  -  Winner: {r.SessionWinner}"
+                : $"Session {i + 1}  -  {r.PlayedAt:HH:mm}  -  {r.Rounds.Count}/{r.TotalQuestions} rounds";
 
             if (ImGui.CollapsingHeader(label)) {
                 if (ImGui.BeginTable($"##WgHist{i}", 3,
@@ -300,7 +300,7 @@ public class WordGuessWindow : Window {
                                 ImGui.Text(ShortName(rnd.Winner));
                         } else {
                             using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Red))
-                                ImGui.Text("—");
+                                ImGui.Text("-");
                         }
                     }
                     ImGui.EndTable();

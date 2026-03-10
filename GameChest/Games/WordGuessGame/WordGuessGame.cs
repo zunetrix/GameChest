@@ -26,8 +26,6 @@ public sealed class WordGuessGame : GameBase, IChatConsumer {
         ReloadPhrases();
     }
 
-    // ── IGame ──────────────────────────────────────────────
-
     public override void Start() {
         if (Cfg.Questions.Count == 0) return;
         _state.Reset();
@@ -48,7 +46,6 @@ public sealed class WordGuessGame : GameBase, IChatConsumer {
 
     public override void ProcessRoll(Roll roll) { /* not used */ }
 
-    // ── IChatConsumer ──────────────────────────────────────
 
     public void ProcessChatMessage(string senderFullName, string message, XivChatType chatType) {
         if (_state.Phase != WordGuessPhase.Active) return;
@@ -62,15 +59,13 @@ public sealed class WordGuessGame : GameBase, IChatConsumer {
         OnCorrectAnswer(senderFullName);
     }
 
-    // ── Game control ───────────────────────────────────────
-
     /// <summary>Skip or advance to next question depending on round state.</summary>
     public void NextQuestion() {
         if (_state.Phase != WordGuessPhase.Active) return;
         AdvanceQuestion(wasSkipped: !_state.RoundEnded);
     }
 
-    /// <summary>Called from Draw() — checks hint reveal and timer expiry.</summary>
+    /// <summary>Called from Draw() - checks hint reveal and timer expiry.</summary>
     public void Tick(DateTime now) {
         if (_state.Phase != WordGuessPhase.Active || _state.RoundEnded) return;
 
@@ -98,8 +93,6 @@ public sealed class WordGuessGame : GameBase, IChatConsumer {
         if (q == null || _state.RoundEnded) return;
         ProcessChatMessage("Simulator@Bahamut", q.Answer, XivChatType.Say);
     }
-
-    // ── Internal ───────────────────────────────────────────
 
     private void StartQuestion() {
         var q = CurrentQuestion;

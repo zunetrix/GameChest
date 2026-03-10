@@ -17,9 +17,9 @@ public class PluginCommandManager : IDisposable {
 
         DalamudApi.CommandManager.AddHandler(_mainCommand, new CommandInfo(OnMainCommand) {
             HelpMessage = """
-            /gamechest -> Show / hide UI
+            /gamechest -> Show / Hide UI
             prizeroll
-            fight
+            fightclub
             deathroll
             deathrolltournament
             wordguess
@@ -85,7 +85,7 @@ public class PluginCommandManager : IDisposable {
                 case "prizeroll":
                     Plugin.Ui.PrizeRollWindow.Toggle();
                     break;
-                case "fight":
+                case "fightclub":
                     Plugin.Ui.FightGameWindow.Toggle();
                     break;
                 case "deathroll":

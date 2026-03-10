@@ -13,11 +13,11 @@ public static class WordGuessPhraseCategories {
 
     public static readonly IReadOnlyList<PhraseCategoryMeta> All = new List<PhraseCategoryMeta> {
         new(QuestionStart, "Question Start", new[] { "{question}", "{number}", "{total}" }, new[] {
-            "Round {number}/{total} — {question}",
+            "Round {number}/{total} - {question}",
             "Question {number} of {total}: {question}",
         }),
         new(HintReveal, "Hint Reveal", new[] { "{hint}", "{number}" }, new[] {
-            "💡 Hint for round {number}: {hint}",
+            "Hint for round {number}: {hint}",
             "Hint: {hint}",
         }),
         new(RoundWon, "Round Won", new[] { "{winner}", "{answer}", "{number}" }, new[] {

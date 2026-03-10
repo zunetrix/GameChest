@@ -226,5 +226,5 @@ public class WordGuessQuestionListWindow : Window {
     }
 
     private static string Truncate(string s, int maxLen) =>
-        s.Length <= maxLen ? s : s[..maxLen] + "…";
+        s.Length <= maxLen ? s : s[..maxLen] + "...";
 }

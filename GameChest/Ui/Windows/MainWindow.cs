@@ -21,7 +21,7 @@ public class MainWindow : Window {
         Plugin = plugin;
         Ui = ui;
 
-        Size = ImGuiHelpers.ScaledVector2(380, 270);
+        Size = ImGuiHelpers.ScaledVector2(380, 300);
         SizeCondition = ImGuiCond.FirstUseEver;
         UpdateWindowConfig();
     }
@@ -296,7 +296,7 @@ public class MainWindow : Window {
                     break;
                 case WordGuessPhase.Done:
                     using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Blue))
-                        ImGui.Text($"  Session complete — {state.SessionRounds.Count} rounds");
+                        ImGui.Text($"  Session complete - {state.SessionRounds.Count} rounds");
                     break;
                 default:
                     using (ImRaii.PushColor(ImGuiCol.Text, Style.Components.TextDisabled))
