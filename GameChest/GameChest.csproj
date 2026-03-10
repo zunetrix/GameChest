@@ -10,7 +10,7 @@
         <Description>The first and second rules of Fight Club are: you do not talk about Fight Club</Description>
         <Tags>roleplay;chat;minigame;roll</Tags>
         <RepoUrl>https://github.com/zunetrix/GameChest</RepoUrl>
-        <IconUrl>https://i.imgur.com/U3xHZZu.png</IconUrl>
+        <IconUrl>https://i.imgur.com/WECX7n9.png</IconUrl>
     </PropertyGroup>
     <PropertyGroup>
         <TargetFramework>net10.0-windows</TargetFramework>
