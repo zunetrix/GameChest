@@ -57,6 +57,7 @@ internal class ChatWatcher : IDisposable {
             return;
         }
 
+        DalamudApi.PluginLog.Warning($"OnChatMessage: {senderName}");
         var messageString = message.ToString();
         if (messageString.Contains(Plugin.Config.FightGame.JoinGamePhrase, StringComparison.InvariantCultureIgnoreCase)) {
             HandleJoinGame(senderName);

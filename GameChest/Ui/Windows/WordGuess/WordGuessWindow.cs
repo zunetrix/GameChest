@@ -43,7 +43,7 @@ public class WordGuessWindow : Window {
 
     private void DrawControls(WordGuessGame wg, WordGuessState state) {
         var cfg = Plugin.Config.WordGuess;
-        var noQuestions = cfg.Questions.Count == 0;
+        var noQuestions = !cfg.Questions.Any(q => q.Enabled);
 
         // Start (enabled when Idle or Done)
         using (ImRaii.Disabled(state.IsActive || noQuestions))
@@ -52,7 +52,7 @@ public class WordGuessWindow : Window {
             .Push(ImGuiCol.ButtonActive, Style.Components.ButtonSuccessActive)) {
             if (ImGui.Button("Start##WgStart")) wg.Start();
         }
-        if (noQuestions) ImGuiUtil.ToolTip("Add questions in the Question List window first.");
+        if (noQuestions) ImGuiUtil.ToolTip("Enable at least one question in the Question List first.");
 
         // Next / Skip (only when Active)
         if (state.IsActive) {
@@ -114,9 +114,9 @@ public class WordGuessWindow : Window {
         if (!state.IsActive && state.Phase == WordGuessPhase.Idle) {
             ImGui.Spacing();
             using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Gray))
-                ImGui.Text(cfg.Questions.Count == 0
-                    ? "No questions configured. Open the Question List to add some."
-                    : $"{cfg.Questions.Count} question(s) ready. Click Start to begin.");
+                ImGui.Text(!cfg.Questions.Any(q => q.Enabled)
+                    ? "No enabled questions. Open the Question List to configure some."
+                    : $"{cfg.Questions.Count(q => q.Enabled)} enabled question(s) ready. Click Start to begin.");
             return;
         }
 
@@ -127,41 +127,51 @@ public class WordGuessWindow : Window {
 
             // Q index header
             using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Yellow))
-                ImGui.Text($"Q {state.CurrentQuestionIndex + 1} / {cfg.Questions.Count}");
+                ImGui.Text($"Q {cfg.Questions.Take(state.CurrentQuestionIndex + 1).Count(x => x.Enabled)} / {cfg.Questions.Count(x => x.Enabled)}");
 
             ImGui.Spacing();
 
-            // Question text and answer (GM-visible only)
+            // Question text
             ImGui.Text("Question:");
             ImGui.SameLine();
             ImGui.TextWrapped(q.Question);
 
+            // Answer line with manual send button
             ImGui.Text("Answer:  ");
             ImGui.SameLine();
             using (ImRaii.PushColor(ImGuiCol.Text, state.RoundEnded ? Style.Colors.Green : Plugin.Config.HighlightColor))
                 ImGui.Text(q.Answer);
+            ImGui.SameLine();
+            using (ImRaii.Disabled(!state.IsActive || state.RoundEnded))
+                if (ImGuiUtil.IconButton(FontAwesomeIcon.PaperPlane, "##WgSendAnswer", "Send answer to chat"))
+                    wg.PublishAnswer();
 
-            // Hint row
+            // Hint row with manual send button
             if (q.Hint != null) {
                 ImGui.Text("Hint:    ");
                 ImGui.SameLine();
-                if (!cfg.RevealHint) {
-                    using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Gray))
-                        ImGui.Text("(reveal disabled)");
-                } else if (state.HintRevealed) {
+                if (state.HintRevealed) {
                     using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Green))
                         ImGui.Text($"Sent - {q.Hint}");
+                } else if (!cfg.RevealHint) {
+                    using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Gray))
+                        ImGui.Text(q.Hint);
                 } else if (state.HintRevealAt.HasValue) {
                     var secs = (int)Math.Ceiling((state.HintRevealAt.Value - DateTime.Now).TotalSeconds);
                     using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Gray))
                         ImGui.Text($"Reveals in {Math.Max(0, secs)}s");
                 }
+                ImGui.SameLine();
+                using (ImRaii.Disabled(!state.IsActive || state.RoundEnded || state.HintRevealed))
+                    if (ImGuiUtil.IconButton(FontAwesomeIcon.Lightbulb, "##WgSendHint", "Send hint to chat now"))
+                        wg.PublishHint();
             }
 
             // Timer row
-            if (state.TimerEndsAt.HasValue) {
+            var timerSecs = q.TimerSecs ?? (cfg.UseGlobalTimer ? cfg.GlobalTimerSecs : (int?)null);
+            if (timerSecs.HasValue) {
                 ImGui.Spacing();
-                DrawTimerRow(state);
+                DrawTimerRow(wg, state, timerSecs.Value);
             }
 
             // Round result banner
@@ -171,10 +181,10 @@ public class WordGuessWindow : Window {
                 ImGui.Spacing();
                 if (state.RoundWinner != null) {
                     using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Green))
-                        ImGui.Text($"✓  Winner: {ShortName(state.RoundWinner)}");
+                        ImGui.Text($"Winner: {ShortName(state.RoundWinner)}");
                 } else {
                     using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Red))
-                        ImGui.Text("✗  No winner (timeout / skipped)");
+                        ImGui.Text("No winner (timeout / skipped)");
                 }
                 using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Gray))
                     ImGui.Text("Press Next to continue.");
@@ -309,13 +319,28 @@ public class WordGuessWindow : Window {
         }
     }
 
-    private static void DrawTimerRow(WordGuessState state) {
-        var rem = state.TimeRemaining;
-        var color = rem.TotalSeconds < 10 ? Style.Colors.Red
-                  : rem.TotalSeconds < 20 ? Style.Colors.Orange
-                  : Style.Colors.Green;
-        using (ImRaii.PushColor(ImGuiCol.Text, color))
-            ImGui.Text($"Time remaining: {(int)rem.TotalMinutes:D2}:{rem.Seconds:D2}");
+    private static void DrawTimerRow(WordGuessGame wg, WordGuessState state, int timerSecs) {
+        if (state.TimerEndsAt.HasValue) {
+            var rem = state.TimeRemaining;
+            var color = rem.TotalSeconds < 10 ? Style.Colors.Red
+                      : rem.TotalSeconds < 20 ? Style.Colors.Orange
+                      : Style.Colors.Green;
+            using (ImRaii.PushColor(ImGuiCol.Text, color))
+                ImGui.Text($"Time remaining: {(int)rem.TotalMinutes:D2}:{rem.Seconds:D2}");
+            ImGui.SameLine();
+            using (ImRaii.Disabled(state.RoundEnded))
+                if (ImGuiUtil.IconButton(FontAwesomeIcon.Stop, "##WgStopTimer", "Stop timer"))
+                    wg.StopTimer();
+        } else {
+            var m = timerSecs / 60;
+            var s = timerSecs % 60;
+            using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Gray))
+                ImGui.Text($"Timer: {m:D2}:{s:D2}  (not started)");
+            ImGui.SameLine();
+            using (ImRaii.Disabled(state.RoundEnded))
+                if (ImGuiUtil.IconButton(FontAwesomeIcon.Play, "##WgStartTimer", "Start timer"))
+                    wg.StartTimer();
+        }
     }
 
     private static void DrawPhaseBadge(WordGuessState state) {

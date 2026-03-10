@@ -8,6 +8,8 @@ using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using Dalamud.Interface.Windowing;
 
+using GameChest.Extensions;
+
 namespace GameChest;
 
 public class WordGuessQuestionListWindow : Window {
@@ -20,6 +22,7 @@ public class WordGuessQuestionListWindow : Window {
     private bool _editHasHint = false;
     private bool _editHasTimer = false;
     private int _editTimerSecs = 60;
+    private bool _editEnabled = true;
     private bool _isNewItem = false;
 
     public WordGuessQuestionListWindow(Plugin plugin)
@@ -69,6 +72,7 @@ public class WordGuessQuestionListWindow : Window {
                 _editHasHint = false;
                 _editHasTimer = false;
                 _editTimerSecs = 60;
+                _editEnabled = true;
             }
         }
 
@@ -80,24 +84,92 @@ public class WordGuessQuestionListWindow : Window {
 
         ImGui.Separator();
 
-        if (ImGui.BeginListBox("##WqList", new Vector2(-1, -1))) {
+        ImGui.BeginChild("##WqListScroll", new Vector2(-1, -1), false);
+
+        if (ImGui.BeginTable("##WqTable", 2,
+            ImGuiTableFlags.RowBg | ImGuiTableFlags.NoSavedSettings)) {
+            ImGui.TableSetupColumn("#", ImGuiTableColumnFlags.WidthFixed, 26 * ImGuiHelpers.GlobalScale);
+            ImGui.TableSetupColumn("Question", ImGuiTableColumnFlags.WidthStretch);
+
+            int? moveFrom = null, moveTo = null;
+
             for (var i = 0; i < Questions.Count; i++) {
                 var q = Questions[i];
-                var label = $"{i + 1:00}. {Truncate(q.Question, 24)}##wqitem{i}";
                 var isSelected = _selectedIndex == i && !_isNewItem;
-                if (ImGui.Selectable(label, isSelected)) {
-                    _selectedIndex = i;
-                    _isNewItem = false;
-                    LoadForEdit(q);
+
+                ImGui.PushID(i);
+                ImGui.TableNextRow();
+                ImGui.TableNextColumn();
+
+                using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Gray))
+                    ImGui.Text($"{i + 1:D2}");
+
+                ImGui.TableNextColumn();
+
+                using (ImRaii.PushColor(ImGuiCol.Text, ImGui.GetColorU32(ImGuiCol.TextDisabled), !q.Enabled)) {
+                    if (ImGui.Selectable(Truncate(q.Question, 22) + $"##wqitem{i}",
+                        isSelected, ImGuiSelectableFlags.None,
+                        new Vector2(ImGui.GetContentRegionAvail().X, 0))) {
+                        _selectedIndex = i;
+                        _isNewItem = false;
+                        LoadForEdit(q);
+                    }
                 }
+
+                // Drag source
+                if (ImGui.BeginDragDropSource()) {
+                    unsafe {
+                        var idx = i;
+                        ImGui.SetDragDropPayload("DND_QUESTION", new ReadOnlySpan<byte>(&idx, sizeof(int)), ImGuiCond.None);
+                        ImGui.Text($"({i + 1:D2}) {Truncate(q.Question, 20)}");
+                    }
+                    ImGui.EndDragDropSource();
+                }
+
+                // Drop target
+                ImGui.PushStyleColor(ImGuiCol.DragDropTarget, Style.Components.DragDropTarget);
+                if (ImGui.BeginDragDropTarget()) {
+                    var payload = ImGui.AcceptDragDropPayload("DND_QUESTION");
+                    bool isDropping;
+                    unsafe { isDropping = !payload.IsNull; }
+                    if (isDropping && payload.IsDelivery()) {
+                        unsafe {
+                            moveFrom = *(int*)payload.Data;
+                            moveTo = i;
+                        }
+                    }
+                    ImGui.EndDragDropTarget();
+                }
+                ImGui.PopStyleColor();
+
+                ImGui.PopID();
             }
-            ImGui.EndListBox();
+
+            ImGui.EndTable();
+
+            if (moveFrom.HasValue && moveTo.HasValue && moveFrom.Value != moveTo.Value) {
+                var from = moveFrom.Value;
+                var to = moveTo.Value;
+                Questions.MoveItemToIndex(from, to);
+                // Keep selection tracking
+                if (_selectedIndex == from)
+                    _selectedIndex = to;
+                else if (from < to && _selectedIndex > from && _selectedIndex <= to)
+                    _selectedIndex--;
+                else if (from > to && _selectedIndex >= to && _selectedIndex < from)
+                    _selectedIndex++;
+                Plugin.Config.Save();
+            }
         }
+
+        ImGui.EndChild();
     }
 
     private void DrawEditForm() {
         var isNew = _isNewItem;
         ImGui.Text(isNew ? "New Question" : $"Question {_selectedIndex + 1}");
+        ImGui.SameLine();
+        ImGui.Checkbox("Enabled##WqEnabled", ref _editEnabled);
         ImGui.Separator();
         ImGui.Spacing();
 
@@ -159,6 +231,7 @@ public class WordGuessQuestionListWindow : Window {
                     Answer = _editAnswer.Trim(),
                     Hint = _editHasHint && !string.IsNullOrWhiteSpace(_editHint) ? _editHint.Trim() : null,
                     TimerSecs = _editHasTimer && _editTimerSecs > 0 ? _editTimerSecs : (int?)null,
+                    Enabled = _editEnabled,
                 };
                 if (isNew) {
                     Questions.Add(q);
@@ -175,28 +248,6 @@ public class WordGuessQuestionListWindow : Window {
             ImGuiUtil.ToolTip("Question and Answer fields are required.");
 
         if (!isNew) {
-            ImGui.SameLine();
-
-            // Move Up
-            using (ImRaii.Disabled(_selectedIndex <= 0)) {
-                if (ImGuiUtil.IconButton(FontAwesomeIcon.ArrowUp, "##WqMoveUp", "Move Up")) {
-                    (Questions[_selectedIndex - 1], Questions[_selectedIndex]) =
-                        (Questions[_selectedIndex], Questions[_selectedIndex - 1]);
-                    _selectedIndex--;
-                    Plugin.Config.Save();
-                }
-            }
-            ImGui.SameLine();
-
-            // Move Down
-            using (ImRaii.Disabled(_selectedIndex >= Questions.Count - 1)) {
-                if (ImGuiUtil.IconButton(FontAwesomeIcon.ArrowDown, "##WqMoveDown", "Move Down")) {
-                    (Questions[_selectedIndex + 1], Questions[_selectedIndex]) =
-                        (Questions[_selectedIndex], Questions[_selectedIndex + 1]);
-                    _selectedIndex++;
-                    Plugin.Config.Save();
-                }
-            }
             ImGui.SameLine();
 
             // Delete
@@ -223,6 +274,7 @@ public class WordGuessQuestionListWindow : Window {
         _editHint = q.Hint ?? string.Empty;
         _editHasTimer = q.TimerSecs.HasValue;
         _editTimerSecs = q.TimerSecs ?? 60;
+        _editEnabled = q.Enabled;
     }
 
     private static string Truncate(string s, int maxLen) =>

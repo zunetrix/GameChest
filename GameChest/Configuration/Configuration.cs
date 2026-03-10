@@ -123,6 +123,7 @@ internal class Configuration : IPluginConfiguration {
         public string Answer { get; set; } = "";
         public string? Hint { get; set; }
         public int? TimerSecs { get; set; }
+        public bool Enabled { get; set; } = true;
     }
 
     internal sealed class WordGuessConfiguration {

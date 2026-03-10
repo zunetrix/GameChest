@@ -27,9 +27,9 @@ public sealed class WordGuessGame : GameBase, IChatConsumer {
     }
 
     public override void Start() {
-        if (Cfg.Questions.Count == 0) return;
+        if (!Cfg.Questions.Any(q => q.Enabled)) return;
         _state.Reset();
-        _state.CurrentQuestionIndex = 0;
+        _state.CurrentQuestionIndex = FindNextEnabledIndex(0);
         StartQuestion();
     }
 
@@ -172,10 +172,11 @@ public sealed class WordGuessGame : GameBase, IChatConsumer {
             }
         }
 
-        _state.CurrentQuestionIndex++;
-        if (_state.CurrentQuestionIndex >= Cfg.Questions.Count) {
+        var next = FindNextEnabledIndex(_state.CurrentQuestionIndex + 1);
+        if (next < 0) {
             EndSession();
         } else {
+            _state.CurrentQuestionIndex = next;
             StartQuestion();
         }
     }
@@ -234,6 +235,44 @@ public sealed class WordGuessGame : GameBase, IChatConsumer {
             ? Cfg.Questions[_state.CurrentQuestionIndex]
             : null;
 
-    private string QuestionNumber => (_state.CurrentQuestionIndex + 1).ToString();
-    private string TotalQuestions => Cfg.Questions.Count.ToString();
+    /// <summary>Manually send the current answer text to the output channel.</summary>
+    public void PublishAnswer() {
+        var q = CurrentQuestion;
+        if (q == null) return;
+        Publish(q.Answer);
+    }
+
+    /// <summary>Manually send the current hint to the output channel and mark it revealed.</summary>
+    public void PublishHint() {
+        var q = CurrentQuestion;
+        if (q?.Hint == null) return;
+        _state.HintRevealed = true;
+        _state.HintRevealAt = null;
+        PublishPhrase(WordGuessPhraseCategories.HintReveal, new Dictionary<string, string> {
+            ["hint"] = q.Hint,
+            ["number"] = QuestionNumber,
+        });
+    }
+
+    /// <summary>Start (or restart) the round timer with the configured duration.</summary>
+    public void StartTimer() {
+        var q = CurrentQuestion;
+        if (q == null) return;
+        var timerSecs = q.TimerSecs ?? (Cfg.UseGlobalTimer ? Cfg.GlobalTimerSecs : (int?)null);
+        if (timerSecs.HasValue && timerSecs.Value > 0)
+            _state.TimerEndsAt = DateTime.Now.AddSeconds(timerSecs.Value);
+    }
+
+    /// <summary>Cancel the running round timer without ending the round.</summary>
+    public void StopTimer() => _state.TimerEndsAt = null;
+
+    private int FindNextEnabledIndex(int start) {
+        for (var i = start; i < Cfg.Questions.Count; i++)
+            if (Cfg.Questions[i].Enabled) return i;
+        return -1;
+    }
+
+    private string QuestionNumber =>
+        Cfg.Questions.Take(_state.CurrentQuestionIndex + 1).Count(q => q.Enabled).ToString();
+    private string TotalQuestions => Cfg.Questions.Count(q => q.Enabled).ToString();
 }
