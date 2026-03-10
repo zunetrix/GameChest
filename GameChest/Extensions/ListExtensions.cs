@@ -1,0 +1,78 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace GameChest.Extensions;
+
+public static class ListExtensions {
+    /// <summary>
+    /// Move a list item in safe way
+    /// </summary>
+    public static void MoveItemToIndex<T>(this IList<T> list, int itemIndex, int targetIndex) {
+        if (list == null || list.Count == 0)
+            return;
+
+        var isValidIndex = itemIndex >= 0 && itemIndex < list.Count;
+        var isValidTargetIndex = targetIndex >= 0 && targetIndex < list.Count;
+
+        if (!isValidIndex || !isValidTargetIndex)
+            return;
+
+        targetIndex = Math.Clamp(targetIndex, 0, list.Count - 1);
+
+        var item = list[itemIndex];
+        list.RemoveAt(itemIndex);
+        list.Insert(targetIndex, item);
+    }
+
+    public static void RemoveAtSafe<T>(this IList<T> list, int itemIndex) {
+        var isEmptyList = list == null || list.Count == 0;
+
+        if (isEmptyList)
+            return;
+
+        if (!list.IndexExists(itemIndex))
+            return;
+
+        list.RemoveAt(itemIndex);
+    }
+
+    public static bool IndexExists<T>(this IList<T> list, int index) {
+        return index >= 0 && index < list.Count;
+    }
+
+    /// <summary>
+    /// Adds an item only if it does not exist in the list.
+    /// </summary>
+    public static bool AddUnique<T>(this IList<T> list, T item) {
+        if (!list.Contains(item)) {
+            list.Add(item);
+            return true;
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// Adds multiple items only if they do not exist in the list.
+    /// </summary>
+    public static void AddRangeUnique<T>(this IList<T> list, IEnumerable<T> items) {
+        foreach (var item in items) {
+            list.AddUnique(item);
+        }
+    }
+
+    /// <summary>
+    /// Returns true if the list contains a player name that matches, ignoring case and @World suffix.
+    /// </summary>
+    public static bool ContainsPlayer(this IEnumerable<string> list, string name) {
+        var nameBase = name.Contains('@') ? name[..name.IndexOf('@')] : name;
+        foreach (var entry in list) {
+            if (string.Equals(entry, name, StringComparison.OrdinalIgnoreCase)) return true;
+            var entryBase = entry.Contains('@') ? entry[..entry.IndexOf('@')] : entry;
+            if (string.Equals(entryBase, nameBase, StringComparison.OrdinalIgnoreCase)) return true;
+        }
+        return false;
+    }
+
+}
+
