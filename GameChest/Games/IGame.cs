@@ -10,6 +10,7 @@ public interface IGame {
     GameMode Mode { get; }
     IGameState State { get; }
     bool IsActive { get; }
+    bool IsRegistering { get; }
     ImGuiMessageDisplay Notification { get; }
     IReadOnlyList<PhraseCategoryMeta> PhraseCategories { get; }
     PhraseCollection Phrases { get; }

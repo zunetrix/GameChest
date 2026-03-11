@@ -10,6 +10,7 @@ public sealed class DiceRoyaleGame : GameBase, IChatConsumer {
     public override string Name => "Dice Royale";
     public override GameMode Mode => GameMode.DiceRoyale;
     public override DiceRoyaleState State => _state;
+    public override bool IsRegistering => _state.Phase == DiceRoyalePhase.Registration;
     public override IReadOnlyList<PhraseCategoryMeta> PhraseCategories => DiceRoyalePhraseCategories.All;
 
     public List<DiceRoyaleResult> MatchHistory { get; } = new();
@@ -112,8 +113,9 @@ public sealed class DiceRoyaleGame : GameBase, IChatConsumer {
     }
 
     public void ProcessChatMessage(string senderFullName, string message, XivChatType chatType) {
+        if (!Cfg.AllowChatElimination) return;
         if (_state.Phase != DiceRoyalePhase.PendingElimination) return;
-        if (!senderFullName.Equals(_state.CurrentEliminator, StringComparison.OrdinalIgnoreCase)) return;
+        if (!ShortName(senderFullName).Equals(ShortName(_state.CurrentEliminator ?? ""), StringComparison.OrdinalIgnoreCase)) return;
 
         var input = message.Trim();
         var match = _state.Players

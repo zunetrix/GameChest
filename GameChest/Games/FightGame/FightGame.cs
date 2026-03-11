@@ -13,6 +13,7 @@ public sealed class FightGame : GameBase, IChatConsumer {
     public override string Name => "Fight Club";
     public override GameMode Mode => GameMode.FightGame;
     public override FightState State => _state;
+    public override bool IsRegistering => _state.Phase == FightPhase.Registration;
     public override IReadOnlyList<PhraseCategoryMeta> PhraseCategories => FightGamePhraseCategories.All;
 
     public List<FightResult> MatchHistory { get; } = new();

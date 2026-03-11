@@ -19,7 +19,7 @@ public class RollManager {
             // DalamudApi.PluginLog.Warning($"{fullName} is on the blocklist and will be ignored");
 
             foreach (var game in Plugin.GameManager.AllGames)
-                if (game.IsActive) game.Notification.ShowError($"Player {fullName} attempted to roll but is on the blocklist");
+                if (game.IsRegistering) game.Notification.ShowError($"Player {fullName} attempted to roll but is on the blocklist");
             return;
         }
 

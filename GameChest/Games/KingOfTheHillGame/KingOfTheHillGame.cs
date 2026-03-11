@@ -10,6 +10,7 @@ public sealed class KingOfTheHillGame : GameBase {
     public override string Name => "King of the Hill";
     public override GameMode Mode => GameMode.KingOfTheHill;
     public override KingOfTheHillState State => _state;
+    public override bool IsRegistering => _state.Phase == KingOfTheHillPhase.Registration;
     public override IReadOnlyList<PhraseCategoryMeta> PhraseCategories => KingOfTheHillPhraseCategories.All;
 
     public List<KingOfTheHillResult> MatchHistory { get; } = new();

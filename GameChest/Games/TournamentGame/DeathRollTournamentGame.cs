@@ -14,6 +14,7 @@ public sealed class DeathRollTournamentGame : GameBase {
     public override string Name => "DeathRoll Tournament";
     public override GameMode Mode => GameMode.DeathRollTournament;
     public override DeathRollTournamentState State => _state;
+    public override bool IsRegistering => _state.Phase == DeathRollTournamentPhase.Registration;
     public override IReadOnlyList<PhraseCategoryMeta> PhraseCategories => DeathRollTournamentPhraseCategories.All;
 
     public List<DeathRollTournamentResult> MatchHistory { get; } = new();

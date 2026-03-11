@@ -10,6 +10,7 @@ public sealed class HighRollDuelGame : GameBase {
     public override string Name => "High Roll Duel";
     public override GameMode Mode => GameMode.HighRollDuel;
     public override HighRollDuelState State => _state;
+    public override bool IsRegistering => _state.Phase == HighRollDuelPhase.Registration;
     public override IReadOnlyList<PhraseCategoryMeta> PhraseCategories => HighRollDuelPhraseCategories.All;
 
     public List<HighRollDuelResult> MatchHistory { get; } = new();

@@ -10,6 +10,7 @@ public sealed class AssassinGame : GameBase {
     public override string Name => "Assassin";
     public override GameMode Mode => GameMode.AssassinGame;
     public override AssassinGameState State => _state;
+    public override bool IsRegistering => _state.Phase == AssassinPhase.Registration;
     public override IReadOnlyList<PhraseCategoryMeta> PhraseCategories => AssassinGamePhraseCategories.All;
 
     public List<AssassinResult> MatchHistory { get; } = new();
@@ -67,7 +68,9 @@ public sealed class AssassinGame : GameBase {
         _state.DefenseRoll = null;
         _state.Phase = AssassinPhase.Attacking;
         PublishPhrase(AssassinGamePhraseCategories.AttackAttempt, new Dictionary<string, string> {
-            ["maxroll"] = Cfg.MaxRoll.ToString(),
+            ["attacker"] = ShortName(attackerName),
+            ["defender"] = ShortName(defender),
+            ["maxroll"]  = Cfg.MaxRoll.ToString(),
         });
     }
 
@@ -76,8 +79,8 @@ public sealed class AssassinGame : GameBase {
         if (_state.Phase != AssassinPhase.Attacking) return;
         if (roll.OutOf != Cfg.MaxRoll) return;
 
-        var isAttacker = roll.PlayerName.Equals(_state.CurrentAttacker, StringComparison.OrdinalIgnoreCase);
-        var isDefender = roll.PlayerName.Equals(_state.CurrentDefender, StringComparison.OrdinalIgnoreCase);
+        var isAttacker = ShortName(roll.PlayerName).Equals(ShortName(_state.CurrentAttacker ?? ""), StringComparison.OrdinalIgnoreCase);
+        var isDefender = ShortName(roll.PlayerName).Equals(ShortName(_state.CurrentDefender ?? ""), StringComparison.OrdinalIgnoreCase);
 
         if (isAttacker && _state.AttackRoll == null) {
             _state.AttackRoll = roll.Result;

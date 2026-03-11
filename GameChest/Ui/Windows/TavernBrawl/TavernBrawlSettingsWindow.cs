@@ -38,6 +38,12 @@ public class TavernBrawlSettingsWindow : Window {
                 cfg.MinPlayers = Math.Clamp(minPlayers, 4, 50);
                 Plugin.Config.Save();
             }
+            var allowChat = cfg.AllowChatElimination;
+            if (ImGui.Checkbox("Allow chat elimination##TbAllowChat", ref allowChat)) {
+                cfg.AllowChatElimination = allowChat;
+                Plugin.Config.Save();
+            }
+            ImGuiUtil.ToolTip("Allows the selected player to type the name of the person to eliminate in chat");
         }
     }
 }

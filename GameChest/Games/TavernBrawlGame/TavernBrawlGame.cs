@@ -6,10 +6,11 @@ using Dalamud.Game.Text;
 
 namespace GameChest;
 
-public sealed class TavernBrawlGame : GameBase {
+public sealed class TavernBrawlGame : GameBase, IChatConsumer {
     public override string Name => "Tavern Brawl";
     public override GameMode Mode => GameMode.TavernBrawl;
     public override TavernBrawlState State => _state;
+    public override bool IsRegistering => _state.Phase == TavernBrawlPhase.Registration;
     public override IReadOnlyList<PhraseCategoryMeta> PhraseCategories => TavernBrawlPhraseCategories.All;
 
     public List<TavernBrawlResult> MatchHistory { get; } = new();
@@ -140,6 +141,21 @@ public sealed class TavernBrawlGame : GameBase {
             MatchHistory.Add(new TavernBrawlResult(winner, _state.Round, DateTime.Now));
             if (MatchHistory.Count > 10) MatchHistory.RemoveAt(0);
         }
+    }
+
+    public void ProcessChatMessage(string senderFullName, string message, XivChatType chatType) {
+        if (!Cfg.AllowChatElimination) return;
+        if (_state.Phase != TavernBrawlPhase.PendingChoice) return;
+        if (!ShortName(senderFullName).Equals(ShortName(_state.HighestRoller ?? ""), StringComparison.OrdinalIgnoreCase)) return;
+
+        var input = message.Trim();
+        var match = _state.Players
+            .Where(p => !p.Equals(_state.HighestRoller, StringComparison.OrdinalIgnoreCase))
+            .FirstOrDefault(p => ShortName(p).Equals(input, StringComparison.OrdinalIgnoreCase)
+                              || p.Equals(input, StringComparison.OrdinalIgnoreCase));
+        if (match == null) return;
+
+        EliminateByChoice(match);
     }
 
     private void PublishPhrase(string categoryId, Dictionary<string, string> vars) {

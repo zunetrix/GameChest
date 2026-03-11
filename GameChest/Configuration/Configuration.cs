@@ -159,6 +159,7 @@ internal class Configuration : IPluginConfiguration {
         public XivChatType OutputChannel { get; set; } = XivChatType.Say;
         public int MaxRoll { get; set; } = 100;
         public int MinPlayers { get; set; } = 4;
+        public bool AllowChatElimination { get; set; } = true;
     }
 
     internal sealed class DiceRoyaleConfiguration {
@@ -166,6 +167,7 @@ internal class Configuration : IPluginConfiguration {
         public XivChatType OutputChannel { get; set; } = XivChatType.Say;
         public int MaxRoll { get; set; } = 100;
         public int MinPlayers { get; set; } = 2;
+        public bool AllowChatElimination { get; set; } = true;
     }
 
     internal sealed class KingOfTheHillConfiguration {

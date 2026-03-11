@@ -38,6 +38,12 @@ public class DiceRoyaleSettingsWindow : Window {
                 cfg.MinPlayers = Math.Clamp(minPlayers, 6, 50);
                 Plugin.Config.Save();
             }
+            var allowChat = cfg.AllowChatElimination;
+            if (ImGui.Checkbox("Allow chat elimination##DrAllowChat", ref allowChat)) {
+                cfg.AllowChatElimination = allowChat;
+                Plugin.Config.Save();
+            }
+            ImGuiUtil.ToolTip("Allows the selected player to type the name of the person to eliminate in chat");
         }
         ImGui.Spacing();
         using (ImGuiGroupPanel.BeginGroupPanel("Roll Ranges")) {
