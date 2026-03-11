@@ -22,6 +22,7 @@ internal class Configuration : IPluginConfiguration {
     public bool AllowCloseWithEscape { get; set; } = false;
     public bool DebugMode { get; set; } = false;
     public Vector4 HighlightColor { get; set; } = Style.Colors.Yellow;
+    public MainWindowCardSettings MainWindowCards { get; set; } = new();
 
     public bool ListenToChatMessages { get; set; } = true;
     public HashSet<XivChatType> ListenedChatTypes { get; set; } = new() { XivChatType.Say };
@@ -180,5 +181,18 @@ internal class Configuration : IPluginConfiguration {
         public XivChatType OutputChannel { get; set; } = XivChatType.Say;
         public int MaxRoll { get; set; } = 20;
         public int MinPlayers { get; set; } = 3;
+    }
+
+    public class MainWindowCardSettings {
+        public bool PrizeRoll           = true;
+        public bool FightGame           = true;
+        public bool DeathRoll           = true;
+        public bool DeathRollTournament = true;
+        public bool WordGuess           = true;
+        public bool HighRollDuel        = true;
+        public bool TavernBrawl         = true;
+        public bool DiceRoyale          = true;
+        public bool KingOfTheHill       = true;
+        public bool AssassinGame        = true;
     }
 }

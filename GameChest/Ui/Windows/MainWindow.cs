@@ -60,31 +60,63 @@ public class MainWindow : Window {
             Ui.SettingsWindow.Toggle();
         ImGuiUtil.ToolTip(Language.SettingsTitle);
 
+        ImGui.SameLine();
+        DrawVisibleGamesButton();
+
         ImGui.Spacing();
         ImGui.Separator();
         ImGui.Spacing();
     }
 
+    private void DrawVisibleGamesButton() {
+        if (ImGuiUtil.IconButton(FontAwesomeIcon.Eye, "##VisibleGamesBtn", "Visible Games"))
+            ImGui.OpenPopup("VisibleGamesPopup");
+
+        using var borderColor = ImRaii.PushColor(ImGuiCol.Border, Style.Components.TooltipBorderColor);
+        using var borderSize = ImRaii.PushStyle(ImGuiStyleVar.PopupBorderSize, 1);
+        using var popup = ImRaii.Popup("VisibleGamesPopup");
+        if (!popup) return;
+
+        ImGui.TextDisabled("Visible Games");
+        ImGui.Separator();
+        ImGui.Spacing();
+
+        var c = Plugin.Config.MainWindowCards;
+        var changed = false;
+        if (ImGui.Checkbox("Prize Roll",             ref c.PrizeRoll))           changed = true;
+        if (ImGui.Checkbox("Fight Club",             ref c.FightGame))           changed = true;
+        if (ImGui.Checkbox("Death Roll",             ref c.DeathRoll))           changed = true;
+        if (ImGui.Checkbox("DeathRoll Tournament",   ref c.DeathRollTournament)) changed = true;
+        if (ImGui.Checkbox("Word Guess",             ref c.WordGuess))           changed = true;
+        if (ImGui.Checkbox("High Roll Duel",         ref c.HighRollDuel))        changed = true;
+        if (ImGui.Checkbox("Tavern Brawl",           ref c.TavernBrawl))         changed = true;
+        if (ImGui.Checkbox("Dice Royale",            ref c.DiceRoyale))          changed = true;
+        if (ImGui.Checkbox("King of the Hill",       ref c.KingOfTheHill))       changed = true;
+        if (ImGui.Checkbox("Assassin Game",          ref c.AssassinGame))        changed = true;
+        if (changed) Plugin.Config.Save();
+    }
+
     private void DrawGameCards() {
-        DrawPrizeRollCard();
-        ImGui.Spacing();
-        DrawFightGameCard();
-        ImGui.Spacing();
-        DrawDeathRollCard();
-        ImGui.Spacing();
-        DrawTournamentCard();
-        ImGui.Spacing();
-        DrawWordGuessCard();
-        ImGui.Spacing();
-        DrawHighRollDuelCard();
-        ImGui.Spacing();
-        DrawTavernBrawlCard();
-        ImGui.Spacing();
-        DrawDiceRoyaleCard();
-        ImGui.Spacing();
-        DrawKingOfTheHillCard();
-        ImGui.Spacing();
-        DrawAssassinGameCard();
+        var v = Plugin.Config.MainWindowCards;
+        var first = true;
+
+        void Card(bool visible, Action draw) {
+            if (!visible) return;
+            if (!first) ImGui.Spacing();
+            draw();
+            first = false;
+        }
+
+        Card(v.PrizeRoll,           DrawPrizeRollCard);
+        Card(v.FightGame,           DrawFightGameCard);
+        Card(v.DeathRoll,           DrawDeathRollCard);
+        Card(v.DeathRollTournament, DrawTournamentCard);
+        Card(v.WordGuess,           DrawWordGuessCard);
+        Card(v.HighRollDuel,        DrawHighRollDuelCard);
+        Card(v.TavernBrawl,         DrawTavernBrawlCard);
+        Card(v.DiceRoyale,          DrawDiceRoyaleCard);
+        Card(v.KingOfTheHill,       DrawKingOfTheHillCard);
+        Card(v.AssassinGame,        DrawAssassinGameCard);
     }
 
     private void DrawFightGameCard() {
