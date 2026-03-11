@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 
 using Dalamud.Bindings.ImGui;
@@ -11,6 +13,8 @@ namespace GameChest;
 public class HighRollDuelWindow : Window {
     private Plugin Plugin { get; }
     private string _addPlayerInput = string.Empty;
+    private enum RollSort { Default, Highest, Lowest }
+    private RollSort _rollSort = RollSort.Lowest;
 
     public HighRollDuelWindow(Plugin plugin) : base("High Roll Duel###HighRollDuelWindow") {
         Plugin = plugin;
@@ -69,7 +73,14 @@ public class HighRollDuelWindow : Window {
         var spacing = ImGui.GetStyle().ItemSpacing.X;
         var btnW = ImGui.GetFrameHeight();
         float marginRight = 15f * ImGuiHelpers.GlobalScale;
-        ImGui.SameLine(ImGui.GetWindowContentRegionMax().X - (btnW * 2 + spacing + marginRight));
+        var btnCount = Plugin.Config.DebugMode ? 3 : 2;
+        ImGui.SameLine(ImGui.GetWindowContentRegionMax().X - (btnW * btnCount + spacing * (btnCount - 1) + marginRight));
+        if (Plugin.Config.DebugMode) {
+            using (ImRaii.Disabled(state.Phase is not (HighRollDuelPhase.Registration or HighRollDuelPhase.Rolling)))
+                if (ImGuiUtil.IconButton(FontAwesomeIcon.Dice, "##HrdSimRoll", "Simulate Roll"))
+                    game.SimulateRoll();
+            ImGui.SameLine();
+        }
         if (ImGuiUtil.IconButton(FontAwesomeIcon.ClipboardList, "##HrdPhrases", "Phrases"))
             Plugin.Ui.GamePhrasesWindow.OpenToGame(GameMode.HighRollDuel);
         ImGui.SameLine();
@@ -98,7 +109,19 @@ public class HighRollDuelWindow : Window {
         if (state.Phase == HighRollDuelPhase.Rolling) {
             using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Yellow))
                 ImGui.Text($"Round {state.Round} - roll /random {Plugin.Config.HighRollDuel.MaxRoll}");
+            ImGui.SameLine();
+            DrawRollSortButtons();
             ImGui.Spacing();
+
+            var players = _rollSort switch {
+                RollSort.Highest => state.Players
+                    .OrderByDescending(p => state.CurrentRoundRolls.TryGetValue(p, out var r) ? r : -1)
+                    .ToList(),
+                RollSort.Lowest => state.Players
+                    .OrderBy(p => state.CurrentRoundRolls.TryGetValue(p, out var r) ? r : int.MaxValue)
+                    .ToList(),
+                _ => (IEnumerable<string>)state.Players,
+            };
 
             if (ImGui.BeginTable("##HrdRollTable", 3,
                 ImGuiTableFlags.RowBg | ImGuiTableFlags.PadOuterX | ImGuiTableFlags.NoSavedSettings)) {
@@ -107,7 +130,7 @@ public class HighRollDuelWindow : Window {
                 ImGui.TableSetupColumn("Status", ImGuiTableColumnFlags.WidthFixed, 60 * ImGuiHelpers.GlobalScale);
                 ImGui.TableHeadersRow();
 
-                foreach (var p in state.Players) {
+                foreach (var p in players) {
                     ImGui.TableNextRow();
                     ImGui.TableNextColumn(); ImGui.Text(ShortName(p));
                     ImGui.TableNextColumn();
@@ -160,6 +183,28 @@ public class HighRollDuelWindow : Window {
             ImGui.TableNextColumn(); using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Gray)) ImGui.Text(r.PlayedAt.ToString("HH:mm"));
             ImGui.TableNextColumn(); using (ImRaii.PushColor(ImGuiCol.Text, Plugin.Config.HighlightColor)) ImGui.Text(r.Winner);
             ImGui.TableNextColumn(); ImGui.Text($"{r.PlayerCount}");
+        }
+    }
+
+    private void DrawRollSortButtons() {
+        DrawSortToggle("Default", RollSort.Default);
+        ImGui.SameLine();
+        DrawSortToggle("Highest", RollSort.Highest);
+        ImGui.SameLine();
+        DrawSortToggle("Lowest", RollSort.Lowest);
+    }
+
+    private void DrawSortToggle(string label, RollSort value) {
+        var active = _rollSort == value;
+        using (active
+            ? ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonBlueNormal)
+                .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonBlueHovered)
+                .Push(ImGuiCol.ButtonActive,  Style.Components.ButtonBlueActive)
+            : ImRaii.PushColor(ImGuiCol.Button, Style.Components.Button)
+                .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonHovered)
+                .Push(ImGuiCol.ButtonActive,  Style.Components.ButtonActive)) {
+            if (ImGui.SmallButton($"{label}##HrdSort{value}"))
+                _rollSort = value;
         }
     }
 

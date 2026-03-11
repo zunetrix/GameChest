@@ -16,6 +16,8 @@ public sealed class TavernBrawlGame : GameBase, IChatConsumer {
     public List<TavernBrawlResult> MatchHistory { get; } = new();
 
     private readonly TavernBrawlState _state = new();
+    private readonly Random _rng = new();
+    private int _simPlayerIdx;
     private Configuration.TavernBrawlConfiguration Cfg => Plugin.Config.TavernBrawl;
     protected override List<PhrasePool> ConfiguredPhrases => Cfg.Phrases;
     protected override XivChatType OutputChannel => Cfg.OutputChannel;
@@ -104,6 +106,18 @@ public sealed class TavernBrawlGame : GameBase, IChatConsumer {
         _state.ResetRound();
         _state.Phase = TavernBrawlPhase.Rolling;
         AnnounceRoundStart();
+    }
+
+    public void SimulateRoll() {
+        var outOf = Cfg.MaxRoll;
+        if (_state.Phase == TavernBrawlPhase.Registration) {
+            Plugin.RollManager.ProcessIncomingRollMessage(
+                $"Player{++_simPlayerIdx}@Bahamut", _rng.Next(1, outOf + 1), outOf);
+        } else if (_state.Phase == TavernBrawlPhase.Rolling) {
+            var pending = _state.Players.FirstOrDefault(p => !_state.CurrentRoundRolls.ContainsKey(p));
+            if (pending != null)
+                Plugin.RollManager.ProcessIncomingRollMessage(pending, _rng.Next(1, outOf + 1), outOf);
+        }
     }
 
     public override void ProcessRoll(Roll roll) {

@@ -68,7 +68,14 @@ public class TavernBrawlWindow : Window {
         var spacing = ImGui.GetStyle().ItemSpacing.X;
         var btnW = ImGui.GetFrameHeight();
         float marginRight = 15f * ImGuiHelpers.GlobalScale;
-        ImGui.SameLine(ImGui.GetWindowContentRegionMax().X - (btnW * 2 + spacing + marginRight));
+        var btnCount = Plugin.Config.DebugMode ? 3 : 2;
+        ImGui.SameLine(ImGui.GetWindowContentRegionMax().X - (btnW * btnCount + spacing * (btnCount - 1) + marginRight));
+        if (Plugin.Config.DebugMode) {
+            using (ImRaii.Disabled(state.Phase is not (TavernBrawlPhase.Registration or TavernBrawlPhase.Rolling)))
+                if (ImGuiUtil.IconButton(FontAwesomeIcon.Dice, "##TbSimRoll", "Simulate Roll"))
+                    game.SimulateRoll();
+            ImGui.SameLine();
+        }
         if (ImGuiUtil.IconButton(FontAwesomeIcon.ClipboardList, "##TbPhrases", "Phrases"))
             Plugin.Ui.GamePhrasesWindow.OpenToGame(GameMode.TavernBrawl);
         ImGui.SameLine();

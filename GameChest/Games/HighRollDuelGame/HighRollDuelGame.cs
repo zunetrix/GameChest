@@ -16,6 +16,8 @@ public sealed class HighRollDuelGame : GameBase {
     public List<HighRollDuelResult> MatchHistory { get; } = new();
 
     private readonly HighRollDuelState _state = new();
+    private readonly Random _rng = new();
+    private int _simPlayerIdx;
     private Configuration.HighRollDuelConfiguration Cfg => Plugin.Config.HighRollDuel;
     protected override List<PhrasePool> ConfiguredPhrases => Cfg.Phrases;
     protected override XivChatType OutputChannel => Cfg.OutputChannel;
@@ -79,6 +81,18 @@ public sealed class HighRollDuelGame : GameBase {
             _state.Round++;
             _state.ResetRound();
             AnnounceRoundStart();
+        }
+    }
+
+    public void SimulateRoll() {
+        var outOf = Cfg.MaxRoll;
+        if (_state.Phase == HighRollDuelPhase.Registration) {
+            Plugin.RollManager.ProcessIncomingRollMessage(
+                $"Player{++_simPlayerIdx}@Bahamut", _rng.Next(1, outOf + 1), outOf);
+        } else if (_state.Phase == HighRollDuelPhase.Rolling) {
+            var pending = _state.Players.FirstOrDefault(p => !_state.CurrentRoundRolls.ContainsKey(p));
+            if (pending != null)
+                Plugin.RollManager.ProcessIncomingRollMessage(pending, _rng.Next(1, outOf + 1), outOf);
         }
     }
 

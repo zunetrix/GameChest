@@ -16,6 +16,8 @@ public sealed class DiceRoyaleGame : GameBase, IChatConsumer {
     public List<DiceRoyaleResult> MatchHistory { get; } = new();
 
     private readonly DiceRoyaleState _state = new();
+    private readonly Random _rng = new();
+    private int _simPlayerIdx;
     private Configuration.DiceRoyaleConfiguration Cfg => Plugin.Config.DiceRoyale;
     protected override List<PhrasePool> ConfiguredPhrases => Cfg.Phrases;
     protected override XivChatType OutputChannel => Cfg.OutputChannel;
@@ -125,6 +127,18 @@ public sealed class DiceRoyaleGame : GameBase, IChatConsumer {
 
         if (match == null) return;
         EliminateByChoice(match);
+    }
+
+    public void SimulateRoll() {
+        var outOf = Cfg.MaxRoll;
+        if (_state.Phase == DiceRoyalePhase.Registration) {
+            Plugin.RollManager.ProcessIncomingRollMessage(
+                $"Player{++_simPlayerIdx}@Bahamut", _rng.Next(1, outOf + 1), outOf);
+        } else if (_state.Phase == DiceRoyalePhase.Rolling) {
+            var pending = _state.Players.FirstOrDefault(p => !_state.CurrentRoundRolls.ContainsKey(p));
+            if (pending != null)
+                Plugin.RollManager.ProcessIncomingRollMessage(pending, _rng.Next(1, outOf + 1), outOf);
+        }
     }
 
     public override void ProcessRoll(Roll roll) {

@@ -17,6 +17,7 @@ public sealed class AssassinGame : GameBase {
 
     private readonly AssassinGameState _state = new();
     private readonly Random _rng = new();
+    private int _simPlayerIdx;
     private Configuration.AssassinGameConfiguration Cfg => Plugin.Config.AssassinGame;
     protected override List<PhrasePool> ConfiguredPhrases => Cfg.Phrases;
     protected override XivChatType OutputChannel => Cfg.OutputChannel;
@@ -72,6 +73,21 @@ public sealed class AssassinGame : GameBase {
             ["defender"] = ShortName(defender),
             ["maxroll"]  = Cfg.MaxRoll.ToString(),
         });
+    }
+
+    public void SimulateRoll() {
+        var outOf = Cfg.MaxRoll;
+        if (_state.Phase == AssassinPhase.Registration) {
+            Plugin.RollManager.ProcessIncomingRollMessage(
+                $"Player{++_simPlayerIdx}@Bahamut", _rng.Next(1, outOf + 1), outOf);
+        } else if (_state.Phase == AssassinPhase.Attacking) {
+            if (_state.AttackRoll == null && _state.CurrentAttacker != null)
+                Plugin.RollManager.ProcessIncomingRollMessage(
+                    _state.CurrentAttacker, _rng.Next(1, outOf + 1), outOf);
+            if (_state.DefenseRoll == null && _state.CurrentDefender != null)
+                Plugin.RollManager.ProcessIncomingRollMessage(
+                    _state.CurrentDefender, _rng.Next(1, outOf + 1), outOf);
+        }
     }
 
     public override void ProcessRoll(Roll roll) {

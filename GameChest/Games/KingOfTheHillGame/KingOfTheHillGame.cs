@@ -16,6 +16,8 @@ public sealed class KingOfTheHillGame : GameBase {
     public List<KingOfTheHillResult> MatchHistory { get; } = new();
 
     private readonly KingOfTheHillState _state = new();
+    private readonly Random _rng = new();
+    private int _simPlayerIdx;
     private Configuration.KingOfTheHillConfiguration Cfg => Plugin.Config.KingOfTheHill;
     protected override List<PhrasePool> ConfiguredPhrases => Cfg.Phrases;
     protected override XivChatType OutputChannel => Cfg.OutputChannel;
@@ -86,6 +88,18 @@ public sealed class KingOfTheHillGame : GameBase {
             _state.Round++;
             _state.ResetRound();
             AnnounceRoundStart();
+        }
+    }
+
+    public void SimulateRoll() {
+        var outOf = Cfg.MaxRoll;
+        if (_state.Phase == KingOfTheHillPhase.Registration) {
+            Plugin.RollManager.ProcessIncomingRollMessage(
+                $"Player{++_simPlayerIdx}@Bahamut", _rng.Next(1, outOf + 1), outOf);
+        } else if (_state.Phase == KingOfTheHillPhase.Rolling) {
+            var pending = _state.Players.FirstOrDefault(p => !_state.CurrentRoundRolls.ContainsKey(p));
+            if (pending != null)
+                Plugin.RollManager.ProcessIncomingRollMessage(pending, _rng.Next(1, outOf + 1), outOf);
         }
     }
 
