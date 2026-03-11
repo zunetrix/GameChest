@@ -34,6 +34,7 @@ public class PluginCommandManager : IDisposable {
         if (!newCommand.StartsWith('/') || newCommand.Length < 2) return;
         if (newCommand == _customCommand) return;
         if (newCommand == _mainCommand) return;
+        if (DalamudApi.CommandManager.Commands.ContainsKey(newCommand)) return;
 
         UnregisterCustomCommand();
         RegisterCustomCommand(newCommand);
@@ -51,6 +52,10 @@ public class PluginCommandManager : IDisposable {
         command = command.Trim().ToLowerInvariant();
         if (string.IsNullOrWhiteSpace(command) || !command.StartsWith('/') || command.Length < 2) return;
         if (command == _mainCommand) return;
+        if (DalamudApi.CommandManager.Commands.ContainsKey(command)) {
+            DalamudApi.PluginLog.Warning($"Command '{command}' is already registered by another plugin.");
+            return;
+        }
 
         try {
             DalamudApi.CommandManager.AddHandler(command, new CommandInfo(OnMainCommand) {

@@ -9,7 +9,10 @@ public sealed class GeneralDebugWidget : Widget {
     }
 
     public override void Draw() {
-        ImGui.Text("Test Debug");
+        ImGui.Text("Commands");
+        foreach (var command in DalamudApi.CommandManager.Commands) {
+            ImGui.Text($"{command.Key}");
+        }
     }
 }
 
