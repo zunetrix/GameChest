@@ -37,6 +37,11 @@ public class GameManager : IDisposable {
             if (game.IsActive) game.ProcessRoll(roll);
     }
 
+    public void Tick(DateTime now) {
+        foreach (var game in AllGames)
+            if (game.IsActive) game.Tick(now);
+    }
+
     public void ProcessChatMessage(string senderFullName, string message, Dalamud.Game.Text.XivChatType chatType) {
         foreach (var consumer in AllGames.OfType<IChatConsumer>())
             if (((IGame)consumer).IsActive)

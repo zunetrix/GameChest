@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace GameChest;
@@ -17,4 +18,5 @@ public interface IGame {
     void Reset();
     void RestartMatch();
     void ProcessRoll(Roll roll);
+    void Tick(DateTime now);
 }

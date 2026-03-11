@@ -18,6 +18,7 @@ public static class FightGamePhraseCategories {
     public const string FightCanceled = "FightCanceled";
     public const string NearDeath = "NearDeath";
     public const string MinionSummon = "MinionSummon";
+    public const string InactivityReminder = "InactivityReminder";
 
     public static readonly IReadOnlyList<PhraseCategoryMeta> All = new List<PhraseCategoryMeta> {
         new(RegistrationStart, "Registration Open", new[] { "{max}", "{hp}" }, new[] {
@@ -230,5 +231,15 @@ public static class FightGamePhraseCategories {
             "{player} swaps in a minion and pays {cost} MP. {mp}/{maxMp} MP remain.",
             "{player} empowers the battlefield with a minion summon. {cost} MP spent; {mp}/{maxMp} MP remain.",
         }),
+        new(InactivityReminder, "Inactivity Reminder", new[] { "{attacker}", "{max}" }, new[] {
+            "{attacker}, it's your turn. Roll /random {max}.",
+            "The Lalarena grows restless. {attacker}, are you still with us? Roll /random {max}.",
+            "The crowd grows impatient. {attacker}, step up and roll /random {max}!",
+            "{attacker}, the duel waits for no one. Roll /random {max}.",
+            "The game master calls upon {attacker}. Roll /random {max}!",
+            "Eyes are on you, {attacker}. Roll /random {max}.",
+            "{attacker}, your turn still stands. Roll /random {max}.",
+            "The Lalarena falls silent waiting for {attacker}. Roll /random {max}!",
+        }, false),
     };
 }

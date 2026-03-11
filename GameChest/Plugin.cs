@@ -1,3 +1,4 @@
+using System;
 using System.Globalization;
 
 using Dalamud.Plugin;
@@ -38,16 +39,17 @@ public class Plugin : IDalamudPlugin {
         DalamudApi.PluginInterface.UiBuilder.Draw += Ui.Draw;
         DalamudApi.PluginInterface.UiBuilder.OpenConfigUi += Ui.SettingsWindow.Toggle;
         DalamudApi.PluginInterface.UiBuilder.OpenMainUi += Ui.MainWindow.Toggle;
-        // DalamudApi.Framework.Update += OnFrameworkUpdate;
+        DalamudApi.Framework.Update += OnFrameworkUpdate;
 
         if (Config.OpenOnStartup) {
             Ui.MainWindow.IsOpen = true;
         }
     }
 
-    // private void OnFrameworkUpdate(IFramework framework) {
-    //     if (!DalamudApi.ClientState.IsLoggedIn) { return; }
-    // }
+    private void OnFrameworkUpdate(Dalamud.Plugin.Services.IFramework _) {
+        if (!DalamudApi.ClientState.IsLoggedIn) return;
+        GameManager.Tick(DateTime.Now);
+    }
 
     private static void OnLanguageChange(string langCode) {
         Language.Culture = new CultureInfo(langCode);
@@ -70,7 +72,7 @@ public class Plugin : IDalamudPlugin {
         DalamudApi.ClientState.Logout -= OnLogout;
         DalamudApi.ClientState.Login -= OnLogin;
         DalamudApi.PluginInterface.LanguageChanged -= OnLanguageChange;
-        // DalamudApi.Framework.Update -= OnFrameworkUpdate;
+        DalamudApi.Framework.Update -= OnFrameworkUpdate;
 
         PluginCommandManager.Dispose();
         RollWatcher.Dispose();

@@ -15,11 +15,11 @@ public class DalamudApi {
     // using CSPlayerState = FFXIVClientStructs.FFXIV.Client.Game.UI.PlayerState;
     [PluginService] public static IPlayerState PlayerState { get; private set; } = null;
     [PluginService] public static INotificationManager NotificationManager { get; private set; } = null;
-    // [PluginService] public static IFramework Framework { get; private set; } = null;
+    [PluginService] public static IFramework Framework { get; private set; } = null;
     [PluginService] public static IDataManager DataManager { get; private set; } = null;
     // [PluginService] public static ITextureProvider TextureProvider { get; private set; } = null;
     [PluginService] public static IChatGui ChatGui { get; private set; } = null;
-    // [PluginService] public static IObjectTable ObjectTable { get; private set; }
+    [PluginService] public static IObjectTable ObjectTable { get; private set; }
     [PluginService] public static ITargetManager TargetManager { get; private set; }
     // hook
     [PluginService] public static IGameInteropProvider GameInteropProvider { get; private set; } = null;

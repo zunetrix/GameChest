@@ -65,8 +65,8 @@ public sealed class WordGuessGame : GameBase, IChatConsumer {
         AdvanceQuestion(wasSkipped: !_state.RoundEnded);
     }
 
-    /// <summary>Called from Draw() - checks hint reveal and timer expiry.</summary>
-    public void Tick(DateTime now) {
+    /// <summary>Called from Framework.Update - checks hint reveal and timer expiry.</summary>
+    public override void Tick(DateTime now) {
         if (_state.Phase != WordGuessPhase.Active || _state.RoundEnded) return;
 
         // Hint reveal

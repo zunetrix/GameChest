@@ -23,8 +23,6 @@ public class WordGuessWindow : Window {
         var wg = Plugin.GameManager.WordGuessGame;
         var state = wg.State;
 
-        // Tick timers (hint reveal + question timeout)
-        if (state.IsActive) wg.Tick(DateTime.Now);
 
         wg.Notification.Draw();
 

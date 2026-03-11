@@ -204,6 +204,7 @@ public sealed class FightGame : GameBase, IChatConsumer {
         _state.CurrentDefender = defender;
         _state.Phase = FightPhase.Combat;
         _state.TurnNumber = 1;
+        _state.InactivityReminderAt = DateTime.UtcNow.AddSeconds(Cfg.InactivityReminderSeconds);
 
         var vars = new Dictionary<string, string> {
             ["attacker"] = Display(attacker),
@@ -281,6 +282,8 @@ public sealed class FightGame : GameBase, IChatConsumer {
             _state.CurrentAttacker.SkipNextTurn = false;
             (_state.CurrentAttacker, _state.CurrentDefender) = (_state.CurrentDefender, _state.CurrentAttacker);
         }
+
+        _state.InactivityReminderAt = DateTime.UtcNow.AddSeconds(Cfg.InactivityReminderSeconds);
     }
 
     private void EndFight(FighterState winner, FighterState loser) {
@@ -309,6 +312,35 @@ public sealed class FightGame : GameBase, IChatConsumer {
         var display = Display(rollerName);
         var attackerDisplay = Display(_state.CurrentAttacker);
         Publish($"Not so fast, {display}! It's {attackerDisplay}'s turn!");
+    }
+
+    public override void Tick(DateTime now) {
+        switch (_state.Phase) {
+            case FightPhase.Registration:
+                if (Cfg.RegistrationReminderSeconds > 0
+                    && _state.RegistrationReminderAt.HasValue
+                    && now >= _state.RegistrationReminderAt.Value) {
+                    var vars = new Dictionary<string, string> { ["max"] = Cfg.MaxRollAllowed.ToString() };
+                    PublishPhrase(FightGamePhraseCategories.RegistrationReminder, vars);
+                    _state.RegistrationReminderAt = now.AddSeconds(Cfg.RegistrationReminderSeconds);
+                }
+                break;
+
+            case FightPhase.Initiative:
+            case FightPhase.Combat:
+                if (Cfg.InactivityReminderSeconds > 0
+                    && _state.InactivityReminderAt.HasValue
+                    && now >= _state.InactivityReminderAt.Value
+                    && _state.CurrentAttacker != null) {
+                    var vars = new Dictionary<string, string> {
+                        ["attacker"] = Display(_state.CurrentAttacker),
+                        ["max"] = Cfg.MaxRollAllowed.ToString(),
+                    };
+                    PublishPhrase(FightGamePhraseCategories.InactivityReminder, vars);
+                    _state.InactivityReminderAt = now.AddSeconds(Cfg.InactivityReminderSeconds);
+                }
+                break;
+        }
     }
 
     private void PublishPhrase(string categoryId, Dictionary<string, string> vars) {
