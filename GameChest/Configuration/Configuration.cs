@@ -67,8 +67,6 @@ internal class Configuration : IPluginConfiguration {
         public int PlayerAMp { get; set; } = 100;
         public int PlayerBMp { get; set; } = 100;
         public int MaxRollAllowed { get; set; } = 20;
-        public bool Automode { get; set; }
-        public float AutoSendDelaySeconds { get; set; } = 1.35f;
         public XivChatType OutputChannel { get; set; } = XivChatType.Say;
         public float RegistrationReminderSeconds { get; set; } = 30.0f;
         public float InactivityReminderSeconds { get; set; } = 30.0f;
@@ -82,8 +80,6 @@ internal class Configuration : IPluginConfiguration {
             PlayerAMp = preset.PlayerAMp;
             PlayerBMp = preset.PlayerBMp;
             MaxRollAllowed = preset.MaxRollAllowed;
-            Automode = preset.Automode;
-            AutoSendDelaySeconds = preset.AutoSendDelaySeconds;
             RegistrationReminderSeconds = preset.RegistrationReminderSeconds;
             InactivityReminderSeconds = preset.InactivityReminderSeconds;
             OutOfTurnCooldownSeconds = preset.OutOfTurnCooldownSeconds;
@@ -96,8 +92,6 @@ internal class Configuration : IPluginConfiguration {
             PlayerAMp = PlayerAMp,
             PlayerBMp = PlayerBMp,
             MaxRollAllowed = MaxRollAllowed,
-            Automode = Automode,
-            AutoSendDelaySeconds = AutoSendDelaySeconds,
             RegistrationReminderSeconds = RegistrationReminderSeconds,
             InactivityReminderSeconds = InactivityReminderSeconds,
             OutOfTurnCooldownSeconds = OutOfTurnCooldownSeconds,

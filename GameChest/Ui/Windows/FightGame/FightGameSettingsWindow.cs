@@ -143,26 +143,6 @@ public class FightGameSettingsWindow : Window {
         }
 
         ImGui.Spacing();
-
-        using (ImGuiGroupPanel.BeginGroupPanel("Auto Mode")) {
-            var automode = cfg.Automode;
-            if (ImGui.Checkbox("Enabled##Automode", ref automode)) {
-                cfg.Automode = automode;
-                Plugin.Config.Save();
-            }
-
-            if (cfg.Automode) {
-                ImGui.SameLine();
-                ImGui.SetNextItemWidth(80f * ImGuiHelpers.GlobalScale);
-                var delay = cfg.AutoSendDelaySeconds;
-                if (ImGui.InputFloat("Delay (s)##AutoDelay", ref delay, 0.1f, 1f, "%.2f")) {
-                    cfg.AutoSendDelaySeconds = Math.Max(0.1f, delay);
-                    Plugin.Config.Save();
-                }
-            }
-        }
-
-        ImGui.Spacing();
         DrawPresets(cfg);
     }
 
