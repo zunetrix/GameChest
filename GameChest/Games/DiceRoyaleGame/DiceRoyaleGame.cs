@@ -6,7 +6,7 @@ using Dalamud.Game.Text;
 
 namespace GameChest;
 
-public sealed class DiceRoyaleGame : GameBase {
+public sealed class DiceRoyaleGame : GameBase, IChatConsumer {
     public override string Name => "Dice Royale";
     public override GameMode Mode => GameMode.DiceRoyale;
     public override DiceRoyaleState State => _state;
@@ -109,6 +109,20 @@ public sealed class DiceRoyaleGame : GameBase {
         } else {
             NextRound();
         }
+    }
+
+    public void ProcessChatMessage(string senderFullName, string message, XivChatType chatType) {
+        if (_state.Phase != DiceRoyalePhase.PendingElimination) return;
+        if (!senderFullName.Equals(_state.CurrentEliminator, StringComparison.OrdinalIgnoreCase)) return;
+
+        var input = message.Trim();
+        var match = _state.Players
+            .Where(p => !p.Equals(_state.CurrentEliminator, StringComparison.OrdinalIgnoreCase))
+            .FirstOrDefault(p => ShortName(p).Equals(input, StringComparison.OrdinalIgnoreCase)
+                              || p.Equals(input, StringComparison.OrdinalIgnoreCase));
+
+        if (match == null) return;
+        EliminateByChoice(match);
     }
 
     public override void ProcessRoll(Roll roll) {
