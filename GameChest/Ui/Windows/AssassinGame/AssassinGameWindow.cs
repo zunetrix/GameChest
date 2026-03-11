@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Numerics;
 
 using Dalamud.Bindings.ImGui;
@@ -84,17 +83,7 @@ public class AssassinGameWindow : Window {
         }
 
         if (state.Phase == AssassinPhase.Registration) {
-            ImGui.Text($"Players: {state.Players.Count}");
-            ImGui.Spacing();
-            ImGui.SetNextItemWidth(180f * ImGuiHelpers.GlobalScale);
-            ImGui.InputTextWithHint("##AgAddPlayer", "Player name...", ref _addPlayerInput, 64);
-            ImGui.SameLine();
-            using (ImRaii.Disabled(string.IsNullOrWhiteSpace(_addPlayerInput)))
-                if (ImGui.Button("Add##AgAddBtn")) { game.TryRegister(_addPlayerInput.Trim()); _addPlayerInput = string.Empty; }
-            ImGui.Spacing();
-            foreach (var p in state.Players) {
-                using (ImRaii.PushColor(ImGuiCol.Text, Plugin.Config.HighlightColor)) ImGui.Text(ShortName(p));
-            }
+            RegistrationPanel.Draw("Ag", state.Players, ref _addPlayerInput, Plugin.Config.AssassinGame.MinPlayers, n => game.TryRegister(n), Plugin);
             return;
         }
 

@@ -8,6 +8,7 @@ using Dalamud.Interface.Utility.Raii;
 using Dalamud.Interface.Windowing;
 
 using GameChest.Extensions;
+using GameChest.Resources;
 
 namespace GameChest;
 
@@ -227,39 +228,7 @@ public class FightGameWindow : Window {
     }
 
     private void DrawRegistrationSection(FightGame fg, FightState state) {
-        if (state.Phase == FightPhase.Idle && state.RegisteredFighters.Count == 0)
-            ImGuiUtil.DrawColoredBanner("Add fighters manually below, or click \"Begin Registration\" to open chat registration.", Style.Colors.Violet);
-
-        ImGui.Text("Registered Fighters:");
-        ImGui.Spacing();
-
-        for (var i = 0; i < 2; i++) {
-            using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonDangerNormal)
-                    .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonDangerHovered)
-                    .Push(ImGuiCol.ButtonActive, Style.Components.ButtonDangerActive)) {
-                if (ImGuiUtil.IconButton(FontAwesomeIcon.Times, $"##RemF{i}", "Remove")) {
-                    state.RegisteredFighters.RemoveAtSafe(i);
-                }
-            }
-
-            ImGui.SameLine();
-            ImGui.Text($"  {(char)('A' + i)}.");
-
-            ImGui.SameLine();
-            if (i < state.RegisteredFighters.Count) {
-                var fighter = state.RegisteredFighters[i];
-                ImGui.Text(ShortName(fighter.FullName));
-                ImGui.SameLine();
-                using (ImRaii.PushColor(ImGuiCol.Text, Style.Components.TextDisabled))
-                    ImGui.Text($"({fighter.Source})");
-            } else {
-                using (ImRaii.PushColor(ImGuiCol.Text, Style.Components.TextDisabled))
-                    ImGui.Text("(empty slot)");
-            }
-        }
-
         if (state.RegisteredFighters.Count < 2) {
-            ImGui.Spacing();
             ImGui.SetNextItemWidth(350f * ImGuiHelpers.GlobalScale);
             ImGui.InputTextWithHint("##RegName", "Firstname Lastname[@World]", ref _manualRegisterName, 100);
 
@@ -267,7 +236,7 @@ public class FightGameWindow : Window {
             using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessnNormal)
                 .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonSuccessHovered)
                 .Push(ImGuiCol.ButtonActive, Style.Components.ButtonSuccessActive)) {
-                if (ImGui.Button("Register##ManualReg") && !string.IsNullOrWhiteSpace(_manualRegisterName)) {
+                if (ImGui.Button($"{Language.Add}##ManualReg") && !string.IsNullOrWhiteSpace(_manualRegisterName)) {
                     fg.TryRegister(_manualRegisterName.Trim(), RegistrationSource.Manual);
                     _manualRegisterName = string.Empty;
                 }
@@ -279,6 +248,67 @@ public class FightGameWindow : Window {
                 if (target != null)
                     fg.TryRegister(target.Name.TextValue, RegistrationSource.Target);
             }
+
+            ImGui.Spacing();
+        }
+
+        ImGui.Text("Registered Fighters:");
+        ImGui.Spacing();
+
+        var scale = ImGuiHelpers.GlobalScale;
+        var btnW = ImGui.GetFrameHeight();
+        var spacing = ImGui.GetStyle().ItemSpacing.X;
+
+        using var table = ImRaii.Table("##FgRegTable", 3,
+            ImGuiTableFlags.RowBg | ImGuiTableFlags.PadOuterX | ImGuiTableFlags.NoSavedSettings);
+        if (!table) return;
+
+        ImGui.TableSetupColumn("##FgRegLabel", ImGuiTableColumnFlags.WidthFixed, 28f * scale);
+        ImGui.TableSetupColumn("##FgRegName", ImGuiTableColumnFlags.WidthStretch);
+        ImGui.TableSetupColumn("##FgRegBtns", ImGuiTableColumnFlags.WidthFixed, btnW * 2 + spacing);
+
+        for (var i = 0; i < 2; i++) {
+            var occupied = i < state.RegisteredFighters.Count;
+            var fighter = occupied ? state.RegisteredFighters[i] : null;
+
+            ImGui.PushID(i);
+            ImGui.TableNextRow();
+
+            ImGui.TableNextColumn();
+            using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Gray))
+                ImGui.Text($"{(char)('A' + i)}.");
+
+            ImGui.TableNextColumn();
+            if (occupied) {
+                ImGui.Text(ShortName(fighter!.FullName));
+                ImGui.SameLine();
+                using (ImRaii.PushColor(ImGuiCol.Text, Style.Components.TextDisabled))
+                    ImGui.Text($"({fighter.Source})");
+            } else {
+                using (ImRaii.PushColor(ImGuiCol.Text, Style.Components.TextDisabled))
+                    ImGui.Text("(empty slot)");
+            }
+
+            ImGui.TableNextColumn();
+            using (ImRaii.Disabled(!occupied))
+            using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonDangerNormal)
+                .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonDangerHovered)
+                .Push(ImGuiCol.ButtonActive, Style.Components.ButtonDangerActive)) {
+                if (ImGuiUtil.IconButton(FontAwesomeIcon.Times, "##Rem", "Remove"))
+                    state.RegisteredFighters.RemoveAtSafe(i);
+                ImGui.SameLine();
+                if (ImGuiUtil.IconButton(FontAwesomeIcon.Ban, "##Blk", $"{Language.Block} (Ctrl+Click)")
+                    && ImGui.GetIO().KeyCtrl && fighter != null) {
+                    var fullName = fighter.FullName;
+                    state.RegisteredFighters.RemoveAtSafe(i);
+                    if (!Plugin.Config.Blocklist.ContainsPlayer(fullName)) {
+                        Plugin.Config.Blocklist.Add(fullName);
+                        Plugin.Config.Save();
+                    }
+                }
+            }
+
+            ImGui.PopID();
         }
     }
 

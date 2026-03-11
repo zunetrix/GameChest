@@ -7,11 +7,14 @@ using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 
 using GameChest.Extensions;
+using GameChest.Resources;
 
 namespace GameChest;
 
 /// <summary>Shared registration panel: count header, add/target input, and player table with remove/block buttons.</summary>
 public static class RegistrationPanel {
+    private static bool _showFullName = false;
+
     public static void Draw(
         string id,
         IList<string> players,
@@ -32,19 +35,29 @@ public static class RegistrationPanel {
         ImGui.Spacing();
 
         // Input + Add + Target
-        ImGui.SetNextItemWidth(180f * scale);
-        ImGui.InputTextWithHint($"##{id}Input", "Player name...", ref inputBuffer, 64);
+        ImGui.SetNextItemWidth(250f * scale);
+        ImGui.InputTextWithHint($"##{id}Input", "Firstname Lastname[@World]", ref inputBuffer, 64);
+
         ImGui.SameLine();
         using (ImRaii.Disabled(string.IsNullOrWhiteSpace(inputBuffer)))
-            if (ImGui.Button($"Add##{id}Add")) {
+        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessnNormal)
+            .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonSuccessHovered)
+            .Push(ImGuiCol.ButtonActive, Style.Components.ButtonSuccessActive)) {
+            if (ImGui.Button($"{Language.Add}##{id}Add")) {
                 onAdd(inputBuffer.Trim());
                 inputBuffer = string.Empty;
             }
+        }
         ImGui.SameLine();
         if (ImGuiUtil.IconButton(FontAwesomeIcon.Crosshairs, $"##{id}Target", "Add targeted player")) {
             var name = GameTargetManager.GetTargetPlayerFullName();
             if (name != null) onAdd(name);
         }
+        ImGui.SameLine();
+        ImGui.Spacing();
+        ImGui.SameLine();
+        ImGui.Checkbox($"@World##{id}FullName", ref _showFullName);
+        ImGuiUtil.ToolTip("Show full name");
 
         ImGui.Spacing();
 
@@ -79,8 +92,7 @@ public static class RegistrationPanel {
                 ImGui.Text($"{i + 1}");
 
             ImGui.TableNextColumn();
-            using (ImRaii.PushColor(ImGuiCol.Text, plugin.Config.HighlightColor))
-                ImGui.Text(ShortName(p));
+            ImGui.Text(_showFullName ? p : ShortName(p));
 
             ImGui.TableNextColumn();
             using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonDangerNormal)
@@ -88,8 +100,9 @@ public static class RegistrationPanel {
                 .Push(ImGuiCol.ButtonActive, Style.Components.ButtonDangerActive)) {
                 if (ImGuiUtil.IconButton(FontAwesomeIcon.Times, "##Rem", "Remove"))
                     toRemove = p;
+
                 ImGui.SameLine();
-                if (ImGuiUtil.IconButton(FontAwesomeIcon.Ban, "##Blk", "Remove & add to blocklist"))
+                if (ImGuiUtil.IconButton(FontAwesomeIcon.Ban, "##Blk", $"{Language.Block} (Ctrl+Click)") && ImGui.GetIO().KeyCtrl)
                     toBlock = p;
             }
 

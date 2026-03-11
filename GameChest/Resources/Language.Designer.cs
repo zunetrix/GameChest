@@ -170,5 +170,15 @@ internal class Language {
             return ResourceManager.GetString("BlockList", resourceCulture);
         }
     }
+    internal static string Add {
+        get {
+            return ResourceManager.GetString("Add", resourceCulture);
+        }
+    }
+    internal static string Block {
+        get {
+            return ResourceManager.GetString("Block", resourceCulture);
+        }
+    }
 }
 

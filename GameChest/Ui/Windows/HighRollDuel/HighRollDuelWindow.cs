@@ -60,7 +60,11 @@ public class HighRollDuelWindow : Window {
 
         ImGui.SameLine();
         DrawPhaseBadge(state);
-        ImGuiUtil.HelpMarker("All players roll /random each round. The lowest roll is eliminated. Last player standing wins.");
+        ImGuiUtil.HelpMarker("""
+        All players roll /random each round.
+        The lowest roll is eliminated.
+        Last player standing wins.
+        """);
 
         var spacing = ImGui.GetStyle().ItemSpacing.X;
         var btnW = ImGui.GetFrameHeight();
