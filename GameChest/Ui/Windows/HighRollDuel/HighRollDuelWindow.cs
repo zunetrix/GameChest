@@ -99,6 +99,12 @@ public class HighRollDuelWindow : Window {
                     game.TryRegister(_addPlayerInput.Trim());
                     _addPlayerInput = string.Empty;
                 }
+            ImGui.SameLine();
+            if (ImGuiUtil.IconButton(FontAwesomeIcon.Crosshairs, "##HrdTargetReg", "Add targeted player")) {
+                var target = DalamudApi.TargetManager.Target;
+                if (target != null)
+                    game.TryRegister(target.Name.TextValue);
+            }
 
             ImGui.Spacing();
             foreach (var p in state.Players) {
