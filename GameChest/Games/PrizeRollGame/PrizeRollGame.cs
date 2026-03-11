@@ -22,6 +22,7 @@ public sealed class PrizeRollGame : GameBase {
     private Configuration.PrizeRollConfiguration Cfg => Plugin.Config.PrizeRoll;
     protected override List<PhrasePool> ConfiguredPhrases => Cfg.Phrases;
     protected override XivChatType OutputChannel => Cfg.OutputChannel;
+    public override void SetOutputChannel(XivChatType channel) => Cfg.OutputChannel = channel;
     private readonly Random _rng = new();
     private int _simPlayerIdx = 0;
 

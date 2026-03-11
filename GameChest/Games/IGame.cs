@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 
+using Dalamud.Game.Text;
+
 namespace GameChest;
 
 public interface IGame {
@@ -19,4 +21,5 @@ public interface IGame {
     void RestartMatch();
     void ProcessRoll(Roll roll);
     void Tick(DateTime now);
+    void SetOutputChannel(XivChatType channel);
 }

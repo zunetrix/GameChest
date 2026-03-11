@@ -98,7 +98,7 @@ public class FightGameSettingsWindow : Window {
                 cfg.RegisterByPhrase = registerByPhrase;
                 Plugin.Config.Save();
             }
-            ImGuiUtil.HelpMarker("Players type the join phrase in chat to register.", sameline: true);
+            ImGuiUtil.HelpMarker("Players type the join phrase in chat to register.");
 
             ImGui.Spacing();
             using (ImRaii.Disabled(!cfg.RegisterByPhrase)) {
@@ -114,7 +114,7 @@ public class FightGameSettingsWindow : Window {
                 cfg.RegisterByRoll = registerByRoll;
                 Plugin.Config.Save();
             }
-            ImGuiUtil.HelpMarker("Players register by using /random with any value, like the Death Roll Tournament.", sameline: true);
+            ImGuiUtil.HelpMarker("Players register by using /random with any value, like the Death Roll Tournament.");
         }
 
         ImGui.Spacing();

@@ -18,6 +18,7 @@ public sealed class DiceRoyaleGame : GameBase {
     private Configuration.DiceRoyaleConfiguration Cfg => Plugin.Config.DiceRoyale;
     protected override List<PhrasePool> ConfiguredPhrases => Cfg.Phrases;
     protected override XivChatType OutputChannel => Cfg.OutputChannel;
+    public override void SetOutputChannel(XivChatType channel) => Cfg.OutputChannel = channel;
 
     public DiceRoyaleGame(Plugin plugin) : base(plugin) {
         EnsurePhraseDefaults();

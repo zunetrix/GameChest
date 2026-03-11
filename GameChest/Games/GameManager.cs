@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using Dalamud.Game.Text;
+
 namespace GameChest;
 
 public class GameManager : IDisposable {
@@ -40,6 +42,11 @@ public class GameManager : IDisposable {
     public void Tick(DateTime now) {
         foreach (var game in AllGames)
             if (game.IsActive) game.Tick(now);
+    }
+
+    public void SetAllOutputChannels(XivChatType channel) {
+        foreach (var game in AllGames)
+            game.SetOutputChannel(channel);
     }
 
     public void ProcessChatMessage(string senderFullName, string message, Dalamud.Game.Text.XivChatType chatType) {

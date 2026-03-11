@@ -44,7 +44,7 @@ public class KingOfTheHillSettingsWindow : Window {
                 cfg.CrownHoldRounds = Math.Clamp(holdRounds, 1, 20);
                 Plugin.Config.Save();
             }
-            ImGuiUtil.HelpMarker("Rounds the king must hold the crown to win.", sameline: true);
+            ImGuiUtil.HelpMarker("Rounds the king must hold the crown to win.");
         }
     }
 }

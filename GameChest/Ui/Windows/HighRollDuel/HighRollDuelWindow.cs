@@ -61,7 +61,7 @@ public class HighRollDuelWindow : Window {
 
         ImGui.SameLine();
         DrawPhaseBadge(state);
-        ImGuiUtil.HelpMarker("All players roll /random each round. The lowest roll is eliminated. Last player standing wins.", sameline: true);
+        ImGuiUtil.HelpMarker("All players roll /random each round. The lowest roll is eliminated. Last player standing wins.");
 
         var spacing = ImGui.GetStyle().ItemSpacing.X;
         var btnW = ImGui.GetFrameHeight();
@@ -110,7 +110,7 @@ public class HighRollDuelWindow : Window {
 
         if (state.Phase == HighRollDuelPhase.Rolling) {
             using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Yellow))
-                ImGui.Text($"Round {state.Round} — roll /random {Plugin.Config.HighRollDuel.MaxRoll}");
+                ImGui.Text($"Round {state.Round} - roll /random {Plugin.Config.HighRollDuel.MaxRoll}");
             ImGui.Spacing();
 
             if (ImGui.BeginTable("##HrdRollTable", 3,

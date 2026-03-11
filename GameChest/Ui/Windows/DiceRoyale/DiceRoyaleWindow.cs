@@ -59,7 +59,12 @@ public class DiceRoyaleWindow : Window {
 
         ImGui.SameLine();
         DrawPhaseBadge(state);
-        ImGuiUtil.HelpMarker("Roll ranges determine fate each round: 1-20 eliminated, 61-90 advantage, 91-100 eliminate another player.", sameline: true);
+        ImGuiUtil.HelpMarker("""
+        Roll ranges determine fate each round:
+        1-20 eliminated,
+        61-90 advantage,
+        91-100 eliminate another player
+        """);
 
         var spacing = ImGui.GetStyle().ItemSpacing.X;
         var btnW = ImGui.GetFrameHeight();
@@ -100,7 +105,7 @@ public class DiceRoyaleWindow : Window {
 
         if (state.Phase == DiceRoyalePhase.Rolling) {
             using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Yellow))
-                ImGui.Text($"Round {state.Round} — roll /random {Plugin.Config.DiceRoyale.MaxRoll}");
+                ImGui.Text($"Round {state.Round} - roll /random {Plugin.Config.DiceRoyale.MaxRoll}");
             ImGui.Spacing();
             DrawRollTable(state);
             return;

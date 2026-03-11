@@ -18,6 +18,7 @@ public sealed class TavernBrawlGame : GameBase {
     private Configuration.TavernBrawlConfiguration Cfg => Plugin.Config.TavernBrawl;
     protected override List<PhrasePool> ConfiguredPhrases => Cfg.Phrases;
     protected override XivChatType OutputChannel => Cfg.OutputChannel;
+    public override void SetOutputChannel(XivChatType channel) => Cfg.OutputChannel = channel;
 
     public TavernBrawlGame(Plugin plugin) : base(plugin) {
         EnsurePhraseDefaults();

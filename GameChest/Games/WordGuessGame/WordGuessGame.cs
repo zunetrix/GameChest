@@ -20,6 +20,7 @@ public sealed class WordGuessGame : GameBase, IChatConsumer {
     private Configuration.WordGuessConfiguration Cfg => Plugin.Config.WordGuess;
     protected override List<PhrasePool> ConfiguredPhrases => Cfg.Phrases;
     protected override XivChatType OutputChannel => Cfg.OutputChannel;
+    public override void SetOutputChannel(XivChatType channel) => Cfg.OutputChannel = channel;
 
     public WordGuessGame(Plugin plugin) : base(plugin) {
         EnsurePhraseDefaults();

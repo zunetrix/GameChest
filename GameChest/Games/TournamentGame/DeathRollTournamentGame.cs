@@ -23,6 +23,7 @@ public sealed class DeathRollTournamentGame : GameBase {
     private Configuration.DeathRollTournamentConfiguration Cfg => Plugin.Config.DeathRollTournament;
     protected override List<PhrasePool> ConfiguredPhrases => Cfg.Phrases;
     protected override XivChatType OutputChannel => Cfg.OutputChannel;
+    public override void SetOutputChannel(XivChatType channel) => Cfg.OutputChannel = channel;
 
     public void SimulateRoll() {
         if (_state.Phase != DeathRollTournamentPhase.Match) return;

@@ -40,6 +40,7 @@ public abstract class GameBase : IGame {
     public virtual void RestartMatch() { }
     public abstract void ProcessRoll(Roll roll);
     public virtual void Tick(DateTime now) { }
+    public abstract void SetOutputChannel(XivChatType channel);
 
     public void ReloadPhrases() {
         _phrases = new PhraseCollection(PhraseCategories, ConfiguredPhrases);

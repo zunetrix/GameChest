@@ -20,7 +20,7 @@ public static class AssassinGamePhraseCategories {
         new(AssassinationSuccess, "Assassination Success", new[] { "{attacker}", "{aroll}", "{defender}", "{droll}" },    new[] { "{attacker} ({aroll}) eliminated {defender} ({droll})!" }),
         new(AssassinationFailed,  "Assassination Failed",  new[] { "{attacker}", "{aroll}", "{defender}", "{droll}" },    new[] { "{defender} ({droll}) survived the attack from {attacker} ({aroll})!" }),
         new(PlayerEliminated,     "Player Eliminated",     new[] { "{player}", "{remaining}" },                           new[] { "{player} has been eliminated. {remaining} players remain." }, false),
-        new(GameEnd,              "Game End",              new[] { "{winner}" },                                           new[] { "{winner} is the last survivor — the ultimate assassin!" }),
+        new(GameEnd,              "Game End",              new[] { "{winner}" },                                           new[] { "{winner} is the last survivor - the ultimate assassin!" }),
         new(GameCanceled,         "Game Canceled",         Array.Empty<string>(),                                          new[] { "The Assassin Game has been canceled." }, false),
     };
 }

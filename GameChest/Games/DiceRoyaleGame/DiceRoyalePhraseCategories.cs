@@ -19,7 +19,7 @@ public static class DiceRoyalePhraseCategories {
         new(PlayerEliminated, "Player Eliminated",  new[] { "{player}", "{roll}" },   new[] { "{player} rolled {roll} (1-20) and is eliminated!" }),
         new(PlayerSurvives,   "Player Survives",    new[] { "{player}", "{roll}" },   new[] { "{player} rolled {roll} and survives this round." }, false),
         new(PlayerAdvantage,  "Player Advantage",   new[] { "{player}", "{roll}" },   new[] { "{player} rolled {roll} and gains an advantage!" }),
-        new(PlayerEliminates, "Player Eliminates",  new[] { "{player}", "{roll}" },   new[] { "{player} rolled {roll} — a critical hit! They may eliminate a player!" }),
+        new(PlayerEliminates, "Player Eliminates",  new[] { "{player}", "{roll}" },   new[] { "{player} rolled {roll} - a critical hit! They may eliminate a player!" }),
         new(GameEnd,          "Game End",           new[] { "{winner}" },             new[] { "{winner} is the last survivor of the Dice Royale!" }),
         new(GameCanceled,     "Game Canceled",      Array.Empty<string>(),            new[] { "The Dice Royale has been canceled." }, false),
     };

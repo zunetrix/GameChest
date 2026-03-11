@@ -19,6 +19,7 @@ public sealed class DeathRollGame : GameBase {
     private Configuration.DeathRollConfiguration Cfg => Plugin.Config.DeathRoll;
     protected override List<PhrasePool> ConfiguredPhrases => Cfg.Phrases;
     protected override XivChatType OutputChannel => Cfg.OutputChannel;
+    public override void SetOutputChannel(XivChatType channel) => Cfg.OutputChannel = channel;
     private readonly Random _rng = new();
     private static readonly string[] SimPlayers = { "SimPlayer0@Bahamut", "SimPlayer1@Bahamut" };
 

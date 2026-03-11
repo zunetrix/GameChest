@@ -19,6 +19,7 @@ public sealed class AssassinGame : GameBase {
     private Configuration.AssassinGameConfiguration Cfg => Plugin.Config.AssassinGame;
     protected override List<PhrasePool> ConfiguredPhrases => Cfg.Phrases;
     protected override XivChatType OutputChannel => Cfg.OutputChannel;
+    public override void SetOutputChannel(XivChatType channel) => Cfg.OutputChannel = channel;
 
     public AssassinGame(Plugin plugin) : base(plugin) {
         EnsurePhraseDefaults();

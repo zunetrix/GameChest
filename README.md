@@ -12,7 +12,7 @@ A Dalamud plugin for Final Fantasy XIV that gives Game Masters a suite of roll-b
 
 ## Overview
 
-Game Chest hooks into FFXIV's native `/random` and `/dice` roll events and chat messages, then lets the GM orchestrate five distinct mini-games through an ImGui control panel. Players participate naturally — they just roll or type in chat.
+Game Chest hooks into FFXIV's native `/random` and `/dice` roll events and chat messages, then lets the GM orchestrate five distinct mini-games through an ImGui control panel. Players participate naturally - they just roll or type in chat.
 
 ---
 
@@ -52,9 +52,9 @@ The `/gc` alias can be replaced with a custom command of your choice from the Se
 A 1v2 turn-based HP combat game driven by `/random` rolls.
 
 **How it works:**
-1. GM clicks **Begin Registration** — the plugin announces registration in chat.
+1. GM clicks **Begin Registration** - the plugin announces registration in chat.
 2. Players join by typing the configured join phrase (default: `I want to fight!`) in the listened channel. The GM can also add players manually from the UI.
-3. Once 2 fighters are registered, GM clicks **Start Fight** — each player rolls for initiative.
+3. Once 2 fighters are registered, GM clicks **Start Fight** - each player rolls for initiative.
 4. The higher roll goes first. Each turn the attacker rolls:
    - **Roll of 1** → Fumble: attacker loses their next turn, no damage.
    - **Max roll** → Critical Hit: bonus damage added.
@@ -67,7 +67,7 @@ A 1v2 turn-based HP combat game driven by `/random` rolls.
 - Output chat channel
 - Timers: registration reminder, inactivity reminder, out-of-turn cooldown
 - Auto Mode (auto-sends announcements with a configurable delay)
-- **Presets** — save and load full configuration snapshots by name
+- **Presets** - save and load full configuration snapshots by name
 
 ---
 
@@ -76,15 +76,15 @@ A 1v2 turn-based HP combat game driven by `/random` rolls.
 An open-roll competition where the winner is the player with the best roll according to the configured sorting mode.
 
 **How it works:**
-1. GM clicks **Start** — announces the game is open.
+1. GM clicks **Start** - announces the game is open.
 2. Players roll `/random <MaxRoll>`. Each roll is tracked in a live leaderboard.
 3. When a new best is set, the plugin announces it.
 4. GM clicks **Stop** to close the game and announce the winner.
 
 **Sorting modes:**
-- **Highest** — highest roll wins (default)
-- **Lowest** — lowest roll wins
-- **Nearest** — closest to a target value wins
+- **Highest** - highest roll wins (default)
+- **Lowest** - lowest roll wins
+- **Nearest** - closest to a target value wins
 
 **Settings:**
 - Sorting mode and nearest target value
@@ -102,7 +102,7 @@ A decreasing chain-roll duel between two players. Whoever rolls 1 loses.
 1. GM clicks **Start**.
 2. The first player rolls `/random 999` (or the configured starting roll). Their result is the new cap.
 3. The second player must roll `/random <previous result>`.
-4. Players alternate; the chain decreases until someone rolls 1 — that player loses.
+4. Players alternate; the chain decreases until someone rolls 1 - that player loses.
 5. The GM can click **New Round** to rematch the same players.
 
 **Settings:**
@@ -118,9 +118,9 @@ A full single-elimination bracket tournament built on Death Roll duels.
 **How it works:**
 1. GM clicks **Begin Registration**.
 2. Players register by rolling `/random` (no number). The GM can also add players manually.
-3. GM clicks **Close Registration** — players are shuffled and seeded into a power-of-2 bracket. BYE slots are resolved automatically.
+3. GM clicks **Close Registration** - players are shuffled and seeded into a power-of-2 bracket. BYE slots are resolved automatically.
 4. For each round, GM clicks **Start Match** to begin the Death Roll duel between two players.
-5. GM clicks **Advance** after each match — the winner moves forward; BYEs pass automatically.
+5. GM clicks **Advance** after each match - the winner moves forward; BYEs pass automatically.
 6. The GM can **Forfeit** a match to a specific player at any time.
 7. The last player standing wins the tournament.
 
@@ -136,14 +136,14 @@ A chat-based trivia game where the first player to type the correct answer wins 
 
 **How it works:**
 1. The GM sets up a question list in the **Question List** editor (question, answer, optional hint, optional per-question timer).
-2. GM clicks **Start** — the first question is announced in chat.
+2. GM clicks **Start** - the first question is announced in chat.
 3. Players type the answer in any listened channel. The first correct match wins.
 4. GM clicks **Next** to move to the next question (or it auto-advances if enabled).
 5. The game ends when all questions are exhausted.
 
 **Victory modes:**
-- **Single** — each round is independent; no session tracking.
-- **Session** — scores are tracked across all rounds; a session champion is announced at the end.
+- **Single** - each round is independent; no session tracking.
+- **Session** - scores are tracked across all rounds; a session champion is announced at the end.
 
 **Settings:**
 - Partial match: accept answers that contain (rather than exactly match) the answer
@@ -172,7 +172,7 @@ A global blocklist prevents specific players from participating in any game. Man
 Enable **Debug Mode** in Settings to show **Simulate Roll** and **Simulate Answer** buttons on all game windows. This lets you test games solo without needing other players.
 
 ### Presets (Fight Club)
-Fight Club supports named configuration presets — save your current setup and restore it with one click. Great for running events with different rules.
+Fight Club supports named configuration presets - save your current setup and restore it with one click. Great for running events with different rules.
 
 ### Match History
 All games keep the last 10 match results in memory for reference during a session.

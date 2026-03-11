@@ -3,6 +3,7 @@ using System.Linq;
 using System.Numerics;
 
 using Dalamud.Bindings.ImGui;
+using Dalamud.Game.Text;
 using Dalamud.Interface;
 using Dalamud.Interface.Components;
 using Dalamud.Interface.Utility;
@@ -18,6 +19,7 @@ namespace GameChest;
 public class SettingsWindow : Window {
     private Plugin Plugin { get; }
     private string _customCommandInput = string.Empty;
+    private XivChatType _bulkOutputChannel = XivChatType.Say;
 
     public SettingsWindow(Plugin plugin) : base($"{Plugin.Name} {Language.SettingsTitle}###SettingsWindow") {
         Plugin = plugin;
@@ -34,6 +36,9 @@ public class SettingsWindow : Window {
 
     public override void Draw() {
         DrawGeneralSection();
+        ImGui.Spacing();
+        ImGui.Spacing();
+        DrawOutputChannelSection();
         ImGui.Spacing();
         ImGui.Spacing();
         DrawPhraseDelaySection();
@@ -120,6 +125,19 @@ public class SettingsWindow : Window {
         }
     }
 
+    private void DrawOutputChannelSection() {
+        using (ImGuiGroupPanel.BeginGroupPanel("Output Channel")) {
+            ImGui.TextDisabled("Set output channel for all games at once.");
+            ImGui.Spacing();
+            OutputChannelCombo.Draw("##BulkOutputChannel", ref _bulkOutputChannel, 180f * ImGuiHelpers.GlobalScale);
+            ImGui.SameLine();
+            if (ImGui.Button("Apply to all##ApplyBulkChannel")) {
+                Plugin.GameManager.SetAllOutputChannels(_bulkOutputChannel);
+                Plugin.Config.Save();
+            }
+        }
+    }
+
     private void DrawPhraseDelaySection() {
         using (ImGuiGroupPanel.BeginGroupPanel("Phrase Delay")) {
             var enabled = Plugin.Config.PhraseDelayEnabled;
@@ -127,7 +145,7 @@ public class SettingsWindow : Window {
                 Plugin.Config.PhraseDelayEnabled = enabled;
                 Plugin.Config.Save();
             }
-            ImGuiUtil.HelpMarker("Adds a random delay before sending each phrase, making announcements feel more natural.", sameline: true);
+            ImGuiUtil.HelpMarker("Adds a random delay before sending each phrase, making announcements feel more natural.");
 
             using (ImRaii.Disabled(!Plugin.Config.PhraseDelayEnabled)) {
                 ImGui.Spacing();
@@ -184,7 +202,10 @@ public class SettingsWindow : Window {
                 Plugin.Config.DebugMode = debugMode;
                 Plugin.Config.Save();
             }
-            ImGuiUtil.HelpMarker("Enables the Simulate Roll button on all game windows.\nUseful for solo testing and learning the games.", sameline: true);
+            ImGuiUtil.HelpMarker("""
+            Enables the Simulate Roll button on all game windows.
+            Useful for solo testing and learning the games.
+            """);
         }
     }
 

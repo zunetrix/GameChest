@@ -18,6 +18,7 @@ public sealed class HighRollDuelGame : GameBase {
     private Configuration.HighRollDuelConfiguration Cfg => Plugin.Config.HighRollDuel;
     protected override List<PhrasePool> ConfiguredPhrases => Cfg.Phrases;
     protected override XivChatType OutputChannel => Cfg.OutputChannel;
+    public override void SetOutputChannel(XivChatType channel) => Cfg.OutputChannel = channel;
 
     public HighRollDuelGame(Plugin plugin) : base(plugin) {
         EnsurePhraseDefaults();

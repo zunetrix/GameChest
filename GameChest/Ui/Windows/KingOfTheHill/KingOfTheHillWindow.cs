@@ -59,7 +59,7 @@ public class KingOfTheHillWindow : Window {
 
         ImGui.SameLine();
         DrawPhaseBadge(state);
-        ImGuiUtil.HelpMarker("Highest roll becomes King. Hold the crown for the configured rounds to win.", sameline: true);
+        ImGuiUtil.HelpMarker("Highest roll becomes King. Hold the crown for the configured rounds to win.");
 
         var spacing = ImGui.GetStyle().ItemSpacing.X;
         var btnW = ImGui.GetFrameHeight();
@@ -101,7 +101,7 @@ public class KingOfTheHillWindow : Window {
         if (state.Phase == KingOfTheHillPhase.Rolling) {
             var cfg = Plugin.Config.KingOfTheHill;
             using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Yellow))
-                ImGui.Text($"Round {state.Round} — roll /random {cfg.MaxRoll}");
+                ImGui.Text($"Round {state.Round} - roll /random {cfg.MaxRoll}");
 
             if (state.King != null) {
                 ImGui.Spacing();

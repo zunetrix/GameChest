@@ -344,7 +344,7 @@ public class MainWindow : Window {
                     ImGui.Text($"  {state.Players.Count} registered");
                     break;
                 case HighRollDuelPhase.Rolling:
-                    ImGui.Text($"  Round {state.Round} — {state.CurrentRoundRolls.Count}/{state.Players.Count} rolled");
+                    ImGui.Text($"  Round {state.Round} - {state.CurrentRoundRolls.Count}/{state.Players.Count} rolled");
                     break;
                 case HighRollDuelPhase.Done when state.Winner != null:
                     using (ImRaii.PushColor(ImGuiCol.Text, Plugin.Config.HighlightColor))
@@ -383,7 +383,7 @@ public class MainWindow : Window {
                     ImGui.Text($"  {state.Players.Count} registered");
                     break;
                 case TavernBrawlPhase.Rolling:
-                    ImGui.Text($"  Round {state.Round} — {state.CurrentRoundRolls.Count}/{state.Players.Count} rolled");
+                    ImGui.Text($"  Round {state.Round} - {state.CurrentRoundRolls.Count}/{state.Players.Count} rolled");
                     break;
                 case TavernBrawlPhase.PendingChoice when state.HighestRoller != null:
                     using (ImRaii.PushColor(ImGuiCol.Text, Plugin.Config.HighlightColor))
@@ -426,7 +426,7 @@ public class MainWindow : Window {
                     ImGui.Text($"  {state.Players.Count} registered");
                     break;
                 case DiceRoyalePhase.Rolling:
-                    ImGui.Text($"  Round {state.Round} — {state.Players.Count} remaining");
+                    ImGui.Text($"  Round {state.Round} - {state.Players.Count} remaining");
                     break;
                 case DiceRoyalePhase.PendingElimination when state.CurrentEliminator != null:
                     using (ImRaii.PushColor(ImGuiCol.Text, Plugin.Config.HighlightColor))

@@ -18,6 +18,7 @@ public sealed class KingOfTheHillGame : GameBase {
     private Configuration.KingOfTheHillConfiguration Cfg => Plugin.Config.KingOfTheHill;
     protected override List<PhrasePool> ConfiguredPhrases => Cfg.Phrases;
     protected override XivChatType OutputChannel => Cfg.OutputChannel;
+    public override void SetOutputChannel(XivChatType channel) => Cfg.OutputChannel = channel;
 
     public KingOfTheHillGame(Plugin plugin) : base(plugin) {
         EnsurePhraseDefaults();

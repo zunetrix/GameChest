@@ -24,6 +24,7 @@ public sealed class FightGame : GameBase, IChatConsumer {
     private Configuration.FightGameConfiguration Cfg => Plugin.Config.FightGame;
     protected override List<PhrasePool> ConfiguredPhrases => Cfg.Phrases;
     protected override XivChatType OutputChannel => Cfg.OutputChannel;
+    public override void SetOutputChannel(XivChatType channel) => Cfg.OutputChannel = channel;
 
     public FightGame(Plugin plugin) : base(plugin) {
         EnsurePhraseDefaults();

@@ -59,7 +59,7 @@ public class AssassinGameWindow : Window {
 
         ImGui.SameLine();
         DrawPhaseBadge(state);
-        ImGuiUtil.HelpMarker("Each player has a secret target. GM triggers attacks. Attacker and defender both roll — higher roll wins.", sameline: true);
+        ImGuiUtil.HelpMarker("Each player has a secret target. GM triggers attacks. Attacker and defender both roll - higher roll wins.");
 
         var spacing = ImGui.GetStyle().ItemSpacing.X;
         var btnW = ImGui.GetFrameHeight();

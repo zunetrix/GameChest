@@ -59,7 +59,7 @@ public class TavernBrawlWindow : Window {
 
         ImGui.SameLine();
         DrawPhaseBadge(state);
-        ImGuiUtil.HelpMarker("Each round: lowest roll is knocked out, highest roll eliminates another player.", sameline: true);
+        ImGuiUtil.HelpMarker("Each round: lowest roll is knocked out, highest roll eliminates another player.");
 
         var spacing = ImGui.GetStyle().ItemSpacing.X;
         var btnW = ImGui.GetFrameHeight();
@@ -100,7 +100,7 @@ public class TavernBrawlWindow : Window {
 
         if (state.Phase == TavernBrawlPhase.Rolling) {
             using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Yellow))
-                ImGui.Text($"Round {state.Round} — roll /random {Plugin.Config.TavernBrawl.MaxRoll}");
+                ImGui.Text($"Round {state.Round} - roll /random {Plugin.Config.TavernBrawl.MaxRoll}");
             ImGui.Spacing();
             DrawRollTable(state);
             return;
@@ -108,7 +108,7 @@ public class TavernBrawlWindow : Window {
 
         if (state.Phase == TavernBrawlPhase.PendingChoice) {
             using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Orange))
-                ImGui.Text($"{ShortName(state.HighestRoller ?? "")} rolled {state.HighestRoll} — select a player to eliminate:");
+                ImGui.Text($"{ShortName(state.HighestRoller ?? "")} rolled {state.HighestRoll} - select a player to eliminate:");
             ImGui.Spacing();
 
             var eligible = state.Players
