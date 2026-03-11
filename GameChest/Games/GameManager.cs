@@ -17,8 +17,9 @@ public class GameManager : IDisposable {
     public DiceRoyaleGame DiceRoyaleGame { get; }
     public KingOfTheHillGame KingOfTheHillGame { get; }
     public AssassinGame AssassinGame { get; }
+    public DiceBlackjackGame DiceBlackjackGame { get; }
 
-    public IEnumerable<IGame> AllGames => [FightGame, PrizeRollGame, DeathRollGame, DeathRollTournamentGame, WordGuessGame, HighRollDuelGame, TavernBrawlGame, DiceRoyaleGame, KingOfTheHillGame, AssassinGame];
+    public IEnumerable<IGame> AllGames => [FightGame, PrizeRollGame, DeathRollGame, DeathRollTournamentGame, WordGuessGame, HighRollDuelGame, TavernBrawlGame, DiceRoyaleGame, KingOfTheHillGame, AssassinGame, DiceBlackjackGame];
     public bool AnyGameActive => AllGames.Any(g => g.IsActive);
 
     public GameManager(Plugin plugin) {
@@ -32,6 +33,7 @@ public class GameManager : IDisposable {
         DiceRoyaleGame = new DiceRoyaleGame(plugin);
         KingOfTheHillGame = new KingOfTheHillGame(plugin);
         AssassinGame = new AssassinGame(plugin);
+        DiceBlackjackGame = new DiceBlackjackGame(plugin);
     }
 
     public void ProcessRoll(Roll roll) {

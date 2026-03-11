@@ -12,5 +12,6 @@ public enum GameMode {
     DiceRoyale = 8,
     KingOfTheHill = 9,
     AssassinGame = 10,
+    DiceBlackjack = 11,
 }
 

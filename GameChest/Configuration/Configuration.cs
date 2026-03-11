@@ -47,6 +47,7 @@ internal class Configuration : IPluginConfiguration {
     public DiceRoyaleConfiguration DiceRoyale { get; set; } = new();
     public KingOfTheHillConfiguration KingOfTheHill { get; set; } = new();
     public AssassinGameConfiguration AssassinGame { get; set; } = new();
+    public DiceBlackjackConfiguration DiceBlackjack { get; set; } = new();
 
     public void Initialize(IDalamudPluginInterface pluginInterface) {
         PluginInterface = pluginInterface;
@@ -186,6 +187,16 @@ internal class Configuration : IPluginConfiguration {
         public int MinPlayers { get; set; } = 3;
     }
 
+    internal sealed class DiceBlackjackConfiguration {
+        public List<PhrasePool> Phrases { get; set; } = new();
+        public XivChatType OutputChannel { get; set; } = XivChatType.Say;
+        public int MaxRoll { get; set; } = 13;
+        public int TargetPoints { get; set; } = 21;
+        public int DealerStandAt { get; set; } = 17;
+        public int MinPlayers { get; set; } = 1;
+        public bool CardMapping { get; set; } = true;
+    }
+
     public class MainWindowCardSettings {
         public bool PrizeRoll = true;
         public bool FightGame = true;
@@ -197,5 +208,6 @@ internal class Configuration : IPluginConfiguration {
         public bool DiceRoyale = true;
         public bool KingOfTheHill = true;
         public bool AssassinGame = true;
+        public bool DiceBlackjack = true;
     }
 }

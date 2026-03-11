@@ -93,6 +93,7 @@ public class MainWindow : Window {
         if (ImGui.Checkbox("Dice Royale",            ref c.DiceRoyale))          changed = true;
         if (ImGui.Checkbox("King of the Hill",       ref c.KingOfTheHill))       changed = true;
         if (ImGui.Checkbox("Assassin Game",          ref c.AssassinGame))        changed = true;
+        if (ImGui.Checkbox("Dice Blackjack",          ref c.DiceBlackjack))       changed = true;
         if (changed) Plugin.Config.Save();
     }
 
@@ -117,6 +118,7 @@ public class MainWindow : Window {
         Card(v.DiceRoyale,          DrawDiceRoyaleCard);
         Card(v.KingOfTheHill,       DrawKingOfTheHillCard);
         Card(v.AssassinGame,        DrawAssassinGameCard);
+        Card(v.DiceBlackjack,       DrawDiceBlackjackCard);
     }
 
     private void DrawFightGameCard() {
@@ -561,6 +563,50 @@ public class MainWindow : Window {
     private static string ShortName(string fullName) {
         var at = fullName.IndexOf('@');
         return at >= 0 ? fullName[..at] : fullName;
+    }
+
+    private void DrawDiceBlackjackCard() {
+        var state = Plugin.GameManager.DiceBlackjackGame.State;
+        using (ImGuiGroupPanel.BeginGroupPanel("Dice Blackjack")) {
+            var btnW = 60f * ImGuiHelpers.GlobalScale;
+            ImGui.SetCursorPosX(ImGui.GetCursorPosX() + ImGui.GetContentRegionAvail().X - btnW);
+            using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonBlueNormal)
+                .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonBlueHovered)
+                .Push(ImGuiCol.ButtonActive, Style.Components.ButtonBlueActive)) {
+                if (ImGui.Button("Open##OpenDbj", new Vector2(btnW, 0)))
+                    Ui.DiceBlackjackWindow.Toggle();
+            }
+            ImGui.SameLine(8f * ImGuiHelpers.GlobalScale);
+            var (label, col) = state.Phase switch {
+                DiceBlackjackPhase.Registration => ("[REG]",     Style.Colors.Yellow),
+                DiceBlackjackPhase.PlayerTurns  => ("[PLAYING]", Style.Colors.Green),
+                DiceBlackjackPhase.DealerTurn   => ("[DEALER]",  Style.Colors.Orange),
+                DiceBlackjackPhase.Done         => ("[DONE]",    Style.Colors.Gray),
+                _                               => ("[IDLE]",    Style.Colors.Gray),
+            };
+            using (ImRaii.PushColor(ImGuiCol.Text, col)) ImGui.Text(label);
+            switch (state.Phase) {
+                case DiceBlackjackPhase.Registration:
+                    ImGui.Text($"  {state.Players.Count} registered");
+                    break;
+                case DiceBlackjackPhase.PlayerTurns when state.CurrentPlayer != null:
+                    using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Yellow))
+                        ImGui.Text($"  {ShortName(state.CurrentPlayer.Name)}'s turn ({state.CurrentPlayerIndex + 1}/{state.Players.Count})");
+                    break;
+                case DiceBlackjackPhase.DealerTurn:
+                    using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Orange))
+                        ImGui.Text("  Dealer's turn");
+                    break;
+                case DiceBlackjackPhase.Done when state.Winner != null:
+                    using (ImRaii.PushColor(ImGuiCol.Text, Plugin.Config.HighlightColor))
+                        ImGui.Text($"  Winner: {ShortName(state.Winner)}");
+                    break;
+                default:
+                    using (ImRaii.PushColor(ImGuiCol.Text, Style.Components.TextDisabled))
+                        ImGui.Text("  No active game.");
+                    break;
+            }
+        }
     }
 
     internal void UpdateWindowConfig() {

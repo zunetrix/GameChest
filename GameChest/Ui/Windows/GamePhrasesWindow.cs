@@ -45,6 +45,7 @@ public class GamePhrasesWindow : Window {
             plugin.GameManager.DiceRoyaleGame,
             plugin.GameManager.KingOfTheHillGame,
             plugin.GameManager.AssassinGame,
+            plugin.GameManager.DiceBlackjackGame,
         };
         _gameNames = _games.Select(g => g.Name).ToArray();
         Size = ImGuiHelpers.ScaledVector2(700, 500);

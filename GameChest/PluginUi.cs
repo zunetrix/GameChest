@@ -36,6 +36,8 @@ public class PluginUi : IDisposable {
     public KingOfTheHillSettingsWindow KingOfTheHillSettingsWindow { get; }
     public AssassinGameWindow AssassinGameWindow { get; }
     public AssassinGameSettingsWindow AssassinGameSettingsWindow { get; }
+    public DiceBlackjackWindow DiceBlackjackWindow { get; }
+    public DiceBlackjackSettingsWindow DiceBlackjackSettingsWindow { get; }
 
     public PluginUi(Plugin plugin) {
         Plugin = plugin;
@@ -51,6 +53,7 @@ public class PluginUi : IDisposable {
         DiceRoyaleSettingsWindow = AddWindow(new DiceRoyaleSettingsWindow(Plugin));
         KingOfTheHillSettingsWindow = AddWindow(new KingOfTheHillSettingsWindow(Plugin));
         AssassinGameSettingsWindow = AddWindow(new AssassinGameSettingsWindow(Plugin));
+        DiceBlackjackSettingsWindow = AddWindow(new DiceBlackjackSettingsWindow(Plugin));
 
         // game windows
         FightGameWindow = AddWindow(new FightGameWindow(Plugin));
@@ -64,6 +67,7 @@ public class PluginUi : IDisposable {
         DiceRoyaleWindow = AddWindow(new DiceRoyaleWindow(Plugin));
         KingOfTheHillWindow = AddWindow(new KingOfTheHillWindow(Plugin));
         AssassinGameWindow = AddWindow(new AssassinGameWindow(Plugin));
+        DiceBlackjackWindow = AddWindow(new DiceBlackjackWindow(Plugin));
 
         // shared / global windows
         GamePhrasesWindow = AddWindow(new GamePhrasesWindow(Plugin));
