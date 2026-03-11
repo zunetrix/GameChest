@@ -41,6 +41,13 @@ public class HighRollDuelSettingsWindow : Window {
                 cfg.MinPlayers = Math.Clamp(minPlayers, 2, 50);
                 Plugin.Config.Save();
             }
+
+            var autoClose = cfg.AutoCloseRound;
+            if (ImGui.Checkbox("Auto close round##HrdAutoClose", ref autoClose)) {
+                cfg.AutoCloseRound = autoClose;
+                Plugin.Config.Save();
+            }
+            ImGuiUtil.ToolTip("Automatically close the round when all players have rolled.\nDisable to control timing manually with the Close Round button.");
         }
     }
 }

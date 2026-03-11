@@ -109,7 +109,7 @@ public sealed class HighRollDuelGame : GameBase {
 
         _state.CurrentRoundRolls[roll.PlayerName] = roll.Result;
 
-        if (_state.CurrentRoundRolls.Count >= _state.Players.Count)
+        if (Cfg.AutoCloseRound && _state.CurrentRoundRolls.Count >= _state.Players.Count)
             CloseRound();
     }
 

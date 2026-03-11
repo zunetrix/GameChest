@@ -32,8 +32,8 @@ internal class Configuration : IPluginConfiguration {
 
     // Phrase delay
     public bool PhraseDelayEnabled { get; set; } = false;
-    public int PhraseDelayMinMs { get; set; } = 500;
-    public int PhraseDelayMaxMs { get; set; } = 2000;
+    public int PhraseDelayMinMs { get; set; } = 1000;
+    public int PhraseDelayMaxMs { get; set; } = 3000;
     public List<string> Blocklist = new();
 
     // Per-game configuration
@@ -152,6 +152,7 @@ internal class Configuration : IPluginConfiguration {
         public XivChatType OutputChannel { get; set; } = XivChatType.Say;
         public int MaxRoll { get; set; } = 100;
         public int MinPlayers { get; set; } = 2;
+        public bool AutoCloseRound { get; set; } = false;
     }
 
     internal sealed class TavernBrawlConfiguration {
@@ -186,15 +187,15 @@ internal class Configuration : IPluginConfiguration {
     }
 
     public class MainWindowCardSettings {
-        public bool PrizeRoll           = true;
-        public bool FightGame           = true;
-        public bool DeathRoll           = true;
+        public bool PrizeRoll = true;
+        public bool FightGame = true;
+        public bool DeathRoll = true;
         public bool DeathRollTournament = true;
-        public bool WordGuess           = true;
-        public bool HighRollDuel        = true;
-        public bool TavernBrawl         = true;
-        public bool DiceRoyale          = true;
-        public bool KingOfTheHill       = true;
-        public bool AssassinGame        = true;
+        public bool WordGuess = true;
+        public bool HighRollDuel = true;
+        public bool TavernBrawl = true;
+        public bool DiceRoyale = true;
+        public bool KingOfTheHill = true;
+        public bool AssassinGame = true;
     }
 }
