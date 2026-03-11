@@ -48,27 +48,27 @@ public class FightGameWindow : Window {
     }
 
     private void DrawControls(FightGame fg, FightState state) {
-        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessnNormal)
-            .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonSuccessHovered)
-            .Push(ImGuiCol.ButtonActive, Style.Components.ButtonSuccessActive)) {
-            if (ImGui.Button("Begin Registration##BeginReg")) {
-                fg.BeginRegistration();
+        // Phase-based action button
+        if (state.Phase is FightPhase.Idle or FightPhase.Finished) {
+            using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessnNormal)
+                .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonSuccessHovered)
+                .Push(ImGuiCol.ButtonActive, Style.Components.ButtonSuccessActive)) {
+                if (ImGui.Button("Begin Registration##BeginReg"))
+                    fg.BeginRegistration();
             }
-        }
-
-        ImGui.SameLine();
-
-        var canStart = state.RegisteredFighters.Count == 2 && state.Phase == FightPhase.Idle;
-        using (ImRaii.Disabled(!canStart))
-        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonBlueNormal)
-            .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonBlueHovered)
-            .Push(ImGuiCol.ButtonActive, Style.Components.ButtonBlueActive)) {
-            if (ImGui.Button("Start Fight##StartFight")) {
-                fg.Start();
+            ImGui.SameLine();
+        } else if (state.Phase == FightPhase.Registration) {
+            var canStart = state.RegisteredFighters.Count == 2;
+            using (ImRaii.Disabled(!canStart))
+            using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonBlueNormal)
+                .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonBlueHovered)
+                .Push(ImGuiCol.ButtonActive, Style.Components.ButtonBlueActive)) {
+                if (ImGui.Button("Start Fight##StartFight"))
+                    fg.Start();
             }
+            if (!canStart) ImGuiUtil.ToolTip("Need 2 fighters.");
+            ImGui.SameLine();
         }
-
-        ImGui.SameLine();
 
         using (ImRaii.Disabled(!state.IsActive))
         using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonDangerNormal)
@@ -78,19 +78,18 @@ public class FightGameWindow : Window {
                 fg.Stop();
         }
 
-        ImGui.SameLine();
-
-        using (ImRaii.Disabled(state.PlayerA == null))
-        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonBlueNormal)
-            .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonBlueHovered)
-            .Push(ImGuiCol.ButtonActive, Style.Components.ButtonBlueActive)) {
-            if (ImGui.Button("Restart##RestartMatch"))
-                fg.RestartMatch();
+        if (state.PlayerA != null) {
+            ImGui.SameLine();
+            using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonBlueNormal)
+                .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonBlueHovered)
+                .Push(ImGuiCol.ButtonActive, Style.Components.ButtonBlueActive)) {
+                if (ImGui.Button("Restart##RestartMatch"))
+                    fg.RestartMatch();
+            }
+            ImGuiUtil.ToolTip("Restart match with the same fighters.");
         }
-        ImGuiUtil.ToolTip("Restart match with the same fighters.");
 
         ImGui.SameLine();
-
         if (ImGui.Button("Reset##ResetFight") && ImGui.GetIO().KeyCtrl)
             fg.Reset();
         ImGuiUtil.ToolTip("Ctrl+Click to reset.");

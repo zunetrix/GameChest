@@ -44,6 +44,36 @@ public class DeathRollTournamentWindow : Window {
     }
 
     private void DrawControls(DeathRollTournamentGame tn, DeathRollTournamentState state) {
+        // Phase-based action button
+        if (state.Phase is DeathRollTournamentPhase.Idle or DeathRollTournamentPhase.Done) {
+            using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessnNormal)
+                .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonSuccessHovered)
+                .Push(ImGuiCol.ButtonActive, Style.Components.ButtonSuccessActive)) {
+                if (ImGui.Button("Begin Registration##TnBeginReg"))
+                    tn.BeginRegistration();
+            }
+            ImGui.SameLine();
+        } else if (state.Phase == DeathRollTournamentPhase.Registration) {
+            using (ImRaii.Disabled(state.RegisteredPlayers.Count < 2))
+            using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonBlueNormal)
+                .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonBlueHovered)
+                .Push(ImGuiCol.ButtonActive, Style.Components.ButtonBlueActive)) {
+                if (ImGui.Button("Close Registration##TnCloseReg"))
+                    tn.CloseRegistration();
+            }
+            if (state.RegisteredPlayers.Count < 2)
+                ImGuiUtil.ToolTip("Need at least 2 players.");
+            ImGui.SameLine();
+        } else if (state.Phase == DeathRollTournamentPhase.Preparing) {
+            using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessnNormal)
+                .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonSuccessHovered)
+                .Push(ImGuiCol.ButtonActive, Style.Components.ButtonSuccessActive)) {
+                if (ImGui.Button("Start Tournament##TnStart"))
+                    tn.StartMatch();
+            }
+            ImGui.SameLine();
+        }
+
         // Stop / Reset
         using (ImRaii.Disabled(!state.IsActive))
         using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonDangerNormal)
@@ -106,7 +136,7 @@ public class DeathRollTournamentWindow : Window {
 
         switch (state.Phase) {
             case DeathRollTournamentPhase.Idle:
-                DrawIdleSection(tn);
+                DrawIdleSection();
                 break;
             case DeathRollTournamentPhase.Registration:
                 DrawRegistrationSection(tn, state);
@@ -123,17 +153,9 @@ public class DeathRollTournamentWindow : Window {
         }
     }
 
-    private static void DrawIdleSection(DeathRollTournamentGame tn) {
+    private static void DrawIdleSection() {
         using (ImRaii.PushColor(ImGuiCol.Text, Style.Components.TextDisabled))
-            ImGui.TextWrapped("Start registration to begin accepting participants via /random.");
-        ImGui.Spacing();
-
-        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessnNormal)
-            .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonSuccessHovered)
-            .Push(ImGuiCol.ButtonActive, Style.Components.ButtonSuccessActive)) {
-            if (ImGui.Button("Begin Registration##TnBeginReg"))
-                tn.BeginRegistration();
-        }
+            ImGui.TextWrapped("Click \"Begin Registration\" above to start accepting participants via /random.");
     }
 
     private void DrawRegistrationSection(DeathRollTournamentGame tn, DeathRollTournamentState state) {
@@ -199,22 +221,6 @@ public class DeathRollTournamentWindow : Window {
             if (target != null)
                 tn.TryRegisterPlayer(target.Name.TextValue);
         }
-
-        ImGui.Spacing();
-
-        // Close Registration
-        using (ImRaii.Disabled(state.RegisteredPlayers.Count < 2))
-        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonBlueNormal)
-            .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonBlueHovered)
-            .Push(ImGuiCol.ButtonActive, Style.Components.ButtonBlueActive)) {
-            if (ImGui.Button("Close Registration##TnCloseReg"))
-                tn.CloseRegistration();
-        }
-        if (state.RegisteredPlayers.Count < 2) {
-            ImGui.SameLine();
-            using (ImRaii.PushColor(ImGuiCol.Text, Style.Components.TextDisabled))
-                ImGui.Text("(need at least 2 players)");
-        }
     }
 
     private static void DrawPreparingSection(DeathRollTournamentGame tn, DeathRollTournamentState state) {
@@ -236,13 +242,6 @@ public class DeathRollTournamentWindow : Window {
         }
 
         ImGui.Spacing();
-
-        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessnNormal)
-            .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonSuccessHovered)
-            .Push(ImGuiCol.ButtonActive, Style.Components.ButtonSuccessActive)) {
-            if (ImGui.Button("Start Tournament##TnStart"))
-                tn.StartMatch();
-        }
     }
 
     private void DrawMatchSection(DeathRollTournamentGame tn, DeathRollTournamentState state) {
