@@ -26,6 +26,16 @@ public class PluginUi : IDisposable {
     public WordGuessWindow WordGuessWindow { get; }
     public WordGuessSettingsWindow WordGuessSettingsWindow { get; }
     public WordGuessQuestionListWindow WordGuessQuestionListWindow { get; }
+    public HighRollDuelWindow HighRollDuelWindow { get; }
+    public HighRollDuelSettingsWindow HighRollDuelSettingsWindow { get; }
+    public TavernBrawlWindow TavernBrawlWindow { get; }
+    public TavernBrawlSettingsWindow TavernBrawlSettingsWindow { get; }
+    public DiceRoyaleWindow DiceRoyaleWindow { get; }
+    public DiceRoyaleSettingsWindow DiceRoyaleSettingsWindow { get; }
+    public KingOfTheHillWindow KingOfTheHillWindow { get; }
+    public KingOfTheHillSettingsWindow KingOfTheHillSettingsWindow { get; }
+    public AssassinGameWindow AssassinGameWindow { get; }
+    public AssassinGameSettingsWindow AssassinGameSettingsWindow { get; }
 
     public PluginUi(Plugin plugin) {
         Plugin = plugin;
@@ -36,6 +46,11 @@ public class PluginUi : IDisposable {
         DeathRollSettingsWindow = AddWindow(new DeathRollSettingsWindow(Plugin));
         DeathRollTournamentSettingsWindow = AddWindow(new DeathRollTournamentSettingsWindow(Plugin));
         WordGuessSettingsWindow = AddWindow(new WordGuessSettingsWindow(Plugin));
+        HighRollDuelSettingsWindow = AddWindow(new HighRollDuelSettingsWindow(Plugin));
+        TavernBrawlSettingsWindow = AddWindow(new TavernBrawlSettingsWindow(Plugin));
+        DiceRoyaleSettingsWindow = AddWindow(new DiceRoyaleSettingsWindow(Plugin));
+        KingOfTheHillSettingsWindow = AddWindow(new KingOfTheHillSettingsWindow(Plugin));
+        AssassinGameSettingsWindow = AddWindow(new AssassinGameSettingsWindow(Plugin));
 
         // game windows
         FightGameWindow = AddWindow(new FightGameWindow(Plugin));
@@ -44,6 +59,11 @@ public class PluginUi : IDisposable {
         DeathRollTournamentWindow = AddWindow(new DeathRollTournamentWindow(Plugin));
         WordGuessWindow = AddWindow(new WordGuessWindow(Plugin));
         WordGuessQuestionListWindow = AddWindow(new WordGuessQuestionListWindow(Plugin));
+        HighRollDuelWindow = AddWindow(new HighRollDuelWindow(Plugin));
+        TavernBrawlWindow = AddWindow(new TavernBrawlWindow(Plugin));
+        DiceRoyaleWindow = AddWindow(new DiceRoyaleWindow(Plugin));
+        KingOfTheHillWindow = AddWindow(new KingOfTheHillWindow(Plugin));
+        AssassinGameWindow = AddWindow(new AssassinGameWindow(Plugin));
 
         // shared / global windows
         GamePhrasesWindow = AddWindow(new GamePhrasesWindow(Plugin));

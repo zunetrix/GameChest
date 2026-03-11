@@ -7,5 +7,10 @@ public enum GameMode {
     DeathRoll = 3,
     DeathRollTournament = 4,
     WordGuessGame = 5,
+    HighRollDuel = 6,
+    TavernBrawl = 7,
+    DiceRoyale = 8,
+    KingOfTheHill = 9,
+    AssassinGame = 10,
 }
 

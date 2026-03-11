@@ -75,6 +75,16 @@ public class MainWindow : Window {
         DrawTournamentCard();
         ImGui.Spacing();
         DrawWordGuessCard();
+        ImGui.Spacing();
+        DrawHighRollDuelCard();
+        ImGui.Spacing();
+        DrawTavernBrawlCard();
+        ImGui.Spacing();
+        DrawDiceRoyaleCard();
+        ImGui.Spacing();
+        DrawKingOfTheHillCard();
+        ImGui.Spacing();
+        DrawAssassinGameCard();
     }
 
     private void DrawFightGameCard() {
@@ -305,6 +315,212 @@ public class MainWindow : Window {
                 default:
                     using (ImRaii.PushColor(ImGuiCol.Text, Style.Components.TextDisabled))
                         ImGui.Text($"  {cfg.Questions.Count} question(s) ready");
+                    break;
+            }
+        }
+    }
+
+    private void DrawHighRollDuelCard() {
+        var state = Plugin.GameManager.HighRollDuelGame.State;
+        using (ImGuiGroupPanel.BeginGroupPanel("High Roll Duel")) {
+            var btnW = 60f * ImGuiHelpers.GlobalScale;
+            ImGui.SetCursorPosX(ImGui.GetCursorPosX() + ImGui.GetContentRegionAvail().X - btnW);
+            using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonBlueNormal)
+                .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonBlueHovered)
+                .Push(ImGuiCol.ButtonActive, Style.Components.ButtonBlueActive)) {
+                if (ImGui.Button("Open##OpenHrd", new Vector2(btnW, 0)))
+                    Ui.HighRollDuelWindow.Toggle();
+            }
+            ImGui.SameLine(8f * ImGuiHelpers.GlobalScale);
+            var (label, col) = state.Phase switch {
+                HighRollDuelPhase.Registration => ("[REG]", Style.Colors.Yellow),
+                HighRollDuelPhase.Rolling => ("[ROLLING]", Style.Colors.Green),
+                HighRollDuelPhase.Done => ("[DONE]", Style.Colors.Gray),
+                _ => ("[IDLE]", Style.Colors.Gray),
+            };
+            using (ImRaii.PushColor(ImGuiCol.Text, col)) ImGui.Text(label);
+            switch (state.Phase) {
+                case HighRollDuelPhase.Registration:
+                    ImGui.Text($"  {state.Players.Count} registered");
+                    break;
+                case HighRollDuelPhase.Rolling:
+                    ImGui.Text($"  Round {state.Round} — {state.CurrentRoundRolls.Count}/{state.Players.Count} rolled");
+                    break;
+                case HighRollDuelPhase.Done when state.Winner != null:
+                    using (ImRaii.PushColor(ImGuiCol.Text, Plugin.Config.HighlightColor))
+                        ImGui.Text($"  Winner: {ShortName(state.Winner)}");
+                    break;
+                default:
+                    using (ImRaii.PushColor(ImGuiCol.Text, Style.Components.TextDisabled))
+                        ImGui.Text("  No active game.");
+                    break;
+            }
+        }
+    }
+
+    private void DrawTavernBrawlCard() {
+        var state = Plugin.GameManager.TavernBrawlGame.State;
+        using (ImGuiGroupPanel.BeginGroupPanel("Tavern Brawl")) {
+            var btnW = 60f * ImGuiHelpers.GlobalScale;
+            ImGui.SetCursorPosX(ImGui.GetCursorPosX() + ImGui.GetContentRegionAvail().X - btnW);
+            using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonBlueNormal)
+                .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonBlueHovered)
+                .Push(ImGuiCol.ButtonActive, Style.Components.ButtonBlueActive)) {
+                if (ImGui.Button("Open##OpenTb", new Vector2(btnW, 0)))
+                    Ui.TavernBrawlWindow.Toggle();
+            }
+            ImGui.SameLine(8f * ImGuiHelpers.GlobalScale);
+            var (label, col) = state.Phase switch {
+                TavernBrawlPhase.Registration => ("[REG]", Style.Colors.Yellow),
+                TavernBrawlPhase.Rolling => ("[ROLLING]", Style.Colors.Green),
+                TavernBrawlPhase.PendingChoice => ("[CHOICE]", Style.Colors.Orange),
+                TavernBrawlPhase.Done => ("[DONE]", Style.Colors.Gray),
+                _ => ("[IDLE]", Style.Colors.Gray),
+            };
+            using (ImRaii.PushColor(ImGuiCol.Text, col)) ImGui.Text(label);
+            switch (state.Phase) {
+                case TavernBrawlPhase.Registration:
+                    ImGui.Text($"  {state.Players.Count} registered");
+                    break;
+                case TavernBrawlPhase.Rolling:
+                    ImGui.Text($"  Round {state.Round} — {state.CurrentRoundRolls.Count}/{state.Players.Count} rolled");
+                    break;
+                case TavernBrawlPhase.PendingChoice when state.HighestRoller != null:
+                    using (ImRaii.PushColor(ImGuiCol.Text, Plugin.Config.HighlightColor))
+                        ImGui.Text($"  {ShortName(state.HighestRoller)} chooses");
+                    break;
+                case TavernBrawlPhase.Done when state.Winner != null:
+                    using (ImRaii.PushColor(ImGuiCol.Text, Plugin.Config.HighlightColor))
+                        ImGui.Text($"  Winner: {ShortName(state.Winner)}");
+                    break;
+                default:
+                    using (ImRaii.PushColor(ImGuiCol.Text, Style.Components.TextDisabled))
+                        ImGui.Text("  No active brawl.");
+                    break;
+            }
+        }
+    }
+
+    private void DrawDiceRoyaleCard() {
+        var state = Plugin.GameManager.DiceRoyaleGame.State;
+        using (ImGuiGroupPanel.BeginGroupPanel("Dice Royale")) {
+            var btnW = 60f * ImGuiHelpers.GlobalScale;
+            ImGui.SetCursorPosX(ImGui.GetCursorPosX() + ImGui.GetContentRegionAvail().X - btnW);
+            using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonBlueNormal)
+                .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonBlueHovered)
+                .Push(ImGuiCol.ButtonActive, Style.Components.ButtonBlueActive)) {
+                if (ImGui.Button("Open##OpenDr", new Vector2(btnW, 0)))
+                    Ui.DiceRoyaleWindow.Toggle();
+            }
+            ImGui.SameLine(8f * ImGuiHelpers.GlobalScale);
+            var (label, col) = state.Phase switch {
+                DiceRoyalePhase.Registration => ("[REG]", Style.Colors.Yellow),
+                DiceRoyalePhase.Rolling => ("[ROLLING]", Style.Colors.Green),
+                DiceRoyalePhase.PendingElimination => ("[ELIM]", Style.Colors.Orange),
+                DiceRoyalePhase.Done => ("[DONE]", Style.Colors.Gray),
+                _ => ("[IDLE]", Style.Colors.Gray),
+            };
+            using (ImRaii.PushColor(ImGuiCol.Text, col)) ImGui.Text(label);
+            switch (state.Phase) {
+                case DiceRoyalePhase.Registration:
+                    ImGui.Text($"  {state.Players.Count} registered");
+                    break;
+                case DiceRoyalePhase.Rolling:
+                    ImGui.Text($"  Round {state.Round} — {state.Players.Count} remaining");
+                    break;
+                case DiceRoyalePhase.PendingElimination when state.CurrentEliminator != null:
+                    using (ImRaii.PushColor(ImGuiCol.Text, Plugin.Config.HighlightColor))
+                        ImGui.Text($"  {ShortName(state.CurrentEliminator)} eliminates");
+                    break;
+                case DiceRoyalePhase.Done when state.Winner != null:
+                    using (ImRaii.PushColor(ImGuiCol.Text, Plugin.Config.HighlightColor))
+                        ImGui.Text($"  Winner: {ShortName(state.Winner)}");
+                    break;
+                default:
+                    using (ImRaii.PushColor(ImGuiCol.Text, Style.Components.TextDisabled))
+                        ImGui.Text("  No active royale.");
+                    break;
+            }
+        }
+    }
+
+    private void DrawKingOfTheHillCard() {
+        var state = Plugin.GameManager.KingOfTheHillGame.State;
+        using (ImGuiGroupPanel.BeginGroupPanel("King of the Hill")) {
+            var btnW = 60f * ImGuiHelpers.GlobalScale;
+            ImGui.SetCursorPosX(ImGui.GetCursorPosX() + ImGui.GetContentRegionAvail().X - btnW);
+            using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonBlueNormal)
+                .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonBlueHovered)
+                .Push(ImGuiCol.ButtonActive, Style.Components.ButtonBlueActive)) {
+                if (ImGui.Button("Open##OpenKoth", new Vector2(btnW, 0)))
+                    Ui.KingOfTheHillWindow.Toggle();
+            }
+            ImGui.SameLine(8f * ImGuiHelpers.GlobalScale);
+            var (label, col) = state.Phase switch {
+                KingOfTheHillPhase.Registration => ("[REG]", Style.Colors.Yellow),
+                KingOfTheHillPhase.Rolling => ("[ROLLING]", Style.Colors.Green),
+                KingOfTheHillPhase.Done => ("[DONE]", Style.Colors.Gray),
+                _ => ("[IDLE]", Style.Colors.Gray),
+            };
+            using (ImRaii.PushColor(ImGuiCol.Text, col)) ImGui.Text(label);
+            switch (state.Phase) {
+                case KingOfTheHillPhase.Registration:
+                    ImGui.Text($"  {state.Players.Count} registered");
+                    break;
+                case KingOfTheHillPhase.Rolling when state.King != null:
+                    using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Yellow))
+                        ImGui.Text($"  King: {ShortName(state.King)} ({state.KingHoldCount}/{Plugin.Config.KingOfTheHill.CrownHoldRounds})");
+                    break;
+                case KingOfTheHillPhase.Done when state.Winner != null:
+                    using (ImRaii.PushColor(ImGuiCol.Text, Plugin.Config.HighlightColor))
+                        ImGui.Text($"  Champion: {ShortName(state.Winner)}");
+                    break;
+                default:
+                    using (ImRaii.PushColor(ImGuiCol.Text, Style.Components.TextDisabled))
+                        ImGui.Text("  No active game.");
+                    break;
+            }
+        }
+    }
+
+    private void DrawAssassinGameCard() {
+        var state = Plugin.GameManager.AssassinGame.State;
+        using (ImGuiGroupPanel.BeginGroupPanel("Assassin Game")) {
+            var btnW = 60f * ImGuiHelpers.GlobalScale;
+            ImGui.SetCursorPosX(ImGui.GetCursorPosX() + ImGui.GetContentRegionAvail().X - btnW);
+            using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonBlueNormal)
+                .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonBlueHovered)
+                .Push(ImGuiCol.ButtonActive, Style.Components.ButtonBlueActive)) {
+                if (ImGui.Button("Open##OpenAss", new Vector2(btnW, 0)))
+                    Ui.AssassinGameWindow.Toggle();
+            }
+            ImGui.SameLine(8f * ImGuiHelpers.GlobalScale);
+            var (label, col) = state.Phase switch {
+                AssassinPhase.Registration => ("[REG]", Style.Colors.Yellow),
+                AssassinPhase.Active => ("[ACTIVE]", Style.Colors.Green),
+                AssassinPhase.Attacking => ("[ATTACK]", Style.Colors.Orange),
+                AssassinPhase.Done => ("[DONE]", Style.Colors.Gray),
+                _ => ("[IDLE]", Style.Colors.Gray),
+            };
+            using (ImRaii.PushColor(ImGuiCol.Text, col)) ImGui.Text(label);
+            switch (state.Phase) {
+                case AssassinPhase.Registration:
+                    ImGui.Text($"  {state.Players.Count} registered");
+                    break;
+                case AssassinPhase.Active:
+                    ImGui.Text($"  {state.Players.Count} players alive");
+                    break;
+                case AssassinPhase.Attacking when state.CurrentAttacker != null && state.CurrentDefender != null:
+                    using (ImRaii.PushColor(ImGuiCol.Text, Plugin.Config.HighlightColor))
+                        ImGui.Text($"  {ShortName(state.CurrentAttacker)} vs {ShortName(state.CurrentDefender)}");
+                    break;
+                case AssassinPhase.Done when state.Winner != null:
+                    using (ImRaii.PushColor(ImGuiCol.Text, Plugin.Config.HighlightColor))
+                        ImGui.Text($"  Winner: {ShortName(state.Winner)}");
+                    break;
+                default:
+                    using (ImRaii.PushColor(ImGuiCol.Text, Style.Components.TextDisabled))
+                        ImGui.Text("  No active game.");
                     break;
             }
         }

@@ -31,7 +31,7 @@ public class FightGameSettingsWindow : Window {
         var cfg = Plugin.Config.FightGame;
 
         using (ImGuiGroupPanel.BeginGroupPanel("Stats")) {
-            var w = 80f * ImGuiHelpers.GlobalScale;
+            var w = 150f * ImGuiHelpers.GlobalScale;
 
             ImGui.AlignTextToFramePadding();
             ImGui.Text("Player A");
@@ -100,6 +100,7 @@ public class FightGameSettingsWindow : Window {
             }
             ImGuiUtil.HelpMarker("Players type the join phrase in chat to register.", sameline: true);
 
+            ImGui.Spacing();
             using (ImRaii.Disabled(!cfg.RegisterByPhrase)) {
                 var joinPhrase = cfg.JoinGamePhrase;
                 if (ImGui.InputTextWithHint("##JoinGamePhrase", "e.g. I want to fight!", ref joinPhrase, 255, ImGuiInputTextFlags.AutoSelectAll)) {

@@ -40,6 +40,11 @@ public class GamePhrasesWindow : Window {
             plugin.GameManager.DeathRollGame,
             plugin.GameManager.DeathRollTournamentGame,
             plugin.GameManager.WordGuessGame,
+            plugin.GameManager.HighRollDuelGame,
+            plugin.GameManager.TavernBrawlGame,
+            plugin.GameManager.DiceRoyaleGame,
+            plugin.GameManager.KingOfTheHillGame,
+            plugin.GameManager.AssassinGame,
         };
         _gameNames = _games.Select(g => g.Name).ToArray();
         Size = ImGuiHelpers.ScaledVector2(700, 500);

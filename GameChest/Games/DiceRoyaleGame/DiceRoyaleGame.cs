@@ -1,0 +1,157 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+using Dalamud.Game.Text;
+
+namespace GameChest;
+
+public sealed class DiceRoyaleGame : GameBase {
+    public override string Name => "Dice Royale";
+    public override GameMode Mode => GameMode.DiceRoyale;
+    public override DiceRoyaleState State => _state;
+    public override IReadOnlyList<PhraseCategoryMeta> PhraseCategories => DiceRoyalePhraseCategories.All;
+
+    public List<DiceRoyaleResult> MatchHistory { get; } = new();
+
+    private readonly DiceRoyaleState _state = new();
+    private Configuration.DiceRoyaleConfiguration Cfg => Plugin.Config.DiceRoyale;
+    protected override List<PhrasePool> ConfiguredPhrases => Cfg.Phrases;
+    protected override XivChatType OutputChannel => Cfg.OutputChannel;
+
+    public DiceRoyaleGame(Plugin plugin) : base(plugin) {
+        EnsurePhraseDefaults();
+        ReloadPhrases();
+    }
+
+    public void BeginRegistration() {
+        _state.Reset();
+        _state.Phase = DiceRoyalePhase.Registration;
+        PublishPhrase(DiceRoyalePhraseCategories.RegistrationOpen, new Dictionary<string, string>());
+    }
+
+    public override void Start() => BeginRegistration();
+
+    public void StartRolling() {
+        if (_state.Players.Count < Cfg.MinPlayers) return;
+        _state.Phase = DiceRoyalePhase.Rolling;
+        _state.Round = 1;
+        AnnounceRoundStart();
+    }
+
+    public override void Stop() {
+        if (!_state.IsActive) return;
+        _state.Phase = DiceRoyalePhase.Idle;
+        PublishPhrase(DiceRoyalePhraseCategories.GameCanceled, new Dictionary<string, string>());
+    }
+
+    public bool TryRegister(string fullName) {
+        if (_state.Phase != DiceRoyalePhase.Registration) return false;
+        if (_state.Players.Contains(fullName, StringComparer.OrdinalIgnoreCase)) return false;
+        _state.Players.Add(fullName);
+        return true;
+    }
+
+    public void CloseRound() {
+        if (_state.Phase != DiceRoyalePhase.Rolling) return;
+        if (_state.CurrentRoundRolls.Count == 0) return;
+
+        var eliminators = new List<string>();
+
+        foreach (var (player, roll) in _state.CurrentRoundRolls) {
+            if (roll <= 20) {
+                _state.Players.Remove(player);
+                PublishPhrase(DiceRoyalePhraseCategories.PlayerEliminated, new Dictionary<string, string> {
+                    ["player"] = ShortName(player), ["roll"] = roll.ToString(),
+                });
+            } else if (roll <= 60) {
+                PublishPhrase(DiceRoyalePhraseCategories.PlayerSurvives, new Dictionary<string, string> {
+                    ["player"] = ShortName(player), ["roll"] = roll.ToString(),
+                });
+            } else if (roll <= 90) {
+                PublishPhrase(DiceRoyalePhraseCategories.PlayerAdvantage, new Dictionary<string, string> {
+                    ["player"] = ShortName(player), ["roll"] = roll.ToString(),
+                });
+            } else {
+                eliminators.Add(player);
+                PublishPhrase(DiceRoyalePhraseCategories.PlayerEliminates, new Dictionary<string, string> {
+                    ["player"] = ShortName(player), ["roll"] = roll.ToString(),
+                });
+            }
+        }
+
+        if (_state.Players.Count <= 1) { EndGame(); return; }
+
+        // Queue eliminators who are still alive
+        foreach (var e in eliminators.Where(e => _state.Players.Contains(e, StringComparer.OrdinalIgnoreCase)))
+            _state.PendingEliminators.Enqueue(e);
+
+        if (_state.PendingEliminators.Count > 0) {
+            _state.CurrentEliminator = _state.PendingEliminators.Dequeue();
+            _state.Phase = DiceRoyalePhase.PendingElimination;
+        } else {
+            NextRound();
+        }
+    }
+
+    /// <summary>GM selects the target for the current eliminator.</summary>
+    public void EliminateByChoice(string targetName) {
+        if (_state.Phase != DiceRoyalePhase.PendingElimination) return;
+        _state.Players.Remove(targetName);
+        PublishPhrase(DiceRoyalePhraseCategories.PlayerEliminated, new Dictionary<string, string> {
+            ["player"] = ShortName(targetName), ["roll"] = "eliminated",
+        });
+
+        if (_state.Players.Count <= 1) { EndGame(); return; }
+
+        if (_state.PendingEliminators.Count > 0) {
+            _state.CurrentEliminator = _state.PendingEliminators.Dequeue();
+        } else {
+            NextRound();
+        }
+    }
+
+    public override void ProcessRoll(Roll roll) {
+        if (_state.Phase == DiceRoyalePhase.Registration) { TryRegister(roll.PlayerName); return; }
+        if (_state.Phase != DiceRoyalePhase.Rolling) return;
+        if (roll.OutOf != Cfg.MaxRoll) return;
+        if (!_state.Players.Contains(roll.PlayerName, StringComparer.OrdinalIgnoreCase)) return;
+        if (_state.CurrentRoundRolls.ContainsKey(roll.PlayerName)) return;
+
+        _state.CurrentRoundRolls[roll.PlayerName] = roll.Result;
+
+        if (_state.CurrentRoundRolls.Count >= _state.Players.Count)
+            CloseRound();
+    }
+
+    private void NextRound() {
+        _state.Round++;
+        _state.ResetRound();
+        _state.Phase = DiceRoyalePhase.Rolling;
+        AnnounceRoundStart();
+    }
+
+    private void AnnounceRoundStart() {
+        PublishPhrase(DiceRoyalePhraseCategories.RoundStart, new Dictionary<string, string> {
+            ["round"] = _state.Round.ToString(), ["maxroll"] = Cfg.MaxRoll.ToString(),
+        });
+    }
+
+    private void EndGame() {
+        var winner = _state.Players.FirstOrDefault();
+        _state.Winner = winner;
+        _state.Phase = DiceRoyalePhase.Done;
+        if (winner != null) {
+            PublishPhrase(DiceRoyalePhraseCategories.GameEnd, new Dictionary<string, string> { ["winner"] = ShortName(winner) });
+            MatchHistory.Add(new DiceRoyaleResult(winner, _state.Round, DateTime.Now));
+            if (MatchHistory.Count > 10) MatchHistory.RemoveAt(0);
+        }
+    }
+
+    private void PublishPhrase(string categoryId, Dictionary<string, string> vars) {
+        var text = GetPhrase(categoryId, vars);
+        if (text != null) Publish(text);
+    }
+
+    private static string ShortName(string s) { var i = s.IndexOf('@'); return i >= 0 ? s[..i] : s; }
+}

@@ -41,6 +41,11 @@ internal class Configuration : IPluginConfiguration {
     public DeathRollConfiguration DeathRoll { get; set; } = new();
     public DeathRollTournamentConfiguration DeathRollTournament { get; set; } = new();
     public WordGuessConfiguration WordGuess { get; set; } = new();
+    public HighRollDuelConfiguration HighRollDuel { get; set; } = new();
+    public TavernBrawlConfiguration TavernBrawl { get; set; } = new();
+    public DiceRoyaleConfiguration DiceRoyale { get; set; } = new();
+    public KingOfTheHillConfiguration KingOfTheHill { get; set; } = new();
+    public AssassinGameConfiguration AssassinGame { get; set; } = new();
 
     public void Initialize(IDalamudPluginInterface pluginInterface) {
         PluginInterface = pluginInterface;
@@ -145,5 +150,41 @@ internal class Configuration : IPluginConfiguration {
         public bool UseGlobalTimer { get; set; } = false;
         public int GlobalTimerSecs { get; set; } = 60;
         public WordGuessVictoryMode VictoryMode { get; set; } = WordGuessVictoryMode.Single;
+    }
+
+    internal sealed class HighRollDuelConfiguration {
+        public List<PhrasePool> Phrases { get; set; } = new();
+        public XivChatType OutputChannel { get; set; } = XivChatType.Say;
+        public int MaxRoll { get; set; } = 100;
+        public int MinPlayers { get; set; } = 2;
+    }
+
+    internal sealed class TavernBrawlConfiguration {
+        public List<PhrasePool> Phrases { get; set; } = new();
+        public XivChatType OutputChannel { get; set; } = XivChatType.Say;
+        public int MaxRoll { get; set; } = 100;
+        public int MinPlayers { get; set; } = 4;
+    }
+
+    internal sealed class DiceRoyaleConfiguration {
+        public List<PhrasePool> Phrases { get; set; } = new();
+        public XivChatType OutputChannel { get; set; } = XivChatType.Say;
+        public int MaxRoll { get; set; } = 100;
+        public int MinPlayers { get; set; } = 2;
+    }
+
+    internal sealed class KingOfTheHillConfiguration {
+        public List<PhrasePool> Phrases { get; set; } = new();
+        public XivChatType OutputChannel { get; set; } = XivChatType.Say;
+        public int MaxRoll { get; set; } = 100;
+        public int MinPlayers { get; set; } = 2;
+        public int CrownHoldRounds { get; set; } = 3;
+    }
+
+    internal sealed class AssassinGameConfiguration {
+        public List<PhrasePool> Phrases { get; set; } = new();
+        public XivChatType OutputChannel { get; set; } = XivChatType.Say;
+        public int MaxRoll { get; set; } = 20;
+        public int MinPlayers { get; set; } = 3;
     }
 }
