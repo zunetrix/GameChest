@@ -102,11 +102,11 @@ public sealed class DeathRollGame : GameBase {
 
         if (winner != null) {
             var vars = new Dictionary<string, string> {
-                ["winner"] = Display(winner),
-                ["loser"] = Display(loser),
+                ["winner"] = PlayerName.Short(winner),
+                ["loser"] = PlayerName.Short(loser),
             };
             PublishPhrase(DeathRollPhraseCategories.GameEnd, vars);
-            MatchHistory.Insert(0, new DeathRollResult(Display(winner), Display(loser), DateTime.Now));
+            MatchHistory.Insert(0, new DeathRollResult(PlayerName.Short(winner), PlayerName.Short(loser), DateTime.Now));
             if (MatchHistory.Count > 10) MatchHistory.RemoveAt(MatchHistory.Count - 1);
         }
     }
@@ -114,10 +114,5 @@ public sealed class DeathRollGame : GameBase {
     private void PublishPhrase(string categoryId, Dictionary<string, string> vars) {
         var text = GetPhrase(categoryId, vars);
         if (text != null) Publish(text);
-    }
-
-    private static string Display(string fullName) {
-        var at = fullName.IndexOf('@');
-        return at >= 0 ? fullName[..at] : fullName;
     }
 }

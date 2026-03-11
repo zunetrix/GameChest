@@ -94,7 +94,7 @@ public sealed class DiceBlackjackGame : GameBase, IChatConsumer {
         if (current.DealCount < 2) {
             current.DealCount++;
             PublishPhrase(DiceBlackjackPhraseCategories.PlayerDealt, new() {
-                ["player"] = ShortName(current.Name),
+                ["player"] = PlayerName.Short(current.Name),
                 ["card"]   = CardLabel(roll.Result),
                 ["total"]  = total.ToString(),
             });
@@ -102,7 +102,7 @@ public sealed class DiceBlackjackGame : GameBase, IChatConsumer {
                 BustCurrentPlayer();
         } else {
             PublishPhrase(DiceBlackjackPhraseCategories.PlayerHit, new() {
-                ["player"] = ShortName(current.Name),
+                ["player"] = PlayerName.Short(current.Name),
                 ["card"]   = CardLabel(roll.Result),
                 ["total"]  = total.ToString(),
             });
@@ -115,7 +115,7 @@ public sealed class DiceBlackjackGame : GameBase, IChatConsumer {
         if (_state.Phase != DiceBlackjackPhase.PlayerTurns) return;
         var current = _state.CurrentPlayer;
         if (current == null || current.DealCount < 2) return;
-        if (!ShortName(senderFullName).Equals(ShortName(current.Name), StringComparison.OrdinalIgnoreCase)) return;
+        if (!PlayerName.Short(senderFullName).Equals(PlayerName.Short(current.Name), StringComparison.OrdinalIgnoreCase)) return;
         if (message.Trim().Equals("stand", StringComparison.OrdinalIgnoreCase))
             StandCurrentPlayer();
     }
@@ -136,7 +136,7 @@ public sealed class DiceBlackjackGame : GameBase, IChatConsumer {
         if (current == null) return;
         current.Status = PlayerHandStatus.Standing;
         PublishPhrase(DiceBlackjackPhraseCategories.PlayerStand, new() {
-            ["player"] = ShortName(current.Name),
+            ["player"] = PlayerName.Short(current.Name),
             ["total"]  = HandTotal(current.Cards).ToString(),
         });
         AdvanceToNextPlayer();
@@ -147,7 +147,7 @@ public sealed class DiceBlackjackGame : GameBase, IChatConsumer {
         if (current == null) return;
         current.Status = PlayerHandStatus.Busted;
         PublishPhrase(DiceBlackjackPhraseCategories.PlayerBust, new() {
-            ["player"] = ShortName(current.Name),
+            ["player"] = PlayerName.Short(current.Name),
             ["total"]  = HandTotal(current.Cards).ToString(),
         });
         AdvanceToNextPlayer();
@@ -201,7 +201,7 @@ public sealed class DiceBlackjackGame : GameBase, IChatConsumer {
             var score = HandTotal(p.Cards);
             if (dealerBusted || score > dealerTotal) {
                 PublishPhrase(DiceBlackjackPhraseCategories.PlayerWin, new() {
-                    ["player"] = ShortName(p.Name),
+                    ["player"] = PlayerName.Short(p.Name),
                     ["score"]  = score.ToString(),
                 });
                 if (champion == null || score > championScore) {
@@ -210,12 +210,12 @@ public sealed class DiceBlackjackGame : GameBase, IChatConsumer {
                 }
             } else if (score == dealerTotal) {
                 PublishPhrase(DiceBlackjackPhraseCategories.PlayerPush, new() {
-                    ["player"] = ShortName(p.Name),
+                    ["player"] = PlayerName.Short(p.Name),
                     ["score"]  = score.ToString(),
                 });
             } else {
                 PublishPhrase(DiceBlackjackPhraseCategories.PlayerLoss, new() {
-                    ["player"] = ShortName(p.Name),
+                    ["player"] = PlayerName.Short(p.Name),
                     ["score"]  = score.ToString(),
                 });
             }
@@ -224,7 +224,7 @@ public sealed class DiceBlackjackGame : GameBase, IChatConsumer {
         if (champion != null) {
             _state.Winner = champion;
             PublishPhrase(DiceBlackjackPhraseCategories.GameEnd, new() {
-                ["winner"] = ShortName(champion),
+                ["winner"] = PlayerName.Short(champion),
                 ["score"]  = championScore.ToString(),
             });
         }
@@ -234,7 +234,7 @@ public sealed class DiceBlackjackGame : GameBase, IChatConsumer {
         var current = _state.CurrentPlayer;
         if (current == null) return;
         PublishPhrase(DiceBlackjackPhraseCategories.PlayerTurn, new() {
-            ["player"]  = ShortName(current.Name),
+            ["player"]  = PlayerName.Short(current.Name),
             ["maxroll"] = Cfg.MaxRoll.ToString(),
         });
     }
@@ -260,5 +260,4 @@ public sealed class DiceBlackjackGame : GameBase, IChatConsumer {
         if (text != null) Publish(text);
     }
 
-    private static string ShortName(string s) { var i = s.IndexOf('@'); return i >= 0 ? s[..i] : s; }
 }

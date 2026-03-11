@@ -66,20 +66,20 @@ public sealed class DiceRoyaleGame : GameBase, IChatConsumer {
             if (roll <= 20) {
                 _state.Players.Remove(player);
                 PublishPhrase(DiceRoyalePhraseCategories.PlayerEliminated, new Dictionary<string, string> {
-                    ["player"] = ShortName(player), ["roll"] = roll.ToString(),
+                    ["player"] = PlayerName.Short(player), ["roll"] = roll.ToString(),
                 });
             } else if (roll <= 60) {
                 PublishPhrase(DiceRoyalePhraseCategories.PlayerSurvives, new Dictionary<string, string> {
-                    ["player"] = ShortName(player), ["roll"] = roll.ToString(),
+                    ["player"] = PlayerName.Short(player), ["roll"] = roll.ToString(),
                 });
             } else if (roll <= 90) {
                 PublishPhrase(DiceRoyalePhraseCategories.PlayerAdvantage, new Dictionary<string, string> {
-                    ["player"] = ShortName(player), ["roll"] = roll.ToString(),
+                    ["player"] = PlayerName.Short(player), ["roll"] = roll.ToString(),
                 });
             } else {
                 eliminators.Add(player);
                 PublishPhrase(DiceRoyalePhraseCategories.PlayerEliminates, new Dictionary<string, string> {
-                    ["player"] = ShortName(player), ["roll"] = roll.ToString(),
+                    ["player"] = PlayerName.Short(player), ["roll"] = roll.ToString(),
                 });
             }
         }
@@ -102,7 +102,7 @@ public sealed class DiceRoyaleGame : GameBase, IChatConsumer {
         if (_state.Phase != DiceRoyalePhase.PendingElimination) return;
         _state.Players.Remove(targetName);
         PublishPhrase(DiceRoyalePhraseCategories.PlayerEliminated, new Dictionary<string, string> {
-            ["player"] = ShortName(targetName), ["roll"] = "eliminated",
+            ["player"] = PlayerName.Short(targetName), ["roll"] = "eliminated",
         });
 
         if (_state.Players.Count <= 1) { EndGame(); return; }
@@ -117,12 +117,12 @@ public sealed class DiceRoyaleGame : GameBase, IChatConsumer {
     public void ProcessChatMessage(string senderFullName, string message, XivChatType chatType) {
         if (!Cfg.AllowChatElimination) return;
         if (_state.Phase != DiceRoyalePhase.PendingElimination) return;
-        if (!ShortName(senderFullName).Equals(ShortName(_state.CurrentEliminator ?? ""), StringComparison.OrdinalIgnoreCase)) return;
+        if (!PlayerName.Short(senderFullName).Equals(PlayerName.Short(_state.CurrentEliminator ?? ""), StringComparison.OrdinalIgnoreCase)) return;
 
         var input = message.Trim();
         var match = _state.Players
             .Where(p => !p.Equals(_state.CurrentEliminator, StringComparison.OrdinalIgnoreCase))
-            .FirstOrDefault(p => ShortName(p).Equals(input, StringComparison.OrdinalIgnoreCase)
+            .FirstOrDefault(p => PlayerName.Short(p).Equals(input, StringComparison.OrdinalIgnoreCase)
                               || p.Equals(input, StringComparison.OrdinalIgnoreCase));
 
         if (match == null) return;
@@ -185,7 +185,7 @@ public sealed class DiceRoyaleGame : GameBase, IChatConsumer {
         _state.Winner = winner;
         _state.Phase = DiceRoyalePhase.Done;
         if (winner != null) {
-            PublishPhrase(DiceRoyalePhraseCategories.GameEnd, new Dictionary<string, string> { ["winner"] = ShortName(winner) });
+            PublishPhrase(DiceRoyalePhraseCategories.GameEnd, new Dictionary<string, string> { ["winner"] = PlayerName.Short(winner) });
             MatchHistory.Add(new DiceRoyaleResult(winner, _state.Round, DateTime.Now));
             if (MatchHistory.Count > 10) MatchHistory.RemoveAt(0);
         }
@@ -196,5 +196,4 @@ public sealed class DiceRoyaleGame : GameBase, IChatConsumer {
         if (text != null) Publish(text);
     }
 
-    private static string ShortName(string s) { var i = s.IndexOf('@'); return i >= 0 ? s[..i] : s; }
 }

@@ -110,9 +110,9 @@ public class AssassinGameWindow : Window {
 
                 foreach (var (attacker, target) in state.Assignments) {
                     ImGui.TableNextRow();
-                    ImGui.TableNextColumn(); ImGui.Text(ShortName(attacker));
+                    ImGui.TableNextColumn(); ImGui.Text(PlayerName.Short(attacker));
                     ImGui.TableNextColumn();
-                    using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Orange)) ImGui.Text(ShortName(target));
+                    using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Orange)) ImGui.Text(PlayerName.Short(target));
                     ImGui.TableNextColumn();
                     if (ImGui.SmallButton($"Attack##{attacker}"))
                         game.TriggerAttack(attacker);
@@ -127,7 +127,7 @@ public class AssassinGameWindow : Window {
                 ImGui.Text($"Attack in progress!");
             ImGui.Spacing();
 
-            ImGui.Text($"Attacker: {ShortName(state.CurrentAttacker ?? "")}");
+            ImGui.Text($"Attacker: {PlayerName.Short(state.CurrentAttacker ?? "")}");
             ImGui.SameLine();
             if (state.AttackRoll.HasValue) {
                 using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Green)) ImGui.Text($"rolled {state.AttackRoll}");
@@ -135,7 +135,7 @@ public class AssassinGameWindow : Window {
                 using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Gray)) ImGui.Text("waiting...");
             }
 
-            ImGui.Text($"Defender: {ShortName(state.CurrentDefender ?? "")}");
+            ImGui.Text($"Defender: {PlayerName.Short(state.CurrentDefender ?? "")}");
             ImGui.SameLine();
             if (state.DefenseRoll.HasValue) {
                 using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Green)) ImGui.Text($"rolled {state.DefenseRoll}");
@@ -147,7 +147,7 @@ public class AssassinGameWindow : Window {
 
         if (state.Phase == AssassinPhase.Done && state.Winner != null) {
             using (ImRaii.PushColor(ImGuiCol.Text, Plugin.Config.HighlightColor))
-                ImGui.Text($"Winner: {ShortName(state.Winner)}");
+                ImGui.Text($"Winner: {PlayerName.Short(state.Winner)}");
         }
     }
 
@@ -191,5 +191,4 @@ public class AssassinGameWindow : Window {
         using (ImRaii.PushColor(ImGuiCol.Text, color)) ImGui.Text(label);
     }
 
-    private static string ShortName(string s) { var i = s.IndexOf('@'); return i >= 0 ? s[..i] : s; }
 }

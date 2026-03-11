@@ -109,7 +109,7 @@ public class TavernBrawlWindow : Window {
 
         if (state.Phase == TavernBrawlPhase.PendingChoice) {
             using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Orange))
-                ImGui.Text($"{ShortName(state.HighestRoller ?? "")} rolled {state.HighestRoll} - select a player to eliminate:");
+                ImGui.Text($"{PlayerName.Short(state.HighestRoller ?? "")} rolled {state.HighestRoll} - select a player to eliminate:");
             ImGui.Spacing();
 
             var eligible = state.Players
@@ -118,7 +118,7 @@ public class TavernBrawlWindow : Window {
                 .ToList();
 
             foreach (var p in eligible) {
-                if (ImGui.Button($"Eliminate {ShortName(p)}##TbElim_{p}"))
+                if (ImGui.Button($"Eliminate {PlayerName.Short(p)}##TbElim_{p}"))
                     game.EliminateByChoice(p);
             }
             return;
@@ -126,7 +126,7 @@ public class TavernBrawlWindow : Window {
 
         if (state.Phase == TavernBrawlPhase.Done && state.Winner != null) {
             using (ImRaii.PushColor(ImGuiCol.Text, Plugin.Config.HighlightColor))
-                ImGui.Text($"Winner: {ShortName(state.Winner)}");
+                ImGui.Text($"Winner: {PlayerName.Short(state.Winner)}");
         }
     }
 
@@ -140,7 +140,7 @@ public class TavernBrawlWindow : Window {
 
         foreach (var p in state.Players) {
             ImGui.TableNextRow();
-            ImGui.TableNextColumn(); ImGui.Text(ShortName(p));
+            ImGui.TableNextColumn(); ImGui.Text(PlayerName.Short(p));
             ImGui.TableNextColumn();
             if (state.CurrentRoundRolls.TryGetValue(p, out var roll)) ImGui.Text($"{roll}");
             else { using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Gray)) ImGui.Text("..."); }
@@ -195,5 +195,4 @@ public class TavernBrawlWindow : Window {
         using (ImRaii.PushColor(ImGuiCol.Text, color)) ImGui.Text(label);
     }
 
-    private static string ShortName(string s) { var i = s.IndexOf('@'); return i >= 0 ? s[..i] : s; }
 }

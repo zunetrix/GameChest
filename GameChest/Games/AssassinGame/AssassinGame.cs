@@ -69,8 +69,8 @@ public sealed class AssassinGame : GameBase {
         _state.DefenseRoll = null;
         _state.Phase = AssassinPhase.Attacking;
         PublishPhrase(AssassinGamePhraseCategories.AttackAttempt, new Dictionary<string, string> {
-            ["attacker"] = ShortName(attackerName),
-            ["defender"] = ShortName(defender),
+            ["attacker"] = PlayerName.Short(attackerName),
+            ["defender"] = PlayerName.Short(defender),
             ["maxroll"]  = Cfg.MaxRoll.ToString(),
         });
     }
@@ -95,8 +95,8 @@ public sealed class AssassinGame : GameBase {
         if (_state.Phase != AssassinPhase.Attacking) return;
         if (roll.OutOf != Cfg.MaxRoll) return;
 
-        var isAttacker = ShortName(roll.PlayerName).Equals(ShortName(_state.CurrentAttacker ?? ""), StringComparison.OrdinalIgnoreCase);
-        var isDefender = ShortName(roll.PlayerName).Equals(ShortName(_state.CurrentDefender ?? ""), StringComparison.OrdinalIgnoreCase);
+        var isAttacker = PlayerName.Short(roll.PlayerName).Equals(PlayerName.Short(_state.CurrentAttacker ?? ""), StringComparison.OrdinalIgnoreCase);
+        var isDefender = PlayerName.Short(roll.PlayerName).Equals(PlayerName.Short(_state.CurrentDefender ?? ""), StringComparison.OrdinalIgnoreCase);
 
         if (isAttacker && _state.AttackRoll == null) {
             _state.AttackRoll = roll.Result;
@@ -117,8 +117,8 @@ public sealed class AssassinGame : GameBase {
         if (aRoll > dRoll) {
             // Success
             PublishPhrase(AssassinGamePhraseCategories.AssassinationSuccess, new Dictionary<string, string> {
-                ["attacker"] = ShortName(attacker), ["aroll"] = aRoll.ToString(),
-                ["defender"] = ShortName(defender), ["droll"] = dRoll.ToString(),
+                ["attacker"] = PlayerName.Short(attacker), ["aroll"] = aRoll.ToString(),
+                ["defender"] = PlayerName.Short(defender), ["droll"] = dRoll.ToString(),
             });
             // Transfer target
             if (_state.Assignments.TryGetValue(defender, out var nextTarget))
@@ -127,15 +127,15 @@ public sealed class AssassinGame : GameBase {
             _state.Players.Remove(defender);
 
             PublishPhrase(AssassinGamePhraseCategories.PlayerEliminated, new Dictionary<string, string> {
-                ["player"] = ShortName(defender),
+                ["player"] = PlayerName.Short(defender),
                 ["remaining"] = _state.Players.Count.ToString(),
             });
 
             if (_state.Players.Count <= 1) { EndGame(); return; }
         } else {
             PublishPhrase(AssassinGamePhraseCategories.AssassinationFailed, new Dictionary<string, string> {
-                ["attacker"] = ShortName(attacker), ["aroll"] = aRoll.ToString(),
-                ["defender"] = ShortName(defender), ["droll"] = dRoll.ToString(),
+                ["attacker"] = PlayerName.Short(attacker), ["aroll"] = aRoll.ToString(),
+                ["defender"] = PlayerName.Short(defender), ["droll"] = dRoll.ToString(),
             });
         }
 
@@ -148,7 +148,7 @@ public sealed class AssassinGame : GameBase {
         _state.Winner = winner;
         _state.Phase = AssassinPhase.Done;
         if (winner != null) {
-            PublishPhrase(AssassinGamePhraseCategories.GameEnd, new Dictionary<string, string> { ["winner"] = ShortName(winner) });
+            PublishPhrase(AssassinGamePhraseCategories.GameEnd, new Dictionary<string, string> { ["winner"] = PlayerName.Short(winner) });
             MatchHistory.Add(new AssassinResult(winner, _state.Players.Count, DateTime.Now));
             if (MatchHistory.Count > 10) MatchHistory.RemoveAt(0);
         }
@@ -159,5 +159,4 @@ public sealed class AssassinGame : GameBase {
         if (text != null) Publish(text);
     }
 
-    private static string ShortName(string s) { var i = s.IndexOf('@'); return i >= 0 ? s[..i] : s; }
 }

@@ -66,7 +66,7 @@ public sealed class TavernBrawlGame : GameBase, IChatConsumer {
         _state.LowestRoller = loser;
         _state.Players.Remove(loser);
         PublishPhrase(TavernBrawlPhraseCategories.KnockedOut, new Dictionary<string, string> {
-            ["player"] = ShortName(loser),
+            ["player"] = PlayerName.Short(loser),
             ["roll"] = minRoll.ToString(),
         });
 
@@ -82,7 +82,7 @@ public sealed class TavernBrawlGame : GameBase, IChatConsumer {
         _state.HighestRoll = maxRoll;
 
         PublishPhrase(TavernBrawlPhraseCategories.HighestChooses, new Dictionary<string, string> {
-            ["player"] = ShortName(topRoller),
+            ["player"] = PlayerName.Short(topRoller),
             ["roll"] = maxRoll.ToString(),
         });
         _state.Phase = TavernBrawlPhase.PendingChoice;
@@ -93,7 +93,7 @@ public sealed class TavernBrawlGame : GameBase, IChatConsumer {
         if (_state.Phase != TavernBrawlPhase.PendingChoice) return;
         _state.Players.Remove(targetName);
         PublishPhrase(TavernBrawlPhraseCategories.KnockedOut, new Dictionary<string, string> {
-            ["player"] = ShortName(targetName),
+            ["player"] = PlayerName.Short(targetName),
             ["roll"] = "choice",
         });
 
@@ -150,7 +150,7 @@ public sealed class TavernBrawlGame : GameBase, IChatConsumer {
         _state.Phase = TavernBrawlPhase.Done;
         if (winner != null) {
             PublishPhrase(TavernBrawlPhraseCategories.GameEnd, new Dictionary<string, string> {
-                ["winner"] = ShortName(winner),
+                ["winner"] = PlayerName.Short(winner),
             });
             MatchHistory.Add(new TavernBrawlResult(winner, _state.Round, DateTime.Now));
             if (MatchHistory.Count > 10) MatchHistory.RemoveAt(0);
@@ -160,12 +160,12 @@ public sealed class TavernBrawlGame : GameBase, IChatConsumer {
     public void ProcessChatMessage(string senderFullName, string message, XivChatType chatType) {
         if (!Cfg.AllowChatElimination) return;
         if (_state.Phase != TavernBrawlPhase.PendingChoice) return;
-        if (!ShortName(senderFullName).Equals(ShortName(_state.HighestRoller ?? ""), StringComparison.OrdinalIgnoreCase)) return;
+        if (!PlayerName.Short(senderFullName).Equals(PlayerName.Short(_state.HighestRoller ?? ""), StringComparison.OrdinalIgnoreCase)) return;
 
         var input = message.Trim();
         var match = _state.Players
             .Where(p => !p.Equals(_state.HighestRoller, StringComparison.OrdinalIgnoreCase))
-            .FirstOrDefault(p => ShortName(p).Equals(input, StringComparison.OrdinalIgnoreCase)
+            .FirstOrDefault(p => PlayerName.Short(p).Equals(input, StringComparison.OrdinalIgnoreCase)
                               || p.Equals(input, StringComparison.OrdinalIgnoreCase));
         if (match == null) return;
 
@@ -177,5 +177,4 @@ public sealed class TavernBrawlGame : GameBase, IChatConsumer {
         if (text != null) Publish(text);
     }
 
-    private static string ShortName(string s) { var i = s.IndexOf('@'); return i >= 0 ? s[..i] : s; }
 }

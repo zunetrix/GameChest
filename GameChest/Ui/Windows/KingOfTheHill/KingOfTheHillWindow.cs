@@ -107,7 +107,7 @@ public class KingOfTheHillWindow : Window {
                 ImGui.Text("Current King:");
                 ImGui.SameLine();
                 using (ImRaii.PushColor(ImGuiCol.Text, Plugin.Config.HighlightColor))
-                    ImGui.Text(ShortName(state.King));
+                    ImGui.Text(PlayerName.Short(state.King));
                 ImGui.SameLine();
                 using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Gray))
                     ImGui.Text($"({state.KingHoldCount}/{cfg.CrownHoldRounds} rounds)");
@@ -125,7 +125,7 @@ public class KingOfTheHillWindow : Window {
                 ImGui.TableNextRow();
                 ImGui.TableNextColumn();
                 using (ImRaii.PushColor(ImGuiCol.Text, isKing ? Plugin.Config.HighlightColor : Style.Colors.White))
-                    ImGui.Text(ShortName(p) + (isKing ? " [King]" : ""));
+                    ImGui.Text(PlayerName.Short(p) + (isKing ? " [King]" : ""));
                 ImGui.TableNextColumn();
                 if (state.CurrentRoundRolls.TryGetValue(p, out var roll)) ImGui.Text($"{roll}");
                 else { using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Gray)) ImGui.Text("..."); }
@@ -140,7 +140,7 @@ public class KingOfTheHillWindow : Window {
 
         if (state.Phase == KingOfTheHillPhase.Done && state.Winner != null) {
             using (ImRaii.PushColor(ImGuiCol.Text, Plugin.Config.HighlightColor))
-                ImGui.Text($"Winner: {ShortName(state.Winner)}");
+                ImGui.Text($"Winner: {PlayerName.Short(state.Winner)}");
         }
     }
 
@@ -183,5 +183,4 @@ public class KingOfTheHillWindow : Window {
         using (ImRaii.PushColor(ImGuiCol.Text, color)) ImGui.Text(label);
     }
 
-    private static string ShortName(string s) { var i = s.IndexOf('@'); return i >= 0 ? s[..i] : s; }
 }

@@ -46,7 +46,7 @@ public static class RollLogTable {
                 ImGui.Text(e.At.ToString("HH:mm:ss"));
 
             ImGui.TableNextColumn();
-            ImGui.Text(ShortName(e.PlayerName));
+            ImGui.Text(PlayerName.Short(e.PlayerName));
 
             ImGui.TableNextColumn();
             var rollText = e.OutOf > 0 ? $"{e.Result}/{e.OutOf}" : $"{e.Result}";
@@ -76,8 +76,4 @@ public static class RollLogTable {
         }
     }
 
-    private static string ShortName(string fullName) {
-        var at = fullName.IndexOf('@');
-        return at >= 0 ? fullName[..at] : fullName;
-    }
 }

@@ -56,12 +56,12 @@ public sealed class PrizeRollGame : GameBase {
         var winner = _state.Participants.First;
         if (winner != null) {
             var vars = new Dictionary<string, string> {
-                ["winner"] = Display(winner.FullName),
+                ["winner"] = PlayerName.Short(winner.FullName),
                 ["roll"] = winner.RollResult.ToString(),
             };
             PublishPhrase(PrizeRollPhraseCategories.GameEnd, vars);
             var count = _state.Participants.Entries.Count;
-            MatchHistory.Insert(0, new PrizeRollResult(Display(winner.FullName), winner.RollResult, count, Cfg.SortingMode, Cfg.NearestRoll, DateTime.Now));
+            MatchHistory.Insert(0, new PrizeRollResult(PlayerName.Short(winner.FullName), winner.RollResult, count, Cfg.SortingMode, Cfg.NearestRoll, DateTime.Now));
             if (MatchHistory.Count > 10) MatchHistory.RemoveAtSafe(MatchHistory.Count - 1);
         }
 
@@ -95,9 +95,9 @@ public sealed class PrizeRollGame : GameBase {
         if (newWinner != null &&
             !string.Equals(newWinner.FullName, prevWinner?.FullName, StringComparison.OrdinalIgnoreCase)) {
             var bestVars = new Dictionary<string, string> {
-                ["player"] = Display(newWinner.FullName),
+                ["player"] = PlayerName.Short(newWinner.FullName),
                 ["roll"] = newWinner.RollResult.ToString(),
-                ["previous"] = prevWinner != null ? Display(prevWinner.FullName) : "",
+                ["previous"] = prevWinner != null ? PlayerName.Short(prevWinner.FullName) : "",
             };
             PublishPhrase(PrizeRollPhraseCategories.NewBestRoll, bestVars);
         }
@@ -118,9 +118,5 @@ public sealed class PrizeRollGame : GameBase {
         var text = GetPhrase(categoryId, vars);
         if (text != null) Publish(text);
     }
-
-    private static string Display(string fullName) {
-        var at = fullName.IndexOf('@');
-        return at >= 0 ? fullName[..at] : fullName;
-    }
 }
+

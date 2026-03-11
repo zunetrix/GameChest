@@ -190,7 +190,7 @@ public class PrizeRollWindow : Window {
                     ImGui.Text($"{i + 1}");
                     ImGui.TableNextColumn();
                     using (ImRaii.PushColor(ImGuiCol.Text, Plugin.Config.HighlightColor, i == 0))
-                        ImGui.Text(ShortName(p.FullName));
+                        ImGui.Text(PlayerName.Short(p.FullName));
                     ImGui.TableNextColumn();
                     ImGui.Text($"{p.RollResult}");
                 }
@@ -288,8 +288,4 @@ public class PrizeRollWindow : Window {
         _ => "?",
     };
 
-    private static string ShortName(string fullName) {
-        var at = fullName.IndexOf('@');
-        return at >= 0 ? fullName[..at] : fullName;
-    }
 }

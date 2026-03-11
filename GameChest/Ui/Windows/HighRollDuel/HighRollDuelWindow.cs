@@ -132,7 +132,7 @@ public class HighRollDuelWindow : Window {
 
                 foreach (var p in players) {
                     ImGui.TableNextRow();
-                    ImGui.TableNextColumn(); ImGui.Text(ShortName(p));
+                    ImGui.TableNextColumn(); ImGui.Text(PlayerName.Short(p));
                     ImGui.TableNextColumn();
                     if (state.CurrentRoundRolls.TryGetValue(p, out var roll)) ImGui.Text($"{roll}");
                     else { using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Gray)) ImGui.Text("..."); }
@@ -149,7 +149,7 @@ public class HighRollDuelWindow : Window {
         if (state.Phase == HighRollDuelPhase.Done && state.Winner != null) {
             ImGui.Spacing();
             using (ImRaii.PushColor(ImGuiCol.Text, Plugin.Config.HighlightColor))
-                ImGui.Text($"Winner: {ShortName(state.Winner)}");
+                ImGui.Text($"Winner: {PlayerName.Short(state.Winner)}");
         }
     }
 
@@ -218,5 +218,4 @@ public class HighRollDuelWindow : Window {
         using (ImRaii.PushColor(ImGuiCol.Text, color)) ImGui.Text(label);
     }
 
-    private static string ShortName(string s) { var i = s.IndexOf('@'); return i >= 0 ? s[..i] : s; }
 }

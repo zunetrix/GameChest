@@ -134,7 +134,7 @@ public sealed class WordGuessGame : GameBase, IChatConsumer {
         }
 
         PublishPhrase(WordGuessPhraseCategories.RoundWon, new Dictionary<string, string> {
-            ["winner"] = Display(winner),
+            ["winner"] = PlayerName.Short(winner),
             ["answer"] = q.Answer,
             ["number"] = QuestionNumber,
         });
@@ -188,7 +188,7 @@ public sealed class WordGuessGame : GameBase, IChatConsumer {
         if (Cfg.VictoryMode == WordGuessVictoryMode.Session && _state.Scores.Count > 0) {
             var (sessionWinner, score) = _state.Scores.OrderByDescending(kv => kv.Value).First();
             PublishPhrase(WordGuessPhraseCategories.SessionEnd, new Dictionary<string, string> {
-                ["winner"] = Display(sessionWinner),
+                ["winner"] = PlayerName.Short(sessionWinner),
                 ["score"] = score.ToString(),
                 ["total"] = _state.SessionRounds.Count.ToString(),
             });
@@ -206,7 +206,7 @@ public sealed class WordGuessGame : GameBase, IChatConsumer {
 
     private void RecordHistory(string? sessionWinner) {
         var result = new WordGuessResult(
-            sessionWinner != null ? Display(sessionWinner) : null,
+            sessionWinner != null ? PlayerName.Short(sessionWinner) : null,
             Cfg.Questions.Count,
             new List<WordGuessRoundResult>(_state.SessionRounds),
             DateTime.Now);
@@ -224,11 +224,6 @@ public sealed class WordGuessGame : GameBase, IChatConsumer {
     private void PublishPhrase(string categoryId, Dictionary<string, string> vars) {
         var text = GetPhrase(categoryId, vars);
         if (text != null) Publish(text);
-    }
-
-    private static string Display(string fullName) {
-        var at = fullName.IndexOf('@');
-        return at >= 0 ? fullName[..at] : fullName;
     }
 
     internal Configuration.WordGuessQuestion? CurrentQuestion =>

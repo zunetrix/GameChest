@@ -68,13 +68,13 @@ public sealed class KingOfTheHillGame : GameBase {
             _state.King = topRoller;
             _state.KingHoldCount = 1;
             PublishPhrase(KingOfTheHillPhraseCategories.NewKing, new Dictionary<string, string> {
-                ["player"] = ShortName(topRoller), ["roll"] = maxRoll.ToString(),
+                ["player"] = PlayerName.Short(topRoller), ["roll"] = maxRoll.ToString(),
             });
         } else {
             // King defends
             _state.KingHoldCount++;
             var vars = new Dictionary<string, string> {
-                ["king"] = ShortName(_state.King),
+                ["king"] = PlayerName.Short(_state.King),
                 ["roll"] = maxRoll.ToString(),
                 ["holds"] = _state.KingHoldCount.ToString(),
                 ["target"] = Cfg.CrownHoldRounds.ToString(),
@@ -120,7 +120,7 @@ public sealed class KingOfTheHillGame : GameBase {
         PublishPhrase(KingOfTheHillPhraseCategories.RoundStart, new Dictionary<string, string> {
             ["round"] = _state.Round.ToString(),
             ["maxroll"] = Cfg.MaxRoll.ToString(),
-            ["king"] = _state.King != null ? ShortName(_state.King) : "none",
+            ["king"] = _state.King != null ? PlayerName.Short(_state.King) : "none",
             ["holds"] = _state.KingHoldCount.ToString(),
             ["target"] = Cfg.CrownHoldRounds.ToString(),
         });
@@ -131,7 +131,7 @@ public sealed class KingOfTheHillGame : GameBase {
         _state.Phase = KingOfTheHillPhase.Done;
         if (_state.King != null) {
             PublishPhrase(KingOfTheHillPhraseCategories.GameEnd, new Dictionary<string, string> {
-                ["winner"] = ShortName(_state.King),
+                ["winner"] = PlayerName.Short(_state.King),
                 ["holds"] = _state.KingHoldCount.ToString(),
             });
             MatchHistory.Add(new KingOfTheHillResult(_state.King, _state.Round, DateTime.Now));
@@ -144,5 +144,4 @@ public sealed class KingOfTheHillGame : GameBase {
         if (text != null) Publish(text);
     }
 
-    private static string ShortName(string s) { var i = s.IndexOf('@'); return i >= 0 ? s[..i] : s; }
 }

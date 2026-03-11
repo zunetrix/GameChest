@@ -65,12 +65,8 @@ public static class ListExtensions {
     /// Returns true if the list contains a player name that matches, ignoring case and @World suffix.
     /// </summary>
     public static bool ContainsPlayer(this IEnumerable<string> list, string name) {
-        var nameBase = name.Contains('@') ? name[..name.IndexOf('@')] : name;
-        foreach (var entry in list) {
-            if (string.Equals(entry, name, StringComparison.OrdinalIgnoreCase)) return true;
-            var entryBase = entry.Contains('@') ? entry[..entry.IndexOf('@')] : entry;
-            if (string.Equals(entryBase, nameBase, StringComparison.OrdinalIgnoreCase)) return true;
-        }
+        foreach (var entry in list)
+            if (PlayerName.Matches(entry, name)) return true;
         return false;
     }
 

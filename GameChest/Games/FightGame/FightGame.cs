@@ -60,8 +60,8 @@ public sealed class FightGame : GameBase, IChatConsumer {
         if (!_state.IsActive) return;
 
         var vars = new Dictionary<string, string> {
-            ["playerA"] = _state.PlayerA != null ? Display(_state.PlayerA) : "",
-            ["playerB"] = _state.PlayerB != null ? Display(_state.PlayerB) : "",
+            ["playerA"] = _state.PlayerA != null ? PlayerName.Short(_state.PlayerA.FullName) : "",
+            ["playerB"] = _state.PlayerB != null ? PlayerName.Short(_state.PlayerB.FullName) : "",
         };
         PublishPhrase(FightGamePhraseCategories.FightCanceled, vars);
         _state.Reset();
@@ -130,7 +130,7 @@ public sealed class FightGame : GameBase, IChatConsumer {
 
         if (!isOpenRegistration && (!isManualSource || _state.Phase != FightPhase.Idle)) return false;
         if (_state.RegisteredFighters.Count >= 2) return false;
-        if (_state.RegisteredFighters.Exists(f => NamesMatch(f.FullName, fullName))) return false;
+        if (_state.RegisteredFighters.Exists(f => PlayerName.Matches(f.FullName, fullName))) return false;
 
         // for manual entry
         if (Plugin.Config.IsBlockListActive && Plugin.Config.Blocklist.ContainsPlayer(fullName)) {
@@ -143,9 +143,9 @@ public sealed class FightGame : GameBase, IChatConsumer {
 
         if (isOpenRegistration) {
             var vars = new Dictionary<string, string> {
-                ["player"] = Display(fullName),
-                ["playerA"] = count >= 1 ? Display(_state.RegisteredFighters[0].FullName) : "",
-                ["playerB"] = count >= 2 ? Display(_state.RegisteredFighters[1].FullName) : "",
+                ["player"] = PlayerName.Short(fullName),
+                ["playerA"] = count >= 1 ? PlayerName.Short(_state.RegisteredFighters[0].FullName) : "",
+                ["playerB"] = count >= 2 ? PlayerName.Short(_state.RegisteredFighters[1].FullName) : "",
             };
             PublishPhrase(FightGamePhraseCategories.RegistrationEntry, vars);
 
@@ -166,8 +166,8 @@ public sealed class FightGame : GameBase, IChatConsumer {
             return;
         }
 
-        bool isA = NamesMatch(roll.PlayerName, _state.PlayerA.FullName);
-        bool isB = NamesMatch(roll.PlayerName, _state.PlayerB.FullName);
+        bool isA = PlayerName.Matches(roll.PlayerName, _state.PlayerA.FullName);
+        bool isB = PlayerName.Matches(roll.PlayerName, _state.PlayerB.FullName);
         DalamudApi.PluginLog.Debug($"Initiative roll: player={roll.PlayerName} isA={isA}({_state.PlayerA.FullName}) isB={isB}({_state.PlayerB.FullName})");
         if (!isA && !isB) return;
 
@@ -191,8 +191,8 @@ public sealed class FightGame : GameBase, IChatConsumer {
             var tieVars = new Dictionary<string, string> {
                 ["rollA"] = rA.ToString(),
                 ["rollB"] = rB.ToString(),
-                ["playerA"] = Display(_state.PlayerA),
-                ["playerB"] = Display(_state.PlayerB),
+                ["playerA"] = PlayerName.Short(_state.PlayerA.FullName),
+                ["playerB"] = PlayerName.Short(_state.PlayerB.FullName),
                 ["max"] = Cfg.MaxRollAllowed.ToString(),
             };
             PublishPhrase(FightGamePhraseCategories.InitiativeTie, tieVars);
@@ -209,12 +209,12 @@ public sealed class FightGame : GameBase, IChatConsumer {
         _state.InactivityReminderAt = DateTime.UtcNow.AddSeconds(Cfg.InactivityReminderSeconds);
 
         var vars = new Dictionary<string, string> {
-            ["attacker"] = Display(attacker),
-            ["defender"] = Display(defender),
+            ["attacker"] = PlayerName.Short(attacker.FullName),
+            ["defender"] = PlayerName.Short(defender.FullName),
             ["rollA"] = rA.ToString(),
             ["rollB"] = rB.ToString(),
-            ["playerA"] = Display(_state.PlayerA),
-            ["playerB"] = Display(_state.PlayerB),
+            ["playerA"] = PlayerName.Short(_state.PlayerA.FullName),
+            ["playerB"] = PlayerName.Short(_state.PlayerB.FullName),
             ["max"] = Cfg.MaxRollAllowed.ToString(),
         };
         PublishPhrase(FightGamePhraseCategories.InitiativeResult, vars);
@@ -224,7 +224,7 @@ public sealed class FightGame : GameBase, IChatConsumer {
         if (_state.CurrentAttacker == null || _state.CurrentDefender == null) return;
         if (roll.OutOf != Cfg.MaxRollAllowed) return;
 
-        if (!NamesMatch(roll.PlayerName, _state.CurrentAttacker.FullName)) {
+        if (!PlayerName.Matches(roll.PlayerName, _state.CurrentAttacker.FullName)) {
             SendOutOfTurnNotice(roll.PlayerName);
             return;
         }
@@ -265,9 +265,9 @@ public sealed class FightGame : GameBase, IChatConsumer {
 
         if (defender.Health <= (int)Math.Ceiling(defender.MaxHealth * 0.2f)) {
             var nearDeathVars = new Dictionary<string, string> {
-                ["player"] = Display(defender),
-                ["attacker"] = Display(attacker),
-                ["defender"] = Display(defender),
+                ["player"] = PlayerName.Short(defender.FullName),
+                ["attacker"] = PlayerName.Short(attacker.FullName),
+                ["defender"] = PlayerName.Short(defender.FullName),
                 ["health"] = defender.Health.ToString(),
             };
             PublishPhrase(FightGamePhraseCategories.NearDeath, nearDeathVars);
@@ -290,16 +290,16 @@ public sealed class FightGame : GameBase, IChatConsumer {
 
     private void EndFight(FighterState winner, FighterState loser) {
         var vars = new Dictionary<string, string> {
-            ["winner"] = Display(winner),
-            ["loser"] = Display(loser),
-            ["attacker"] = Display(winner),
-            ["defender"] = Display(loser),
+            ["winner"] = PlayerName.Short(winner.FullName),
+            ["loser"] = PlayerName.Short(loser.FullName),
+            ["attacker"] = PlayerName.Short(winner.FullName),
+            ["defender"] = PlayerName.Short(loser.FullName),
             ["attackerHealth"] = winner.Health.ToString(),
             ["defenderHealth"] = loser.Health.ToString(),
             ["max"] = Cfg.MaxRollAllowed.ToString(),
         };
         PublishPhrase(FightGamePhraseCategories.FightEnd, vars);
-        MatchHistory.Insert(0, new FightResult(Display(winner.FullName), Display(loser.FullName), winner.Health, DateTime.Now));
+        MatchHistory.Insert(0, new FightResult(PlayerName.Short(winner.FullName), PlayerName.Short(loser.FullName), winner.Health, DateTime.Now));
         if (MatchHistory.Count > 10) MatchHistory.RemoveAtSafe(MatchHistory.Count - 1);
         _state.Phase = FightPhase.Finished;
     }
@@ -311,8 +311,8 @@ public sealed class FightGame : GameBase, IChatConsumer {
             (now - last).TotalSeconds < Cfg.OutOfTurnCooldownSeconds) return;
 
         _outOfTurnCooldowns[rollerName] = now;
-        var display = Display(rollerName);
-        var attackerDisplay = Display(_state.CurrentAttacker);
+        var display = PlayerName.Short(rollerName);
+        var attackerDisplay = PlayerName.Short(_state.CurrentAttacker.FullName);
         Publish($"Not so fast, {display}! It's {attackerDisplay}'s turn!");
     }
 
@@ -335,7 +335,7 @@ public sealed class FightGame : GameBase, IChatConsumer {
                     && now >= _state.InactivityReminderAt.Value
                     && _state.CurrentAttacker != null) {
                     var vars = new Dictionary<string, string> {
-                        ["attacker"] = Display(_state.CurrentAttacker),
+                        ["attacker"] = PlayerName.Short(_state.CurrentAttacker.FullName),
                         ["max"] = Cfg.MaxRollAllowed.ToString(),
                     };
                     PublishPhrase(FightGamePhraseCategories.InactivityReminder, vars);
@@ -356,11 +356,11 @@ public sealed class FightGame : GameBase, IChatConsumer {
         Dictionary<string, string>? extra = null) {
         var vars = new Dictionary<string, string>();
         if (playerA != null) {
-            vars["playerA"] = Display(playerA);
+            vars["playerA"] = PlayerName.Short(playerA.FullName);
             vars["attackerHealth"] = playerA.Health.ToString();
         }
         if (playerB != null) {
-            vars["playerB"] = Display(playerB);
+            vars["playerB"] = PlayerName.Short(playerB.FullName);
             vars["defenderHealth"] = playerB.Health.ToString();
         }
         if (extra != null)
@@ -372,8 +372,8 @@ public sealed class FightGame : GameBase, IChatConsumer {
         FighterState attacker, FighterState defender, int damage,
         Dictionary<string, string>? extra = null) {
         var vars = new Dictionary<string, string> {
-            ["attacker"] = Display(attacker),
-            ["defender"] = Display(defender),
+            ["attacker"] = PlayerName.Short(attacker.FullName),
+            ["defender"] = PlayerName.Short(defender.FullName),
             ["damage"] = damage.ToString(),
             ["health"] = defender.Health.ToString(),
             ["defenderHealth"] = defender.Health.ToString(),
@@ -384,19 +384,6 @@ public sealed class FightGame : GameBase, IChatConsumer {
         return vars;
     }
 
-    private static string Display(FighterState fighter) => Display(fighter.FullName);
-
-    private static string Display(string fullName) {
-        var at = fullName.IndexOf('@');
-        return at >= 0 ? fullName[..at] : fullName;
-    }
-
-    private static bool NamesMatch(string a, string b) {
-        if (string.Equals(a, b, StringComparison.OrdinalIgnoreCase)) return true;
-        var aBase = a.Contains('@') ? a[..a.IndexOf('@')] : a;
-        var bBase = b.Contains('@') ? b[..b.IndexOf('@')] : b;
-        return string.Equals(aBase, bBase, StringComparison.OrdinalIgnoreCase);
-    }
 
     public void SimulateRoll() {
         var outOf = Cfg.MaxRollAllowed;

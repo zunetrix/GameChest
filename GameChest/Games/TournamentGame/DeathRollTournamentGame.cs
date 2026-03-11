@@ -157,8 +157,8 @@ public sealed class DeathRollTournamentGame : GameBase {
         _state.Phase = DeathRollTournamentPhase.Match;
 
         var vars = new Dictionary<string, string> {
-            ["player1"] = Display(_state.MatchPlayer1),
-            ["player2"] = Display(_state.MatchPlayer2),
+            ["player1"] = PlayerName.Short(_state.MatchPlayer1),
+            ["player2"] = PlayerName.Short(_state.MatchPlayer2),
             ["round"] = (_state.CurrentRoundIndex + 1).ToString(),
             ["max"] = Cfg.StartingRoll == 999 ? "" : Cfg.StartingRoll.ToString(),
         };
@@ -176,8 +176,8 @@ public sealed class DeathRollTournamentGame : GameBase {
         if (_state.MatchWinner != null) {
             var loser = match.Player1 == _state.MatchWinner ? match.Player2 : match.Player1;
             var vars = new Dictionary<string, string> {
-                ["winner"] = Display(_state.MatchWinner),
-                ["loser"] = Display(loser),
+                ["winner"] = PlayerName.Short(_state.MatchWinner),
+                ["loser"] = PlayerName.Short(loser),
                 ["round"] = (_state.CurrentRoundIndex + 1).ToString(),
             };
             PublishPhrase(DeathRollTournamentPhraseCategories.MatchEnd, vars);
@@ -205,10 +205,10 @@ public sealed class DeathRollTournamentGame : GameBase {
                 _state.Phase = DeathRollTournamentPhase.Done;
                 if (_state.TournamentWinner != null) {
                     var vars = new Dictionary<string, string> {
-                        ["winner"] = Display(_state.TournamentWinner),
+                        ["winner"] = PlayerName.Short(_state.TournamentWinner),
                     };
                     PublishPhrase(DeathRollTournamentPhraseCategories.TournamentEnd, vars);
-                    MatchHistory.Insert(0, new DeathRollTournamentResult(Display(_state.TournamentWinner), _state.RegisteredPlayers.Count(p => p != DeathRollTournamentMatch.PlaceholderPlayer), DateTime.Now));
+                    MatchHistory.Insert(0, new DeathRollTournamentResult(PlayerName.Short(_state.TournamentWinner), _state.RegisteredPlayers.Count(p => p != DeathRollTournamentMatch.PlaceholderPlayer), DateTime.Now));
                     if (MatchHistory.Count > 10) MatchHistory.RemoveAt(MatchHistory.Count - 1);
                 }
                 return;
@@ -306,10 +306,5 @@ public sealed class DeathRollTournamentGame : GameBase {
     private void PublishPhrase(string categoryId, Dictionary<string, string> vars) {
         var text = GetPhrase(categoryId, vars);
         if (text != null) Publish(text);
-    }
-
-    private static string Display(string fullName) {
-        var at = fullName.IndexOf('@');
-        return at >= 0 ? fullName[..at] : fullName;
     }
 }

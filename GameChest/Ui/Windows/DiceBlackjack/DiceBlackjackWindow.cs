@@ -134,7 +134,7 @@ public class DiceBlackjackWindow : Window {
 
         if (current != null) {
             using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Yellow))
-                ImGui.Text($"{ShortName(current.Name)}'s turn");
+                ImGui.Text($"{PlayerName.Short(current.Name)}'s turn");
             if (current.DealCount < 2) {
                 ImGui.SameLine();
                 using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Gray))
@@ -179,7 +179,7 @@ public class DiceBlackjackWindow : Window {
         if (state.Winner != null) {
             ImGui.SameLine(0, 20f * ImGuiHelpers.GlobalScale);
             using (ImRaii.PushColor(ImGuiCol.Text, Plugin.Config.HighlightColor))
-                ImGui.Text($"Champion: {ShortName(state.Winner)}");
+                ImGui.Text($"Champion: {PlayerName.Short(state.Winner)}");
         }
 
         ImGui.Spacing();
@@ -215,7 +215,7 @@ public class DiceBlackjackWindow : Window {
             ImGui.TableNextRow();
             ImGui.TableNextColumn();
             using (ImRaii.PushColor(ImGuiCol.Text, isCurrent ? Style.Colors.Yellow : Vector4.One))
-                ImGui.Text(isCurrent ? $"\uE05D {ShortName(p.Name)}" : ShortName(p.Name));
+                ImGui.Text(isCurrent ? $"\uE05D {PlayerName.Short(p.Name)}" : PlayerName.Short(p.Name));
             ImGui.TableNextColumn();
             ImGui.Text(cards);
             ImGui.TableNextColumn();
@@ -238,5 +238,4 @@ public class DiceBlackjackWindow : Window {
         using (ImRaii.PushColor(ImGuiCol.Text, color)) ImGui.Text(label);
     }
 
-    private static string ShortName(string s) { var i = s.IndexOf('@'); return i >= 0 ? s[..i] : s; }
 }

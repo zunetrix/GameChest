@@ -164,7 +164,7 @@ public class DeathRollWindow : Window {
             ImGui.TableNextColumn();
             var isLoser = state.Phase == DeathRollPhase.Done && isLast;
             using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Red, isLoser))
-                ImGui.Text(ShortName(entry.PlayerName));
+                ImGui.Text(PlayerName.Short(entry.PlayerName));
 
             ImGui.TableNextColumn();
             var rollColor = entry.Result == 1 ? Style.Colors.Red : Plugin.Config.HighlightColor;
@@ -220,8 +220,4 @@ public class DeathRollWindow : Window {
         }
     }
 
-    private static string ShortName(string fullName) {
-        var at = fullName.IndexOf('@');
-        return at >= 0 ? fullName[..at] : fullName;
-    }
 }

@@ -70,7 +70,7 @@ public sealed class HighRollDuelGame : GameBase {
             _state.Players.Remove(loser);
             _state.RoundEliminations.Add(loser);
             PublishPhrase(HighRollDuelPhraseCategories.PlayerEliminated, new Dictionary<string, string> {
-                ["player"] = ShortName(loser),
+                ["player"] = PlayerName.Short(loser),
                 ["roll"] = minRoll.ToString(),
             });
         }
@@ -126,7 +126,7 @@ public sealed class HighRollDuelGame : GameBase {
         _state.Phase = HighRollDuelPhase.Done;
         if (winner != null) {
             PublishPhrase(HighRollDuelPhraseCategories.GameEnd, new Dictionary<string, string> {
-                ["winner"] = ShortName(winner),
+                ["winner"] = PlayerName.Short(winner),
             });
             MatchHistory.Add(new HighRollDuelResult(winner, _state.Round, DateTime.Now));
             if (MatchHistory.Count > 10) MatchHistory.RemoveAt(0);
@@ -138,5 +138,4 @@ public sealed class HighRollDuelGame : GameBase {
         if (text != null) Publish(text);
     }
 
-    private static string ShortName(string s) { var i = s.IndexOf('@'); return i >= 0 ? s[..i] : s; }
 }

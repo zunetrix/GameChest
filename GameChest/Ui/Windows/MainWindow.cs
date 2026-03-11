@@ -153,7 +153,7 @@ public class MainWindow : Window {
         switch (state.Phase) {
             case FightPhase.Combat when state.CurrentAttacker != null && state.PlayerA != null && state.PlayerB != null:
                 using (ImRaii.PushColor(ImGuiCol.Text, Plugin.Config.HighlightColor))
-                    ImGui.Text($"  Turn ({state.TurnNumber}): {ShortName(state.CurrentAttacker.FullName)}");
+                    ImGui.Text($"  Turn ({state.TurnNumber}): {PlayerName.Short(state.CurrentAttacker.FullName)}");
                 using (var table = ImRaii.Table("##MHPTable", 2, ImGuiTableFlags.None)) {
                     if (table) {
                         ImGui.TableSetupColumn("##MHPName", ImGuiTableColumnFlags.WidthFixed, 120f * ImGuiHelpers.GlobalScale);
@@ -184,7 +184,7 @@ public class MainWindow : Window {
         var col = frac > 0.5f ? Style.Colors.GrassGreen : frac > 0.2f ? Style.Colors.Orange : Style.Colors.Red;
 
         ImGui.TableNextColumn();
-        var name = ShortName(fighter.FullName);
+        var name = PlayerName.Short(fighter.FullName);
         if (isCurrentTurn) {
             using (ImRaii.PushColor(ImGuiCol.Text, Plugin.Config.HighlightColor))
                 ImGui.Text($"\uE05D {name}");
@@ -220,7 +220,7 @@ public class MainWindow : Window {
                 var first = state.Participants.First;
                 if (first != null) {
                     using (ImRaii.PushColor(ImGuiCol.Text, Plugin.Config.HighlightColor))
-                        ImGui.Text($"  Leading: \uE05D {ShortName(first.FullName)} ({first.RollResult})");
+                        ImGui.Text($"  Leading: \uE05D {PlayerName.Short(first.FullName)} ({first.RollResult})");
                 }
             } else {
                 using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Gray))
@@ -256,7 +256,7 @@ public class MainWindow : Window {
                     using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Yellow))
                         ImGui.Text("[DONE]");
                     if (state.Winner != null)
-                        ImGui.Text($"  Winner: {ShortName(state.Winner)}");
+                        ImGui.Text($"  Winner: {PlayerName.Short(state.Winner)}");
                     break;
                 default:
                     using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Gray))
@@ -299,11 +299,11 @@ public class MainWindow : Window {
                     break;
                 case DeathRollTournamentPhase.Match when state.MatchPlayer1 != null && state.MatchPlayer2 != null:
                     using (ImRaii.PushColor(ImGuiCol.Text, Plugin.Config.HighlightColor))
-                        ImGui.Text($"  {ShortName(state.MatchPlayer1)} vs {ShortName(state.MatchPlayer2)}");
+                        ImGui.Text($"  {PlayerName.Short(state.MatchPlayer1)} vs {PlayerName.Short(state.MatchPlayer2)}");
                     break;
                 case DeathRollTournamentPhase.Done when state.TournamentWinner != null:
                     using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Yellow))
-                        ImGui.Text($"  Champion: {ShortName(state.TournamentWinner)}");
+                        ImGui.Text($"  Champion: {PlayerName.Short(state.TournamentWinner)}");
                     break;
                 default:
                     using (ImRaii.PushColor(ImGuiCol.Text, Style.Components.TextDisabled))
@@ -382,7 +382,7 @@ public class MainWindow : Window {
                     break;
                 case HighRollDuelPhase.Done when state.Winner != null:
                     using (ImRaii.PushColor(ImGuiCol.Text, Plugin.Config.HighlightColor))
-                        ImGui.Text($"  Winner: {ShortName(state.Winner)}");
+                        ImGui.Text($"  Winner: {PlayerName.Short(state.Winner)}");
                     break;
                 default:
                     using (ImRaii.PushColor(ImGuiCol.Text, Style.Components.TextDisabled))
@@ -421,11 +421,11 @@ public class MainWindow : Window {
                     break;
                 case TavernBrawlPhase.PendingChoice when state.HighestRoller != null:
                     using (ImRaii.PushColor(ImGuiCol.Text, Plugin.Config.HighlightColor))
-                        ImGui.Text($"  {ShortName(state.HighestRoller)} chooses");
+                        ImGui.Text($"  {PlayerName.Short(state.HighestRoller)} chooses");
                     break;
                 case TavernBrawlPhase.Done when state.Winner != null:
                     using (ImRaii.PushColor(ImGuiCol.Text, Plugin.Config.HighlightColor))
-                        ImGui.Text($"  Winner: {ShortName(state.Winner)}");
+                        ImGui.Text($"  Winner: {PlayerName.Short(state.Winner)}");
                     break;
                 default:
                     using (ImRaii.PushColor(ImGuiCol.Text, Style.Components.TextDisabled))
@@ -464,11 +464,11 @@ public class MainWindow : Window {
                     break;
                 case DiceRoyalePhase.PendingElimination when state.CurrentEliminator != null:
                     using (ImRaii.PushColor(ImGuiCol.Text, Plugin.Config.HighlightColor))
-                        ImGui.Text($"  {ShortName(state.CurrentEliminator)} eliminates");
+                        ImGui.Text($"  {PlayerName.Short(state.CurrentEliminator)} eliminates");
                     break;
                 case DiceRoyalePhase.Done when state.Winner != null:
                     using (ImRaii.PushColor(ImGuiCol.Text, Plugin.Config.HighlightColor))
-                        ImGui.Text($"  Winner: {ShortName(state.Winner)}");
+                        ImGui.Text($"  Winner: {PlayerName.Short(state.Winner)}");
                     break;
                 default:
                     using (ImRaii.PushColor(ImGuiCol.Text, Style.Components.TextDisabled))
@@ -503,11 +503,11 @@ public class MainWindow : Window {
                     break;
                 case KingOfTheHillPhase.Rolling when state.King != null:
                     using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Yellow))
-                        ImGui.Text($"  King: {ShortName(state.King)} ({state.KingHoldCount}/{Plugin.Config.KingOfTheHill.CrownHoldRounds})");
+                        ImGui.Text($"  King: {PlayerName.Short(state.King)} ({state.KingHoldCount}/{Plugin.Config.KingOfTheHill.CrownHoldRounds})");
                     break;
                 case KingOfTheHillPhase.Done when state.Winner != null:
                     using (ImRaii.PushColor(ImGuiCol.Text, Plugin.Config.HighlightColor))
-                        ImGui.Text($"  Champion: {ShortName(state.Winner)}");
+                        ImGui.Text($"  Champion: {PlayerName.Short(state.Winner)}");
                     break;
                 default:
                     using (ImRaii.PushColor(ImGuiCol.Text, Style.Components.TextDisabled))
@@ -546,11 +546,11 @@ public class MainWindow : Window {
                     break;
                 case AssassinPhase.Attacking when state.CurrentAttacker != null && state.CurrentDefender != null:
                     using (ImRaii.PushColor(ImGuiCol.Text, Plugin.Config.HighlightColor))
-                        ImGui.Text($"  {ShortName(state.CurrentAttacker)} vs {ShortName(state.CurrentDefender)}");
+                        ImGui.Text($"  {PlayerName.Short(state.CurrentAttacker)} vs {PlayerName.Short(state.CurrentDefender)}");
                     break;
                 case AssassinPhase.Done when state.Winner != null:
                     using (ImRaii.PushColor(ImGuiCol.Text, Plugin.Config.HighlightColor))
-                        ImGui.Text($"  Winner: {ShortName(state.Winner)}");
+                        ImGui.Text($"  Winner: {PlayerName.Short(state.Winner)}");
                     break;
                 default:
                     using (ImRaii.PushColor(ImGuiCol.Text, Style.Components.TextDisabled))
@@ -558,11 +558,6 @@ public class MainWindow : Window {
                     break;
             }
         }
-    }
-
-    private static string ShortName(string fullName) {
-        var at = fullName.IndexOf('@');
-        return at >= 0 ? fullName[..at] : fullName;
     }
 
     private void DrawDiceBlackjackCard() {
@@ -591,7 +586,7 @@ public class MainWindow : Window {
                     break;
                 case DiceBlackjackPhase.PlayerTurns when state.CurrentPlayer != null:
                     using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Yellow))
-                        ImGui.Text($"  {ShortName(state.CurrentPlayer.Name)}'s turn ({state.CurrentPlayerIndex + 1}/{state.Players.Count})");
+                        ImGui.Text($"  {PlayerName.Short(state.CurrentPlayer.Name)}'s turn ({state.CurrentPlayerIndex + 1}/{state.Players.Count})");
                     break;
                 case DiceBlackjackPhase.DealerTurn:
                     using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Orange))
@@ -599,7 +594,7 @@ public class MainWindow : Window {
                     break;
                 case DiceBlackjackPhase.Done when state.Winner != null:
                     using (ImRaii.PushColor(ImGuiCol.Text, Plugin.Config.HighlightColor))
-                        ImGui.Text($"  Winner: {ShortName(state.Winner)}");
+                        ImGui.Text($"  Winner: {PlayerName.Short(state.Winner)}");
                     break;
                 default:
                     using (ImRaii.PushColor(ImGuiCol.Text, Style.Components.TextDisabled))

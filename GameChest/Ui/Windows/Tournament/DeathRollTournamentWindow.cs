@@ -234,8 +234,8 @@ public class DeathRollTournamentWindow : Window {
             if (ImGui.CollapsingHeader(header)) {
                 ImGui.Indent();
                 foreach (var m in round.Matches) {
-                    var winStr = m.Winner != null ? $"  → {ShortName(m.Winner)}" : "";
-                    ImGui.Text($"{ShortName(m.Player1)} vs {ShortName(m.Player2)}{winStr}");
+                    var winStr = m.Winner != null ? $"  → {PlayerName.Short(m.Winner)}" : "";
+                    ImGui.Text($"{PlayerName.Short(m.Player1)} vs {PlayerName.Short(m.Player2)}{winStr}");
                 }
                 ImGui.Unindent();
             }
@@ -253,7 +253,7 @@ public class DeathRollTournamentWindow : Window {
         ImGui.Text($"Round {round.RoundNumber} - Match {matchNum}/{totalMatches}:");
         ImGui.SameLine();
         using (ImRaii.PushColor(ImGuiCol.Text, Plugin.Config.HighlightColor))
-            ImGui.Text($"{ShortName(state.MatchPlayer1)} vs {ShortName(state.MatchPlayer2)}");
+            ImGui.Text($"{PlayerName.Short(state.MatchPlayer1)} vs {PlayerName.Short(state.MatchPlayer2)}");
 
         ImGui.Spacing();
 
@@ -269,7 +269,7 @@ public class DeathRollTournamentWindow : Window {
         ImGui.Spacing();
         if (state.MatchWinner != null) {
             using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Green))
-                ImGui.Text($"\uE05D Match Winner: {ShortName(state.MatchWinner)}");
+                ImGui.Text($"\uE05D Match Winner: {PlayerName.Short(state.MatchWinner)}");
             ImGui.Spacing();
             using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessnNormal)
                 .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonSuccessHovered)
@@ -281,10 +281,10 @@ public class DeathRollTournamentWindow : Window {
             using (ImRaii.PushColor(ImGuiCol.Text, Style.Components.TextDisabled))
                 ImGui.Text("Forfeit:");
             ImGui.SameLine();
-            if (ImGui.Button($"→ {ShortName(state.MatchPlayer1)}##TnForf1"))
+            if (ImGui.Button($"→ {PlayerName.Short(state.MatchPlayer1)}##TnForf1"))
                 tn.ForfeitToPlayer(state.MatchPlayer1);
             ImGui.SameLine();
-            if (ImGui.Button($"→ {ShortName(state.MatchPlayer2)}##TnForf2"))
+            if (ImGui.Button($"→ {PlayerName.Short(state.MatchPlayer2)}##TnForf2"))
                 tn.ForfeitToPlayer(state.MatchPlayer2);
         }
     }
@@ -313,7 +313,7 @@ public class DeathRollTournamentWindow : Window {
             ImGui.TableNextColumn();
             var isLoser = state.MatchWinner != null && isLast;
             using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Red, isLoser))
-                ImGui.Text(ShortName(entry.PlayerName));
+                ImGui.Text(PlayerName.Short(entry.PlayerName));
             ImGui.TableNextColumn();
             var rollColor = entry.Result == 1 ? Style.Colors.Red : Plugin.Config.HighlightColor;
             using (ImRaii.PushColor(ImGuiCol.Text, rollColor))
@@ -380,9 +380,4 @@ public class DeathRollTournamentWindow : Window {
         }
     }
 
-    private static string ShortName(string fullName) {
-        if (fullName == DeathRollTournamentMatch.PlaceholderPlayer) return DeathRollTournamentMatch.PlaceholderPlayer;
-        var at = fullName.IndexOf('@');
-        return at >= 0 ? fullName[..at] : fullName;
-    }
 }

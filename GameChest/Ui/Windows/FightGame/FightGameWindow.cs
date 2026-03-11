@@ -216,10 +216,10 @@ public class FightGameWindow : Window {
                 ImGui.Text(r.PlayedAt.ToString("HH:mm"));
             ImGui.TableNextColumn();
             using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Green))
-                ImGui.Text(ShortName(r.Winner));
+                ImGui.Text(PlayerName.Short(r.Winner));
             ImGui.TableNextColumn();
             using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Red))
-                ImGui.Text(ShortName(r.Loser));
+                ImGui.Text(PlayerName.Short(r.Loser));
             ImGui.TableNextColumn();
             using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Gray))
                 ImGui.Text($"{r.WinnerHp}");
@@ -279,7 +279,7 @@ public class FightGameWindow : Window {
 
             ImGui.TableNextColumn();
             if (occupied) {
-                ImGui.Text(ShortName(fighter!.FullName));
+                ImGui.Text(PlayerName.Short(fighter!.FullName));
                 ImGui.SameLine();
                 using (ImRaii.PushColor(ImGuiCol.Text, Style.Components.TextDisabled))
                     ImGui.Text($"({fighter.Source})");
@@ -321,7 +321,7 @@ public class FightGameWindow : Window {
     }
 
     private static void DrawInitiativeRow(string fullName, int? roll) {
-        ImGui.Text($"  {ShortName(fullName)}");
+        ImGui.Text($"  {PlayerName.Short(fullName)}");
         ImGui.SameLine();
         if (roll.HasValue) {
             using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Green))
@@ -337,7 +337,7 @@ public class FightGameWindow : Window {
 
         if (state.CurrentAttacker != null) {
             using (ImRaii.PushColor(ImGuiCol.Text, Plugin.Config.HighlightColor))
-                ImGui.Text($"  Turn ({state.TurnNumber}): {ShortName(state.CurrentAttacker.FullName)}");
+                ImGui.Text($"  Turn ({state.TurnNumber}): {PlayerName.Short(state.CurrentAttacker.FullName)}");
             ImGui.Spacing();
         }
 
@@ -364,7 +364,7 @@ public class FightGameWindow : Window {
                     : Style.Colors.Red;
 
         ImGui.TableNextColumn();
-        var name = ShortName(fighter.FullName);
+        var name = PlayerName.Short(fighter.FullName);
         if (isCurrentTurn) {
             using (ImRaii.PushColor(ImGuiCol.Text, Plugin.Config.HighlightColor))
                 ImGui.Text($"\uE05D {name}");
@@ -392,8 +392,4 @@ public class FightGameWindow : Window {
         }
     }
 
-    private static string ShortName(string fullName) {
-        var at = fullName.IndexOf('@');
-        return at >= 0 ? fullName[..at] : fullName;
-    }
 }

@@ -110,7 +110,7 @@ public class DiceRoyaleWindow : Window {
 
         if (state.Phase == DiceRoyalePhase.PendingElimination) {
             using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Orange))
-                ImGui.Text($"{ShortName(state.CurrentEliminator ?? "")} must eliminate a player:");
+                ImGui.Text($"{PlayerName.Short(state.CurrentEliminator ?? "")} must eliminate a player:");
             ImGui.Spacing();
 
             var eligible = state.Players
@@ -118,7 +118,7 @@ public class DiceRoyaleWindow : Window {
                 .ToList();
 
             foreach (var p in eligible) {
-                if (ImGui.Button($"Eliminate {ShortName(p)}##DrElim_{p}"))
+                if (ImGui.Button($"Eliminate {PlayerName.Short(p)}##DrElim_{p}"))
                     game.EliminateByChoice(p);
             }
             return;
@@ -126,7 +126,7 @@ public class DiceRoyaleWindow : Window {
 
         if (state.Phase == DiceRoyalePhase.Done && state.Winner != null) {
             using (ImRaii.PushColor(ImGuiCol.Text, Plugin.Config.HighlightColor))
-                ImGui.Text($"Winner: {ShortName(state.Winner)}");
+                ImGui.Text($"Winner: {PlayerName.Short(state.Winner)}");
         }
     }
 
@@ -139,7 +139,7 @@ public class DiceRoyaleWindow : Window {
         ImGui.TableHeadersRow();
         foreach (var p in state.Players) {
             ImGui.TableNextRow();
-            ImGui.TableNextColumn(); ImGui.Text(ShortName(p));
+            ImGui.TableNextColumn(); ImGui.Text(PlayerName.Short(p));
             ImGui.TableNextColumn();
             if (state.CurrentRoundRolls.TryGetValue(p, out var roll)) {
                 var color = roll <= 20 ? Style.Colors.Red : roll <= 60 ? Style.Colors.Gray : roll <= 90 ? Style.Colors.Green : Style.Colors.Yellow;
@@ -193,5 +193,4 @@ public class DiceRoyaleWindow : Window {
         using (ImRaii.PushColor(ImGuiCol.Text, color)) ImGui.Text(label);
     }
 
-    private static string ShortName(string s) { var i = s.IndexOf('@'); return i >= 0 ? s[..i] : s; }
 }

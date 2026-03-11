@@ -92,7 +92,7 @@ public static class RegistrationPanel {
                 ImGui.Text($"{i + 1}");
 
             ImGui.TableNextColumn();
-            ImGui.Text(_showFullName ? p : ShortName(p));
+            ImGui.Text(_showFullName ? p : PlayerName.Short(p));
 
             ImGui.TableNextColumn();
             using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonDangerNormal)
@@ -121,8 +121,4 @@ public static class RegistrationPanel {
         }
     }
 
-    private static string ShortName(string s) {
-        var i = s.IndexOf('@');
-        return i >= 0 ? s[..i] : s;
-    }
 }

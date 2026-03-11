@@ -179,7 +179,7 @@ public class WordGuessWindow : Window {
                 ImGui.Spacing();
                 if (state.RoundWinner != null) {
                     using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Green))
-                        ImGui.Text($"Winner: {ShortName(state.RoundWinner)}");
+                        ImGui.Text($"Winner: {PlayerName.Short(state.RoundWinner)}");
                 } else {
                     using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Red))
                         ImGui.Text("No winner (timeout / skipped)");
@@ -215,7 +215,7 @@ public class WordGuessWindow : Window {
                     ImGui.Text($"{i + 1}");
                     ImGui.TableNextColumn();
                     using (ImRaii.PushColor(ImGuiCol.Text, i == 0 ? Plugin.Config.HighlightColor : Style.Colors.White))
-                        ImGui.Text(ShortName(ranked[i].Key));
+                        ImGui.Text(PlayerName.Short(ranked[i].Key));
                     ImGui.TableNextColumn();
                     ImGui.Text($"{ranked[i].Value}");
                 }
@@ -248,7 +248,7 @@ public class WordGuessWindow : Window {
                     ImGui.TableNextColumn();
                     if (r.Winner != null) {
                         using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Green))
-                            ImGui.Text(ShortName(r.Winner));
+                            ImGui.Text(PlayerName.Short(r.Winner));
                     } else {
                         using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Red))
                             ImGui.Text("-");
@@ -305,7 +305,7 @@ public class WordGuessWindow : Window {
                         ImGui.TableNextColumn();
                         if (rnd.Winner != null) {
                             using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Green))
-                                ImGui.Text(ShortName(rnd.Winner));
+                                ImGui.Text(PlayerName.Short(rnd.Winner));
                         } else {
                             using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Red))
                                 ImGui.Text("-");
@@ -351,8 +351,4 @@ public class WordGuessWindow : Window {
             ImGui.Text(label);
     }
 
-    private static string ShortName(string fullName) {
-        var at = fullName.IndexOf('@');
-        return at >= 0 ? fullName[..at] : fullName;
-    }
 }
