@@ -59,7 +59,11 @@ public class TavernBrawlWindow : Window {
 
         ImGui.SameLine();
         DrawPhaseBadge(state);
-        ImGuiUtil.HelpMarker("Each round: lowest roll is knocked out, highest roll eliminates another player.");
+        ImGuiUtil.HelpMarker("""
+        Each round:
+        lowest roll is knocked out
+        highest roll eliminates another player
+        """);
 
         var spacing = ImGui.GetStyle().ItemSpacing.X;
         var btnW = ImGui.GetFrameHeight();
@@ -84,17 +88,7 @@ public class TavernBrawlWindow : Window {
         }
 
         if (state.Phase == TavernBrawlPhase.Registration) {
-            ImGui.Text($"Players: {state.Players.Count}");
-            ImGui.Spacing();
-            ImGui.SetNextItemWidth(180f * ImGuiHelpers.GlobalScale);
-            ImGui.InputTextWithHint("##TbAddPlayer", "Player name...", ref _addPlayerInput, 64);
-            ImGui.SameLine();
-            using (ImRaii.Disabled(string.IsNullOrWhiteSpace(_addPlayerInput)))
-                if (ImGui.Button("Add##TbAddBtn")) { game.TryRegister(_addPlayerInput.Trim()); _addPlayerInput = string.Empty; }
-            ImGui.Spacing();
-            foreach (var p in state.Players) {
-                using (ImRaii.PushColor(ImGuiCol.Text, Plugin.Config.HighlightColor)) ImGui.Text(ShortName(p));
-            }
+            RegistrationPanel.Draw("Tb", state.Players, ref _addPlayerInput, Plugin.Config.TavernBrawl.MinPlayers, n => game.TryRegister(n), Plugin);
             return;
         }
 

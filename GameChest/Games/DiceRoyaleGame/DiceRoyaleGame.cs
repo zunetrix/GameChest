@@ -88,8 +88,7 @@ public sealed class DiceRoyaleGame : GameBase {
             _state.PendingEliminators.Enqueue(e);
 
         if (_state.PendingEliminators.Count > 0) {
-            _state.CurrentEliminator = _state.PendingEliminators.Dequeue();
-            _state.Phase = DiceRoyalePhase.PendingElimination;
+            AdvanceEliminator();
         } else {
             NextRound();
         }
@@ -106,7 +105,7 @@ public sealed class DiceRoyaleGame : GameBase {
         if (_state.Players.Count <= 1) { EndGame(); return; }
 
         if (_state.PendingEliminators.Count > 0) {
-            _state.CurrentEliminator = _state.PendingEliminators.Dequeue();
+            AdvanceEliminator();
         } else {
             NextRound();
         }
@@ -130,6 +129,19 @@ public sealed class DiceRoyaleGame : GameBase {
         _state.ResetRound();
         _state.Phase = DiceRoyalePhase.Rolling;
         AnnounceRoundStart();
+    }
+
+    /// <summary>Dequeues the next eliminator; auto-eliminates if only one target remains.</summary>
+    private void AdvanceEliminator() {
+        _state.CurrentEliminator = _state.PendingEliminators.Dequeue();
+        _state.Phase = DiceRoyalePhase.PendingElimination;
+
+        var eligible = _state.Players
+            .Where(p => !p.Equals(_state.CurrentEliminator, StringComparison.OrdinalIgnoreCase))
+            .ToList();
+
+        if (eligible.Count == 1)
+            EliminateByChoice(eligible[0]);
     }
 
     private void AnnounceRoundStart() {

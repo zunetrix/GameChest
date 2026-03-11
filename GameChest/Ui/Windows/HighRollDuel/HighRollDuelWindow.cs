@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Numerics;
 
 using Dalamud.Bindings.ImGui;
@@ -88,29 +87,7 @@ public class HighRollDuelWindow : Window {
         ImGui.Spacing();
 
         if (state.Phase == HighRollDuelPhase.Registration) {
-            ImGui.Text($"Players registered: {state.Players.Count}");
-            ImGui.Spacing();
-
-            ImGui.SetNextItemWidth(180f * ImGuiHelpers.GlobalScale);
-            ImGui.InputTextWithHint("##HrdAddPlayer", "Player name...", ref _addPlayerInput, 64);
-            ImGui.SameLine();
-            using (ImRaii.Disabled(string.IsNullOrWhiteSpace(_addPlayerInput)))
-                if (ImGui.Button("Add##HrdAddBtn")) {
-                    game.TryRegister(_addPlayerInput.Trim());
-                    _addPlayerInput = string.Empty;
-                }
-            ImGui.SameLine();
-            if (ImGuiUtil.IconButton(FontAwesomeIcon.Crosshairs, "##HrdTargetReg", "Add targeted player")) {
-                var target = DalamudApi.TargetManager.Target;
-                if (target != null)
-                    game.TryRegister(target.Name.TextValue);
-            }
-
-            ImGui.Spacing();
-            foreach (var p in state.Players) {
-                using (ImRaii.PushColor(ImGuiCol.Text, Plugin.Config.HighlightColor))
-                    ImGui.Text(ShortName(p));
-            }
+            RegistrationPanel.Draw("Hrd", state.Players, ref _addPlayerInput, Plugin.Config.HighRollDuel.MinPlayers, n => game.TryRegister(n), Plugin);
             return;
         }
 
