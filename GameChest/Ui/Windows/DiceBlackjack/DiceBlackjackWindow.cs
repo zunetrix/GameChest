@@ -52,7 +52,10 @@ public class DiceBlackjackWindow : Window {
                     if (ImGui.Button("Stand##DbjStand")) game.Stand();
                 if (!canStand) ImGuiUtil.ToolTip("Player must receive 2 deal cards first.");
             } else if (state.Phase == DiceBlackjackPhase.DealerTurn) {
-                if (ImGui.Button("Draw Dealer Card##DbjDraw")) game.DrawDealerCard();
+                var canDraw = state.DealerStatus == PlayerHandStatus.Active;
+                using (ImRaii.Disabled(!canDraw))
+                    if (ImGui.Button("Draw Dealer Card##DbjDraw"))
+                        Chat.SendMessage($"/random {Plugin.Config.DiceBlackjack.MaxRoll}");
                 ImGui.SameLine();
             }
         }
@@ -60,8 +63,11 @@ public class DiceBlackjackWindow : Window {
         if (state.Phase == DiceBlackjackPhase.DealerTurn) {
             using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonBlueNormal)
                 .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonBlueHovered)
-                .Push(ImGuiCol.ButtonActive, Style.Components.ButtonBlueActive))
-                if (ImGui.Button("Auto Draw##DbjAutoDraw")) game.AutoDrawDealer();
+                .Push(ImGuiCol.ButtonActive, Style.Components.ButtonBlueActive)) {
+                var canStand = state.DealerStatus == PlayerHandStatus.Active;
+                using (ImRaii.Disabled(!canStand))
+                    if (ImGui.Button("Dealer Stands##DbjDealerStand")) game.DealerStand();
+            }
             ImGui.SameLine();
         }
 
@@ -82,6 +88,8 @@ public class DiceBlackjackWindow : Window {
         Each player receives 2 cards, then decides Hit or Stand.
         Reach the target without going over to beat the dealer.
         Players type "stand" in chat, or GM clicks Stand.
+        During dealer turn: click "Draw Dealer Card" to send /random to chat.
+        The roll is captured automatically. Click "Dealer Stands" to stop early.
         """);
 
         var spacing = ImGui.GetStyle().ItemSpacing.X;
@@ -90,7 +98,7 @@ public class DiceBlackjackWindow : Window {
         var btnCount = Plugin.Config.DebugMode ? 3 : 2;
         ImGui.SameLine(ImGui.GetWindowContentRegionMax().X - (btnW * btnCount + spacing * (btnCount - 1) + marginRight));
         if (Plugin.Config.DebugMode) {
-            using (ImRaii.Disabled(state.Phase is not (DiceBlackjackPhase.Registration or DiceBlackjackPhase.PlayerTurns)))
+            using (ImRaii.Disabled(state.Phase is not (DiceBlackjackPhase.Registration or DiceBlackjackPhase.PlayerTurns or DiceBlackjackPhase.DealerTurn)))
                 if (ImGuiUtil.IconButton(FontAwesomeIcon.Dice, "##DbjSimRoll", "Simulate Roll"))
                     game.SimulateRoll();
             ImGui.SameLine();

@@ -63,16 +63,13 @@ public class DiceBlackjackGame : GameBase, IChatConsumer {
         StandCurrentPlayer();
     }
 
-    public void DrawDealerCard() {
+    public void DealerStand() {
         if (_state.Phase != DiceBlackjackPhase.DealerTurn) return;
         if (_state.DealerStatus != PlayerHandStatus.Active) return;
-        AddDealerCard(_rng.Next(1, Cfg.MaxRoll + 1));
-    }
-
-    public void AutoDrawDealer() {
-        if (_state.Phase != DiceBlackjackPhase.DealerTurn) return;
-        while (_state.DealerStatus == PlayerHandStatus.Active && _state.Phase == DiceBlackjackPhase.DealerTurn)
-            AddDealerCard(_rng.Next(1, Cfg.MaxRoll + 1));
+        var total = HandTotal(_state.DealerCards);
+        _state.DealerStatus = PlayerHandStatus.Standing;
+        PublishPhrase(DiceBlackjackPhraseCategories.DealerStand, new() { ["total"] = total.ToString() });
+        EndGame();
     }
 
     public override void ProcessRoll(Roll roll) {
@@ -80,6 +77,12 @@ public class DiceBlackjackGame : GameBase, IChatConsumer {
 
         if (_state.Phase == DiceBlackjackPhase.Registration) {
             TryRegister(roll.PlayerName);
+            return;
+        }
+
+        if (_state.Phase == DiceBlackjackPhase.DealerTurn) {
+            if (_state.DealerStatus == PlayerHandStatus.Active)
+                AddDealerCard(roll.Result);
             return;
         }
 
@@ -128,6 +131,8 @@ public class DiceBlackjackGame : GameBase, IChatConsumer {
             var current = _state.CurrentPlayer;
             if (current != null)
                 Plugin.RollManager?.ProcessIncomingRollMessage(current.Name, _rng.Next(1, outOf + 1), outOf);
+        } else if (_state.Phase == DiceBlackjackPhase.DealerTurn) {
+            Plugin.RollManager?.ProcessIncomingRollMessage("Dealer@Bahamut", _rng.Next(1, outOf + 1), outOf);
         }
     }
 
