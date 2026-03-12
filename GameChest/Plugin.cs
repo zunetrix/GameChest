@@ -7,7 +7,7 @@ using GameChest.Resources;
 
 namespace GameChest;
 
-public class Plugin : IDalamudPlugin {
+public class Plugin : IDalamudPlugin, IPluginContext {
     internal static string Name => "Game Chest";
 
     internal Configuration Config { get; }
@@ -18,6 +18,9 @@ public class Plugin : IDalamudPlugin {
 
     internal RollWatcher RollWatcher { get; }
     internal ChatWatcher ChatWatcher { get; }
+
+    Configuration IPluginContext.Config => Config;
+    RollManager? IPluginContext.RollManager => RollManager;
 
     public Plugin(IDalamudPluginInterface pluginInterface) {
         pluginInterface.Create<DalamudApi>();

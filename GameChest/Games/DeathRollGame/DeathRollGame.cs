@@ -7,7 +7,7 @@ namespace GameChest;
 
 public record DeathRollResult(string Winner, string Loser, DateTime PlayedAt);
 
-public sealed class DeathRollGame : GameBase {
+public class DeathRollGame : GameBase {
     public override string Name => "Death Roll";
     public override GameMode Mode => GameMode.DeathRoll;
     public override DeathRollState State => _state;
@@ -29,10 +29,10 @@ public sealed class DeathRollGame : GameBase {
         if (outOf <= 1) return;
         var lastPlayer = _state.Chain.Count > 0 ? _state.Chain[^1].PlayerName : SimPlayers[1];
         var player = lastPlayer == SimPlayers[0] ? SimPlayers[1] : SimPlayers[0];
-        Plugin.RollManager.ProcessIncomingRollMessage(player, _rng.Next(1, outOf + 1), outOf);
+        Plugin.RollManager?.ProcessIncomingRollMessage(player, _rng.Next(1, outOf + 1), outOf);
     }
 
-    public DeathRollGame(Plugin plugin) : base(plugin) {
+    internal DeathRollGame(IPluginContext plugin) : base(plugin) {
         EnsurePhraseDefaults();
         ReloadPhrases();
     }

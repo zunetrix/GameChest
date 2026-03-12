@@ -22,7 +22,7 @@ public class GameManager : IDisposable {
     public IEnumerable<IGame> AllGames => [FightGame, PrizeRollGame, DeathRollGame, DeathRollTournamentGame, WordGuessGame, HighRollDuelGame, TavernBrawlGame, DiceRoyaleGame, KingOfTheHillGame, AssassinGame, DiceBlackjackGame];
     public bool AnyGameActive => AllGames.Any(g => g.IsActive);
 
-    public GameManager(Plugin plugin) {
+    internal GameManager(IPluginContext plugin) {
         FightGame = new FightGame(plugin);
         PrizeRollGame = new PrizeRollGame(plugin);
         DeathRollGame = new DeathRollGame(plugin);

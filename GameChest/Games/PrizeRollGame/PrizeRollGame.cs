@@ -10,7 +10,7 @@ namespace GameChest;
 
 public record PrizeRollResult(string Winner, int WinningRoll, int ParticipantCount, PrizeRollSortingMode SortingMode, int NearestTarget, DateTime PlayedAt);
 
-public sealed class PrizeRollGame : GameBase {
+public class PrizeRollGame : GameBase {
     public override string Name => "Prize Roll";
     public override GameMode Mode => GameMode.PrizeRollGame;
     public override PrizeRollState State => _state;
@@ -29,11 +29,11 @@ public sealed class PrizeRollGame : GameBase {
     public void SimulateRoll() {
         if (!_state.IsActive) return;
         var outOf = Cfg.MaxRoll;
-        Plugin.RollManager.ProcessIncomingRollMessage(
+        Plugin.RollManager?.ProcessIncomingRollMessage(
             $"Player{++_simPlayerIdx}@Bahamut", _rng.Next(1, outOf + 1), outOf);
     }
 
-    public PrizeRollGame(Plugin plugin) : base(plugin) {
+    internal PrizeRollGame(IPluginContext plugin) : base(plugin) {
         EnsurePhraseDefaults();
         ReloadPhrases();
     }

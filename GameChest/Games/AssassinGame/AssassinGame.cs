@@ -6,7 +6,7 @@ using Dalamud.Game.Text;
 
 namespace GameChest;
 
-public sealed class AssassinGame : GameBase {
+public class AssassinGame : GameBase {
     public override string Name => "Assassin";
     public override GameMode Mode => GameMode.AssassinGame;
     public override AssassinGameState State => _state;
@@ -23,7 +23,7 @@ public sealed class AssassinGame : GameBase {
     protected override XivChatType OutputChannel => Cfg.OutputChannel;
     public override void SetOutputChannel(XivChatType channel) => Cfg.OutputChannel = channel;
 
-    public AssassinGame(Plugin plugin) : base(plugin) {
+    internal AssassinGame(IPluginContext plugin) : base(plugin) {
         EnsurePhraseDefaults();
         ReloadPhrases();
     }
@@ -78,14 +78,14 @@ public sealed class AssassinGame : GameBase {
     public void SimulateRoll() {
         var outOf = Cfg.MaxRoll;
         if (_state.Phase == AssassinPhase.Registration) {
-            Plugin.RollManager.ProcessIncomingRollMessage(
+            Plugin.RollManager?.ProcessIncomingRollMessage(
                 $"Player{++_simPlayerIdx}@Bahamut", _rng.Next(1, outOf + 1), outOf);
         } else if (_state.Phase == AssassinPhase.Attacking) {
             if (_state.AttackRoll == null && _state.CurrentAttacker != null)
-                Plugin.RollManager.ProcessIncomingRollMessage(
+                Plugin.RollManager?.ProcessIncomingRollMessage(
                     _state.CurrentAttacker, _rng.Next(1, outOf + 1), outOf);
             if (_state.DefenseRoll == null && _state.CurrentDefender != null)
-                Plugin.RollManager.ProcessIncomingRollMessage(
+                Plugin.RollManager?.ProcessIncomingRollMessage(
                     _state.CurrentDefender, _rng.Next(1, outOf + 1), outOf);
         }
     }

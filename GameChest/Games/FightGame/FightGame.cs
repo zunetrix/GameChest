@@ -9,7 +9,7 @@ namespace GameChest;
 
 public record FightResult(string Winner, string Loser, int WinnerHp, DateTime PlayedAt);
 
-public sealed class FightGame : GameBase, IChatConsumer {
+public class FightGame : GameBase, IChatConsumer {
     public override string Name => "Fight Club";
     public override GameMode Mode => GameMode.FightGame;
     public override FightState State => _state;
@@ -27,7 +27,7 @@ public sealed class FightGame : GameBase, IChatConsumer {
     protected override XivChatType OutputChannel => Cfg.OutputChannel;
     public override void SetOutputChannel(XivChatType channel) => Cfg.OutputChannel = channel;
 
-    public FightGame(Plugin plugin) : base(plugin) {
+    internal FightGame(IPluginContext plugin) : base(plugin) {
         EnsurePhraseDefaults();
         ReloadPhrases();
     }
@@ -389,13 +389,13 @@ public sealed class FightGame : GameBase, IChatConsumer {
         var outOf = Cfg.MaxRollAllowed;
         if (_state.Phase == FightPhase.Initiative) {
             if (_state.PlayerA != null && _state.InitiativeRollA == null)
-                Plugin.RollManager.ProcessIncomingRollMessage(_state.PlayerA.FullName, _rng.Next(1, outOf + 1), outOf);
+                Plugin.RollManager?.ProcessIncomingRollMessage(_state.PlayerA.FullName, _rng.Next(1, outOf + 1), outOf);
 
             if (_state.PlayerB != null && _state.InitiativeRollB == null)
-                Plugin.RollManager.ProcessIncomingRollMessage(_state.PlayerB.FullName, _rng.Next(1, outOf + 1), outOf);
+                Plugin.RollManager?.ProcessIncomingRollMessage(_state.PlayerB.FullName, _rng.Next(1, outOf + 1), outOf);
 
         } else if (_state.Phase == FightPhase.Combat && _state.CurrentAttacker != null) {
-            Plugin.RollManager.ProcessIncomingRollMessage(_state.CurrentAttacker.FullName, _rng.Next(1, outOf + 1), outOf);
+            Plugin.RollManager?.ProcessIncomingRollMessage(_state.CurrentAttacker.FullName, _rng.Next(1, outOf + 1), outOf);
         }
     }
 }

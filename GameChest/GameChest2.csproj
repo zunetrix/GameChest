@@ -1,0 +1,56 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0-windows</TargetFramework>
+        <LangVersion>latest</LangVersion>
+        <Nullable>disable</Nullable>
+        <AssemblyName>GameChest</AssemblyName>
+        <RootNamespace>GameChest</RootNamespace>
+        <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <DalamudLibPath>$(appdata)\XIVLauncher\addon\Hooks\dev\</DalamudLibPath>
+        <DalamudLibPath Condition="$([MSBuild]::IsOSPlatform('Windows'))">
+            $(appdata)\XIVLauncher\addon\Hooks\dev\</DalamudLibPath>
+        <DalamudLibPath Condition="$([MSBuild]::IsOSPlatform('Linux'))">
+            $(HOME)/.xlcore/dalamud/Hooks/dev/</DalamudLibPath>
+        <DalamudLibPath Condition="$(DALAMUD_HOME) != ''">$(DALAMUD_HOME)/</DalamudLibPath>
+    </PropertyGroup>
+    <PropertyGroup>
+        <DalamudLibPath>$([System.String]::Copy('$(DalamudLibPath)').Trim())</DalamudLibPath>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Reference Include="Dalamud">
+            <HintPath>$(DalamudLibPath)Dalamud.dll</HintPath>
+        </Reference>
+        <PackageReference Include="Moq" Version="4.20.72" />
+    </ItemGroup>
+
+    <!-- Remove files that are replaced by stubs or not needed in test compilation -->
+    <ItemGroup>
+        <!-- Replaced by Stubs/ equivalents -->
+        <Compile Remove="DalamudApi\**" />
+        <Compile Remove="Util\ChatBox.cs" />
+        <Compile Remove="Util\ImGui\ImGuiMessageDisplay.cs" />
+        <Compile Remove="Games\RollManager.cs" />
+
+        <!-- UI layer — not needed for game logic tests -->
+        <Compile Remove="Plugin.cs" />
+        <Compile Remove="PluginUi.cs" />
+        <Compile Remove="Ui\**" />
+        <Compile Remove="Commands\**" />
+        <Compile Remove="Listeners\**" />
+        <Compile Remove="Helpers\**" />
+        <Compile Remove="Resources\**" />
+
+        <!-- ImGui utilities (no ImGui context in tests) -->
+        <Compile Remove="Util\ImGui\ImGuiGroupPanel.cs" />
+        <Compile Remove="Util\ImGui\ImGuiUtil.cs" />
+        <Compile Remove="Util\ImGui\ImGuiModalDialog.cs" />
+        <Compile Remove="Util\WindowsApi.cs" />
+        <Compile Remove="Util\ArgumentParser.cs" />
+    </ItemGroup>
+
+</Project>

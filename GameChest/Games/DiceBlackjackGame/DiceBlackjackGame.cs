@@ -6,7 +6,7 @@ using Dalamud.Game.Text;
 
 namespace GameChest;
 
-public sealed class DiceBlackjackGame : GameBase, IChatConsumer {
+public class DiceBlackjackGame : GameBase, IChatConsumer {
     public override string Name => "Dice Blackjack";
     public override GameMode Mode => GameMode.DiceBlackjack;
     public override DiceBlackjackState State => _state;
@@ -22,7 +22,7 @@ public sealed class DiceBlackjackGame : GameBase, IChatConsumer {
     protected override XivChatType OutputChannel => Cfg.OutputChannel;
     public override void SetOutputChannel(XivChatType channel) => Cfg.OutputChannel = channel;
 
-    public DiceBlackjackGame(Plugin plugin) : base(plugin) {
+    internal DiceBlackjackGame(IPluginContext plugin) : base(plugin) {
         EnsurePhraseDefaults();
         ReloadPhrases();
     }
@@ -123,11 +123,11 @@ public sealed class DiceBlackjackGame : GameBase, IChatConsumer {
     public void SimulateRoll() {
         var outOf = Cfg.MaxRoll;
         if (_state.Phase == DiceBlackjackPhase.Registration) {
-            Plugin.RollManager.ProcessIncomingRollMessage($"Player{++_simPlayerIdx}@Bahamut", _rng.Next(1, outOf + 1), outOf);
+            Plugin.RollManager?.ProcessIncomingRollMessage($"Player{++_simPlayerIdx}@Bahamut", _rng.Next(1, outOf + 1), outOf);
         } else if (_state.Phase == DiceBlackjackPhase.PlayerTurns) {
             var current = _state.CurrentPlayer;
             if (current != null)
-                Plugin.RollManager.ProcessIncomingRollMessage(current.Name, _rng.Next(1, outOf + 1), outOf);
+                Plugin.RollManager?.ProcessIncomingRollMessage(current.Name, _rng.Next(1, outOf + 1), outOf);
         }
     }
 

@@ -6,7 +6,7 @@ using Dalamud.Game.Text;
 
 namespace GameChest;
 
-public sealed class TavernBrawlGame : GameBase, IChatConsumer {
+public class TavernBrawlGame : GameBase, IChatConsumer {
     public override string Name => "Tavern Brawl";
     public override GameMode Mode => GameMode.TavernBrawl;
     public override TavernBrawlState State => _state;
@@ -23,7 +23,7 @@ public sealed class TavernBrawlGame : GameBase, IChatConsumer {
     protected override XivChatType OutputChannel => Cfg.OutputChannel;
     public override void SetOutputChannel(XivChatType channel) => Cfg.OutputChannel = channel;
 
-    public TavernBrawlGame(Plugin plugin) : base(plugin) {
+    internal TavernBrawlGame(IPluginContext plugin) : base(plugin) {
         EnsurePhraseDefaults();
         ReloadPhrases();
     }
@@ -111,12 +111,12 @@ public sealed class TavernBrawlGame : GameBase, IChatConsumer {
     public void SimulateRoll() {
         var outOf = Cfg.MaxRoll;
         if (_state.Phase == TavernBrawlPhase.Registration) {
-            Plugin.RollManager.ProcessIncomingRollMessage(
+            Plugin.RollManager?.ProcessIncomingRollMessage(
                 $"Player{++_simPlayerIdx}@Bahamut", _rng.Next(1, outOf + 1), outOf);
         } else if (_state.Phase == TavernBrawlPhase.Rolling) {
             var pending = _state.Players.FirstOrDefault(p => !_state.CurrentRoundRolls.ContainsKey(p));
             if (pending != null)
-                Plugin.RollManager.ProcessIncomingRollMessage(pending, _rng.Next(1, outOf + 1), outOf);
+                Plugin.RollManager?.ProcessIncomingRollMessage(pending, _rng.Next(1, outOf + 1), outOf);
         }
     }
 

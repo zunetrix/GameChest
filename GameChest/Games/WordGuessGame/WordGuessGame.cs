@@ -8,7 +8,7 @@ namespace GameChest;
 
 public record WordGuessResult(string? SessionWinner, int TotalQuestions, List<WordGuessRoundResult> Rounds, DateTime PlayedAt);
 
-public sealed class WordGuessGame : GameBase, IChatConsumer {
+public class WordGuessGame : GameBase, IChatConsumer {
     public override string Name => "Word Guess";
     public override GameMode Mode => GameMode.WordGuessGame;
     public override WordGuessState State => _state;
@@ -22,7 +22,7 @@ public sealed class WordGuessGame : GameBase, IChatConsumer {
     protected override XivChatType OutputChannel => Cfg.OutputChannel;
     public override void SetOutputChannel(XivChatType channel) => Cfg.OutputChannel = channel;
 
-    public WordGuessGame(Plugin plugin) : base(plugin) {
+    internal WordGuessGame(IPluginContext plugin) : base(plugin) {
         EnsurePhraseDefaults();
         ReloadPhrases();
     }

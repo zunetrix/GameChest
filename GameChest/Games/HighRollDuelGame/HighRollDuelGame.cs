@@ -6,7 +6,7 @@ using Dalamud.Game.Text;
 
 namespace GameChest;
 
-public sealed class HighRollDuelGame : GameBase {
+public class HighRollDuelGame : GameBase {
     public override string Name => "High Roll Duel";
     public override GameMode Mode => GameMode.HighRollDuel;
     public override HighRollDuelState State => _state;
@@ -23,7 +23,7 @@ public sealed class HighRollDuelGame : GameBase {
     protected override XivChatType OutputChannel => Cfg.OutputChannel;
     public override void SetOutputChannel(XivChatType channel) => Cfg.OutputChannel = channel;
 
-    public HighRollDuelGame(Plugin plugin) : base(plugin) {
+    internal HighRollDuelGame(IPluginContext plugin) : base(plugin) {
         EnsurePhraseDefaults();
         ReloadPhrases();
     }
@@ -87,12 +87,12 @@ public sealed class HighRollDuelGame : GameBase {
     public void SimulateRoll() {
         var outOf = Cfg.MaxRoll;
         if (_state.Phase == HighRollDuelPhase.Registration) {
-            Plugin.RollManager.ProcessIncomingRollMessage(
+            Plugin.RollManager?.ProcessIncomingRollMessage(
                 $"Player{++_simPlayerIdx}@Bahamut", _rng.Next(1, outOf + 1), outOf);
         } else if (_state.Phase == HighRollDuelPhase.Rolling) {
             var pending = _state.Players.FirstOrDefault(p => !_state.CurrentRoundRolls.ContainsKey(p));
             if (pending != null)
-                Plugin.RollManager.ProcessIncomingRollMessage(pending, _rng.Next(1, outOf + 1), outOf);
+                Plugin.RollManager?.ProcessIncomingRollMessage(pending, _rng.Next(1, outOf + 1), outOf);
         }
     }
 

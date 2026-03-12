@@ -6,7 +6,7 @@ using Dalamud.Game.Text;
 
 namespace GameChest;
 
-public sealed class DiceRoyaleGame : GameBase, IChatConsumer {
+public class DiceRoyaleGame : GameBase, IChatConsumer {
     public override string Name => "Dice Royale";
     public override GameMode Mode => GameMode.DiceRoyale;
     public override DiceRoyaleState State => _state;
@@ -23,7 +23,7 @@ public sealed class DiceRoyaleGame : GameBase, IChatConsumer {
     protected override XivChatType OutputChannel => Cfg.OutputChannel;
     public override void SetOutputChannel(XivChatType channel) => Cfg.OutputChannel = channel;
 
-    public DiceRoyaleGame(Plugin plugin) : base(plugin) {
+    internal DiceRoyaleGame(IPluginContext plugin) : base(plugin) {
         EnsurePhraseDefaults();
         ReloadPhrases();
     }
@@ -132,12 +132,12 @@ public sealed class DiceRoyaleGame : GameBase, IChatConsumer {
     public void SimulateRoll() {
         var outOf = Cfg.MaxRoll;
         if (_state.Phase == DiceRoyalePhase.Registration) {
-            Plugin.RollManager.ProcessIncomingRollMessage(
+            Plugin.RollManager?.ProcessIncomingRollMessage(
                 $"Player{++_simPlayerIdx}@Bahamut", _rng.Next(1, outOf + 1), outOf);
         } else if (_state.Phase == DiceRoyalePhase.Rolling) {
             var pending = _state.Players.FirstOrDefault(p => !_state.CurrentRoundRolls.ContainsKey(p));
             if (pending != null)
-                Plugin.RollManager.ProcessIncomingRollMessage(pending, _rng.Next(1, outOf + 1), outOf);
+                Plugin.RollManager?.ProcessIncomingRollMessage(pending, _rng.Next(1, outOf + 1), outOf);
         }
     }
 

@@ -11,9 +11,9 @@ using GameChest.Extensions.Dalamud;
 namespace GameChest;
 
 public abstract class GameBase : IGame {
-    protected Plugin Plugin { get; }
+    private protected IPluginContext Plugin { get; }
 
-    protected GameBase(Plugin plugin) {
+    internal GameBase(IPluginContext plugin) {
         Plugin = plugin;
     }
 
@@ -68,7 +68,7 @@ public abstract class GameBase : IGame {
         if (changed) Plugin.Config.Save();
     }
 
-    protected void Publish(string text) {
+    protected virtual void Publish(string text) {
         var prefix = OutputChannel.ToChatPrefix();
         var fullText = prefix.Length > 0 ? $"{prefix} {text}" : text;
 

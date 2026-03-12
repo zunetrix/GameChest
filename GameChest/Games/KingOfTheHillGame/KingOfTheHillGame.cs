@@ -6,7 +6,7 @@ using Dalamud.Game.Text;
 
 namespace GameChest;
 
-public sealed class KingOfTheHillGame : GameBase {
+public class KingOfTheHillGame : GameBase {
     public override string Name => "King of the Hill";
     public override GameMode Mode => GameMode.KingOfTheHill;
     public override KingOfTheHillState State => _state;
@@ -23,7 +23,7 @@ public sealed class KingOfTheHillGame : GameBase {
     protected override XivChatType OutputChannel => Cfg.OutputChannel;
     public override void SetOutputChannel(XivChatType channel) => Cfg.OutputChannel = channel;
 
-    public KingOfTheHillGame(Plugin plugin) : base(plugin) {
+    internal KingOfTheHillGame(IPluginContext plugin) : base(plugin) {
         EnsurePhraseDefaults();
         ReloadPhrases();
     }
@@ -94,12 +94,12 @@ public sealed class KingOfTheHillGame : GameBase {
     public void SimulateRoll() {
         var outOf = Cfg.MaxRoll;
         if (_state.Phase == KingOfTheHillPhase.Registration) {
-            Plugin.RollManager.ProcessIncomingRollMessage(
+            Plugin.RollManager?.ProcessIncomingRollMessage(
                 $"Player{++_simPlayerIdx}@Bahamut", _rng.Next(1, outOf + 1), outOf);
         } else if (_state.Phase == KingOfTheHillPhase.Rolling) {
             var pending = _state.Players.FirstOrDefault(p => !_state.CurrentRoundRolls.ContainsKey(p));
             if (pending != null)
-                Plugin.RollManager.ProcessIncomingRollMessage(pending, _rng.Next(1, outOf + 1), outOf);
+                Plugin.RollManager?.ProcessIncomingRollMessage(pending, _rng.Next(1, outOf + 1), outOf);
         }
     }
 
