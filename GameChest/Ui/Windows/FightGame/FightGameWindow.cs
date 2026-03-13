@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 
 using Dalamud.Bindings.ImGui;
@@ -114,7 +114,7 @@ public class FightGameWindow : Window {
                 fg.SimulateRoll();
             ImGui.SameLine();
         }
-        if (ImGuiUtil.IconButton(FontAwesomeIcon.ClipboardList, "##FgPhrases", "Phrases"))
+        if (ImGuiUtil.IconButton(FontAwesomeIcon.BookOpen, "##FgBooking", "Booking Manager")) Plugin.Ui.BookingManagerWindow.Toggle(); ImGui.SameLine(); if (ImGuiUtil.IconButton(FontAwesomeIcon.ClipboardList, "##FgPhrases", "Phrases"))
             Plugin.Ui.GamePhrasesWindow.OpenToGame(GameMode.FightGame);
         ImGui.SameLine();
         if (ImGuiUtil.IconButton(FontAwesomeIcon.Cog, "##FgSettings", "Settings"))
@@ -123,14 +123,14 @@ public class FightGameWindow : Window {
 
     private static void DrawPhaseBadge(FightPhase phase) {
         var (label, color) = phase switch {
-            FightPhase.Registering => ("REGISTRATION", Style.Colors.Yellow),
-            FightPhase.Initiative => ("INITIATIVE", Style.Colors.Orange),
-            FightPhase.Combat => ("COMBAT", Style.Colors.Green),
-            FightPhase.Finished => ("DONE", Style.Colors.Gray),
-            _ => ("IDLE", Style.Colors.Gray),
+            FightPhase.Registering => ("[REGISTRATION]", Style.Colors.Yellow),
+            FightPhase.Initiative => ("[INITIATIVE]", Style.Colors.Orange),
+            FightPhase.Combat => ("[COMBAT]", Style.Colors.Green),
+            FightPhase.Finished => ("[FINISHED]", Style.Colors.Gray),
+            _ => ("[IDLE]", Style.Colors.Gray),
         };
         using (ImRaii.PushColor(ImGuiCol.Text, color))
-            ImGui.Text($"[{label}]");
+            ImGui.Text($"{label}");
     }
 
     private void DrawFightTab(FightGame fg, FightState state) {
@@ -246,6 +246,23 @@ public class FightGameWindow : Window {
                 var target = DalamudApi.TargetManager.Target;
                 if (target != null)
                     fg.TryJoin(target.Name.TextValue, JoinSource.Target);
+            }
+
+            // Booking row
+            var booking = Plugin.Config.PlayerBookingList;
+            if (booking.Count > 0) {
+                var selectedCount = booking.Count(p => p.Selected);
+                using (ImRaii.Disabled(selectedCount == 0))
+                using (selectedCount > 0
+                    ? ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonBlueNormal)
+                        .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonBlueHovered)
+                        .Push(ImGuiCol.ButtonActive,  Style.Components.ButtonBlueActive)
+                    : null) {
+                    if (ImGui.Button($"Load Booking ({selectedCount})##FgLoadBooking")) {
+                        foreach (var p in booking.Where(p => p.Selected))
+                            fg.TryJoin(p.FullName, JoinSource.Manual);
+                    }
+                }
             }
 
             ImGui.Spacing();

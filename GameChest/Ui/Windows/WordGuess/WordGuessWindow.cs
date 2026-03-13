@@ -96,7 +96,7 @@ public class WordGuessWindow : Window {
         if (ImGuiUtil.IconButton(FontAwesomeIcon.Book, "##WgQuestions", "Question List"))
             Plugin.Ui.WordGuessQuestionListWindow.Toggle();
         ImGui.SameLine();
-        if (ImGuiUtil.IconButton(FontAwesomeIcon.ClipboardList, "##WgPhrases", "Phrases"))
+        if (ImGuiUtil.IconButton(FontAwesomeIcon.BookOpen, "##WgBooking", "Booking Manager")) Plugin.Ui.BookingManagerWindow.Toggle(); ImGui.SameLine(); if (ImGuiUtil.IconButton(FontAwesomeIcon.ClipboardList, "##WgPhrases", "Phrases"))
             Plugin.Ui.GamePhrasesWindow.OpenToGame(GameMode.WordGuessGame);
         ImGui.SameLine();
         if (ImGuiUtil.IconButton(FontAwesomeIcon.Cog, "##WgSettings", "Settings"))
@@ -344,7 +344,7 @@ public class WordGuessWindow : Window {
     private static void DrawPhaseBadge(WordGuessState state) {
         var (label, color) = state.Phase switch {
             WordGuessPhase.Active => ("[ACTIVE]", Style.Colors.Green),
-            WordGuessPhase.Finished => ("[DONE]", Style.Colors.Gray),
+            WordGuessPhase.Finished => ("[FINISHED]", Style.Colors.Gray),
             _ => ("[IDLE]", Style.Colors.Gray),
         };
         using (ImRaii.PushColor(ImGuiCol.Text, color))

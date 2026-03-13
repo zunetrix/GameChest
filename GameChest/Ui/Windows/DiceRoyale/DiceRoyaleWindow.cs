@@ -77,7 +77,7 @@ public class DiceRoyaleWindow : Window {
                     game.SimulateRoll();
             ImGui.SameLine();
         }
-        if (ImGuiUtil.IconButton(FontAwesomeIcon.ClipboardList, "##DrPhrases", "Phrases"))
+        if (ImGuiUtil.IconButton(FontAwesomeIcon.BookOpen, "##DrBooking", "Booking Manager")) Plugin.Ui.BookingManagerWindow.Toggle(); ImGui.SameLine(); if (ImGuiUtil.IconButton(FontAwesomeIcon.ClipboardList, "##DrPhrases", "Phrases"))
             Plugin.Ui.GamePhrasesWindow.OpenToGame(GameMode.DiceRoyale);
         ImGui.SameLine();
         if (ImGuiUtil.IconButton(FontAwesomeIcon.Cog, "##DrSettings", "Settings"))
@@ -90,12 +90,7 @@ public class DiceRoyaleWindow : Window {
 
         ImGui.Spacing();
 
-        if (state.Phase == DiceRoyalePhase.Idle) {
-            using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Gray)) ImGui.Text("Click 'Begin Registration' to start.");
-            return;
-        }
-
-        if (state.Phase == DiceRoyalePhase.Registering) {
+        if (state.Phase is DiceRoyalePhase.Idle or DiceRoyalePhase.Registering) {
             RegistrationPanel.Draw("Dr", state.Players, ref _addPlayerInput, Plugin.Config.DiceRoyale.MinPlayers, n => game.TryJoin(n, JoinSource.Manual), Plugin);
             return;
         }
@@ -184,10 +179,10 @@ public class DiceRoyaleWindow : Window {
 
     private static void DrawPhaseBadge(DiceRoyaleState state) {
         var (label, color) = state.Phase switch {
-            DiceRoyalePhase.Registering => ("[REG]", Style.Colors.Yellow),
+            DiceRoyalePhase.Registering => ("[REGISTRATION]", Style.Colors.Yellow),
             DiceRoyalePhase.Rolling => ("[ROLLING]", Style.Colors.Green),
             DiceRoyalePhase.PendingElimination => ("[CHOOSE]", Style.Colors.Orange),
-            DiceRoyalePhase.Finished => ("[DONE]", Style.Colors.Gray),
+            DiceRoyalePhase.Finished => ("[FINISHED]", Style.Colors.Gray),
             _ => ("[IDLE]", Style.Colors.Gray),
         };
         using (ImRaii.PushColor(ImGuiCol.Text, color)) ImGui.Text(label);

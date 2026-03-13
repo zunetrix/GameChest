@@ -81,7 +81,7 @@ public class HighRollDuelWindow : Window {
                     game.SimulateRoll();
             ImGui.SameLine();
         }
-        if (ImGuiUtil.IconButton(FontAwesomeIcon.ClipboardList, "##HrdPhrases", "Phrases"))
+        if (ImGuiUtil.IconButton(FontAwesomeIcon.BookOpen, "##HrdBooking", "Booking Manager")) Plugin.Ui.BookingManagerWindow.Toggle(); ImGui.SameLine(); if (ImGuiUtil.IconButton(FontAwesomeIcon.ClipboardList, "##HrdPhrases", "Phrases"))
             Plugin.Ui.GamePhrasesWindow.OpenToGame(GameMode.HighRollDuel);
         ImGui.SameLine();
         if (ImGuiUtil.IconButton(FontAwesomeIcon.Cog, "##HrdSettings", "Settings"))
@@ -92,16 +92,7 @@ public class HighRollDuelWindow : Window {
         using var tab = ImRaii.TabItem("Game##HrdGameTab");
         if (!tab) return;
 
-        if (state.Phase == HighRollDuelPhase.Idle) {
-            ImGui.Spacing();
-            using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Gray))
-                ImGui.Text("Click 'Begin Registration' to start.");
-            return;
-        }
-
-        ImGui.Spacing();
-
-        if (state.Phase == HighRollDuelPhase.Registering) {
+        if (state.Phase is HighRollDuelPhase.Idle or HighRollDuelPhase.Registering) {
             RegistrationPanel.Draw("Hrd", state.Players, ref _addPlayerInput, Plugin.Config.HighRollDuel.MinPlayers, n => game.TryJoin(n, JoinSource.Manual), Plugin);
             return;
         }
@@ -199,10 +190,10 @@ public class HighRollDuelWindow : Window {
         using (active
             ? ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonBlueNormal)
                 .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonBlueHovered)
-                .Push(ImGuiCol.ButtonActive,  Style.Components.ButtonBlueActive)
+                .Push(ImGuiCol.ButtonActive, Style.Components.ButtonBlueActive)
             : ImRaii.PushColor(ImGuiCol.Button, Style.Components.Button)
                 .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonHovered)
-                .Push(ImGuiCol.ButtonActive,  Style.Components.ButtonActive)) {
+                .Push(ImGuiCol.ButtonActive, Style.Components.ButtonActive)) {
             if (ImGui.SmallButton($"{label}##HrdSort{value}"))
                 _rollSort = value;
         }
@@ -210,9 +201,9 @@ public class HighRollDuelWindow : Window {
 
     private static void DrawPhaseBadge(HighRollDuelState state) {
         var (label, color) = state.Phase switch {
-            HighRollDuelPhase.Registering => ("[REG]", Style.Colors.Yellow),
+            HighRollDuelPhase.Registering => ("[REGISTRATION]", Style.Colors.Yellow),
             HighRollDuelPhase.Rolling => ("[ROLLING]", Style.Colors.Green),
-            HighRollDuelPhase.Finished => ("[DONE]", Style.Colors.Gray),
+            HighRollDuelPhase.Finished => ("[FINISHED]", Style.Colors.Gray),
             _ => ("[IDLE]", Style.Colors.Gray),
         };
         using (ImRaii.PushColor(ImGuiCol.Text, color)) ImGui.Text(label);

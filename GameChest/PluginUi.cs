@@ -38,6 +38,7 @@ public class PluginUi : IDisposable {
     public AssassinGameSettingsWindow AssassinGameSettingsWindow { get; }
     public DiceBlackjackWindow DiceBlackjackWindow { get; }
     public DiceBlackjackSettingsWindow DiceBlackjackSettingsWindow { get; }
+    public BookingManagerWindow BookingManagerWindow { get; }
 
     public PluginUi(Plugin plugin) {
         Plugin = plugin;
@@ -70,6 +71,7 @@ public class PluginUi : IDisposable {
         DiceBlackjackWindow = AddWindow(new DiceBlackjackWindow(Plugin));
 
         // shared / global windows
+        BookingManagerWindow = AddWindow(new BookingManagerWindow(Plugin));
         GamePhrasesWindow = AddWindow(new GamePhrasesWindow(Plugin));
         BlocklistWindow = AddWindow(new BlocklistWindow(Plugin));
         SettingsWindow = AddWindow(new SettingsWindow(Plugin));

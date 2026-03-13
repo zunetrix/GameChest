@@ -74,7 +74,7 @@ public class KingOfTheHillWindow : Window {
                     game.SimulateRoll();
             ImGui.SameLine();
         }
-        if (ImGuiUtil.IconButton(FontAwesomeIcon.ClipboardList, "##KothPhrases", "Phrases"))
+        if (ImGuiUtil.IconButton(FontAwesomeIcon.BookOpen, "##KothBooking", "Booking Manager")) Plugin.Ui.BookingManagerWindow.Toggle(); ImGui.SameLine(); if (ImGuiUtil.IconButton(FontAwesomeIcon.ClipboardList, "##KothPhrases", "Phrases"))
             Plugin.Ui.GamePhrasesWindow.OpenToGame(GameMode.KingOfTheHill);
         ImGui.SameLine();
         if (ImGuiUtil.IconButton(FontAwesomeIcon.Cog, "##KothSettings", "Settings"))
@@ -87,12 +87,7 @@ public class KingOfTheHillWindow : Window {
 
         ImGui.Spacing();
 
-        if (state.Phase == KingOfTheHillPhase.Idle) {
-            using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Gray)) ImGui.Text("Click 'Begin Registration' to start.");
-            return;
-        }
-
-        if (state.Phase == KingOfTheHillPhase.Registering) {
+        if (state.Phase is KingOfTheHillPhase.Idle or KingOfTheHillPhase.Registering) {
             RegistrationPanel.Draw("Koth", state.Players, ref _addPlayerInput, Plugin.Config.KingOfTheHill.MinPlayers, n => game.TryJoin(n, JoinSource.Manual), Plugin);
             return;
         }
@@ -175,9 +170,9 @@ public class KingOfTheHillWindow : Window {
 
     private static void DrawPhaseBadge(KingOfTheHillState state) {
         var (label, color) = state.Phase switch {
-            KingOfTheHillPhase.Registering => ("[REG]", Style.Colors.Yellow),
+            KingOfTheHillPhase.Registering => ("[REGISTRATION]", Style.Colors.Yellow),
             KingOfTheHillPhase.Rolling => ("[ROLLING]", Style.Colors.Green),
-            KingOfTheHillPhase.Finished => ("[DONE]", Style.Colors.Gray),
+            KingOfTheHillPhase.Finished => ("[FINISHED]", Style.Colors.Gray),
             _ => ("[IDLE]", Style.Colors.Gray),
         };
         using (ImRaii.PushColor(ImGuiCol.Text, color)) ImGui.Text(label);

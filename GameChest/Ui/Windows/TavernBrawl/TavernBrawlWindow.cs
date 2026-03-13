@@ -76,7 +76,7 @@ public class TavernBrawlWindow : Window {
                     game.SimulateRoll();
             ImGui.SameLine();
         }
-        if (ImGuiUtil.IconButton(FontAwesomeIcon.ClipboardList, "##TbPhrases", "Phrases"))
+        if (ImGuiUtil.IconButton(FontAwesomeIcon.BookOpen, "##TbBooking", "Booking Manager")) Plugin.Ui.BookingManagerWindow.Toggle(); ImGui.SameLine(); if (ImGuiUtil.IconButton(FontAwesomeIcon.ClipboardList, "##TbPhrases", "Phrases"))
             Plugin.Ui.GamePhrasesWindow.OpenToGame(GameMode.TavernBrawl);
         ImGui.SameLine();
         if (ImGuiUtil.IconButton(FontAwesomeIcon.Cog, "##TbSettings", "Settings"))
@@ -89,12 +89,7 @@ public class TavernBrawlWindow : Window {
 
         ImGui.Spacing();
 
-        if (state.Phase == TavernBrawlPhase.Idle) {
-            using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Gray)) ImGui.Text("Click 'Begin Registration' to start.");
-            return;
-        }
-
-        if (state.Phase == TavernBrawlPhase.Registering) {
+        if (state.Phase is TavernBrawlPhase.Idle or TavernBrawlPhase.Registering) {
             RegistrationPanel.Draw("Tb", state.Players, ref _addPlayerInput, Plugin.Config.TavernBrawl.MinPlayers, n => game.TryJoin(n, JoinSource.Manual), Plugin);
             return;
         }
@@ -186,10 +181,10 @@ public class TavernBrawlWindow : Window {
 
     private static void DrawPhaseBadge(TavernBrawlState state) {
         var (label, color) = state.Phase switch {
-            TavernBrawlPhase.Registering => ("[REG]", Style.Colors.Yellow),
+            TavernBrawlPhase.Registering => ("[REGISTRATION]", Style.Colors.Yellow),
             TavernBrawlPhase.Rolling => ("[ROLLING]", Style.Colors.Green),
             TavernBrawlPhase.PendingChoice => ("[CHOOSE]", Style.Colors.Orange),
-            TavernBrawlPhase.Finished => ("[DONE]", Style.Colors.Gray),
+            TavernBrawlPhase.Finished => ("[FINISHED]", Style.Colors.Gray),
             _ => ("[IDLE]", Style.Colors.Gray),
         };
         using (ImRaii.PushColor(ImGuiCol.Text, color)) ImGui.Text(label);

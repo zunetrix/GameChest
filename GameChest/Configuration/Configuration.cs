@@ -35,6 +35,7 @@ internal class Configuration : IPluginConfiguration {
     public int PhraseDelayMinMs { get; set; } = 1000;
     public int PhraseDelayMaxMs { get; set; } = 3000;
     public List<string> Blocklist = new();
+    public List<BookedPlayer> PlayerBookingList { get; set; } = new();
 
     // Per-game configuration
     public FightGameConfiguration FightGame { get; set; } = new();
@@ -210,4 +211,11 @@ internal class Configuration : IPluginConfiguration {
         public bool AssassinGame = true;
         public bool DiceBlackjack = true;
     }
+
+    public class BookedPlayer {
+        public string FullName { get; set; } = "";
+        public string Notes { get; set; } = "";
+        public bool Selected { get; set; } = true;
+    }
 }
+

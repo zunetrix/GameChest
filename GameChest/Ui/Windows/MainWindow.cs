@@ -48,6 +48,14 @@ public class MainWindow : Window {
     }
 
     private void DrawHeader() {
+        if (ImGuiUtil.IconButton(FontAwesomeIcon.Cog, "##SettingsBtn"))
+            Ui.SettingsWindow.Toggle();
+        ImGuiUtil.ToolTip(Language.SettingsTitle);
+
+        ImGui.SameLine();
+        if (ImGuiUtil.IconButton(FontAwesomeIcon.BookOpen, "##BookingBtn", "Booking Manager"))
+            Ui.BookingManagerWindow.Toggle();
+
         ImGui.SameLine();
         if (ImGuiUtil.IconButton(FontAwesomeIcon.ClipboardList, "##GamePhrasesBtn", Language.GamePhrases))
             Ui.GamePhrasesWindow.Toggle();
@@ -55,11 +63,6 @@ public class MainWindow : Window {
         ImGui.SameLine();
         if (ImGuiUtil.IconButton(FontAwesomeIcon.Ban, "##BlocklistBtn", Language.BlockList))
             Ui.BlocklistWindow.Toggle();
-
-        ImGui.SameLine();
-        if (ImGuiUtil.IconButton(FontAwesomeIcon.Cog, "##SettingsBtn"))
-            Ui.SettingsWindow.Toggle();
-        ImGuiUtil.ToolTip(Language.SettingsTitle);
 
         ImGui.SameLine();
         DrawVisibleGamesButton();
@@ -142,14 +145,14 @@ public class MainWindow : Window {
 
     private void DrawFightStatus(FightState state) {
         var (label, color) = state.Phase switch {
-            FightPhase.Registering => ("REGISTRATION", Style.Colors.Yellow),
-            FightPhase.Initiative => ("INITIATIVE", Style.Colors.Orange),
-            FightPhase.Combat => ("COMBAT", Style.Colors.Green),
-            FightPhase.Finished => ("DONE", Style.Colors.Gray),
-            _ => ("IDLE", Style.Colors.Gray),
+            FightPhase.Registering => ("[REGISTRATION]", Style.Colors.Yellow),
+            FightPhase.Initiative => ("[INITIATIVE]", Style.Colors.Orange),
+            FightPhase.Combat => ("[COMBAT]", Style.Colors.Green),
+            FightPhase.Finished => ("[FINISHED]", Style.Colors.Gray),
+            _ => ("[IDLE]", Style.Colors.Gray),
         };
         using (ImRaii.PushColor(ImGuiCol.Text, color))
-            ImGui.Text($"[{label}]");
+            ImGui.Text($"{label}");
 
         switch (state.Phase) {
             case FightPhase.Combat when state.CurrentAttacker != null && state.PlayerA != null && state.PlayerB != null:
@@ -255,7 +258,7 @@ public class MainWindow : Window {
                     break;
                 case DeathRollPhase.Finished:
                     using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Yellow))
-                        ImGui.Text("[DONE]");
+                        ImGui.Text("[FINISHED]");
                     if (state.Winner != null)
                         ImGui.Text($"  Winner: {PlayerName.Short(state.Winner)}");
                     break;
@@ -288,7 +291,7 @@ public class MainWindow : Window {
                 DeathRollTournamentPhase.Registering => ("[REGISTRATION]", Style.Colors.Yellow),
                 DeathRollTournamentPhase.Preparing => ("[PREPARING]", Style.Colors.Orange),
                 DeathRollTournamentPhase.Match => ("[MATCH]", Style.Colors.Green),
-                DeathRollTournamentPhase.Finished => ("[DONE]", Style.Colors.Blue),
+                DeathRollTournamentPhase.Finished => ("[FINISHED]", Style.Colors.Blue),
                 _ => ("[IDLE]", Style.Colors.Gray),
             };
             using (ImRaii.PushColor(ImGuiCol.Text, cardCol))
@@ -332,7 +335,7 @@ public class MainWindow : Window {
             ImGui.SameLine(8f * ImGuiHelpers.GlobalScale);
             var (cardLabel, cardCol) = state.Phase switch {
                 WordGuessPhase.Active => ("[ACTIVE]", Style.Colors.Green),
-                WordGuessPhase.Finished => ("[DONE]", Style.Colors.Blue),
+                WordGuessPhase.Finished => ("[FINISHED]", Style.Colors.Blue),
                 _ => ("[IDLE]", Style.Colors.Gray),
             };
             using (ImRaii.PushColor(ImGuiCol.Text, cardCol))
@@ -368,9 +371,9 @@ public class MainWindow : Window {
             }
             ImGui.SameLine(8f * ImGuiHelpers.GlobalScale);
             var (label, col) = state.Phase switch {
-                HighRollDuelPhase.Registering => ("[REG]", Style.Colors.Yellow),
+                HighRollDuelPhase.Registering => ("[REGISTRATION]", Style.Colors.Yellow),
                 HighRollDuelPhase.Rolling => ("[ROLLING]", Style.Colors.Green),
-                HighRollDuelPhase.Finished => ("[DONE]", Style.Colors.Gray),
+                HighRollDuelPhase.Finished => ("[FINISHED]", Style.Colors.Gray),
                 _ => ("[IDLE]", Style.Colors.Gray),
             };
             using (ImRaii.PushColor(ImGuiCol.Text, col)) ImGui.Text(label);
@@ -406,10 +409,10 @@ public class MainWindow : Window {
             }
             ImGui.SameLine(8f * ImGuiHelpers.GlobalScale);
             var (label, col) = state.Phase switch {
-                TavernBrawlPhase.Registering => ("[REG]", Style.Colors.Yellow),
+                TavernBrawlPhase.Registering => ("[REGISTRATION]", Style.Colors.Yellow),
                 TavernBrawlPhase.Rolling => ("[ROLLING]", Style.Colors.Green),
                 TavernBrawlPhase.PendingChoice => ("[CHOICE]", Style.Colors.Orange),
-                TavernBrawlPhase.Finished => ("[DONE]", Style.Colors.Gray),
+                TavernBrawlPhase.Finished => ("[FINISHED]", Style.Colors.Gray),
                 _ => ("[IDLE]", Style.Colors.Gray),
             };
             using (ImRaii.PushColor(ImGuiCol.Text, col)) ImGui.Text(label);
@@ -449,10 +452,10 @@ public class MainWindow : Window {
             }
             ImGui.SameLine(8f * ImGuiHelpers.GlobalScale);
             var (label, col) = state.Phase switch {
-                DiceRoyalePhase.Registering => ("[REG]", Style.Colors.Yellow),
+                DiceRoyalePhase.Registering => ("[REGISTRATION]", Style.Colors.Yellow),
                 DiceRoyalePhase.Rolling => ("[ROLLING]", Style.Colors.Green),
                 DiceRoyalePhase.PendingElimination => ("[ELIM]", Style.Colors.Orange),
-                DiceRoyalePhase.Finished => ("[DONE]", Style.Colors.Gray),
+                DiceRoyalePhase.Finished => ("[FINISHED]", Style.Colors.Gray),
                 _ => ("[IDLE]", Style.Colors.Gray),
             };
             using (ImRaii.PushColor(ImGuiCol.Text, col)) ImGui.Text(label);
@@ -492,9 +495,9 @@ public class MainWindow : Window {
             }
             ImGui.SameLine(8f * ImGuiHelpers.GlobalScale);
             var (label, col) = state.Phase switch {
-                KingOfTheHillPhase.Registering => ("[REG]", Style.Colors.Yellow),
+                KingOfTheHillPhase.Registering => ("[REGISTRATION]", Style.Colors.Yellow),
                 KingOfTheHillPhase.Rolling => ("[ROLLING]", Style.Colors.Green),
-                KingOfTheHillPhase.Finished => ("[DONE]", Style.Colors.Gray),
+                KingOfTheHillPhase.Finished => ("[FINISHED]", Style.Colors.Gray),
                 _ => ("[IDLE]", Style.Colors.Gray),
             };
             using (ImRaii.PushColor(ImGuiCol.Text, col)) ImGui.Text(label);
@@ -531,10 +534,10 @@ public class MainWindow : Window {
             }
             ImGui.SameLine(8f * ImGuiHelpers.GlobalScale);
             var (label, col) = state.Phase switch {
-                AssassinPhase.Registering => ("[REG]", Style.Colors.Yellow),
+                AssassinPhase.Registering => ("[REGISTRATION]", Style.Colors.Yellow),
                 AssassinPhase.Active => ("[ACTIVE]", Style.Colors.Green),
                 AssassinPhase.Attacking => ("[ATTACK]", Style.Colors.Orange),
-                AssassinPhase.Finished => ("[DONE]", Style.Colors.Gray),
+                AssassinPhase.Finished => ("[FINISHED]", Style.Colors.Gray),
                 _ => ("[IDLE]", Style.Colors.Gray),
             };
             using (ImRaii.PushColor(ImGuiCol.Text, col)) ImGui.Text(label);
@@ -574,10 +577,10 @@ public class MainWindow : Window {
             }
             ImGui.SameLine(8f * ImGuiHelpers.GlobalScale);
             var (label, col) = state.Phase switch {
-                DiceBlackjackPhase.Registering => ("[REG]", Style.Colors.Yellow),
+                DiceBlackjackPhase.Registering => ("[REGISTRATION]", Style.Colors.Yellow),
                 DiceBlackjackPhase.PlayerTurns => ("[PLAYING]", Style.Colors.Green),
                 DiceBlackjackPhase.DealerTurn => ("[DEALER]", Style.Colors.Orange),
-                DiceBlackjackPhase.Finished => ("[DONE]", Style.Colors.Gray),
+                DiceBlackjackPhase.Finished => ("[FINISHED]", Style.Colors.Gray),
                 _ => ("[IDLE]", Style.Colors.Gray),
             };
             using (ImRaii.PushColor(ImGuiCol.Text, col)) ImGui.Text(label);

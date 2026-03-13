@@ -76,7 +76,9 @@ public class DeathRollTournamentGame : GameBase {
     }
 
     public override bool TryJoin(string fullName, JoinSource source) {
-        if (_state.Phase != DeathRollTournamentPhase.Registering && _state.Phase != DeathRollTournamentPhase.Preparing)
+        var isOpenPhase = _state.Phase is DeathRollTournamentPhase.Registering or DeathRollTournamentPhase.Preparing;
+        if (!isOpenPhase &&
+            (_state.Phase != DeathRollTournamentPhase.Idle || source is not (JoinSource.Manual or JoinSource.Target)))
             return false;
         if (_state.RegisteredPlayers.ContainsPlayer(fullName))
             return false;

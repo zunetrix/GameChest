@@ -50,7 +50,9 @@ public class HighRollDuelGame : GameBase {
     }
 
     public override bool TryJoin(string fullName, JoinSource source) {
-        if (_state.Phase != HighRollDuelPhase.Registering) return false;
+        if (_state.Phase != HighRollDuelPhase.Registering &&
+            (_state.Phase != HighRollDuelPhase.Idle || source is not (JoinSource.Manual or JoinSource.Target)))
+            return false;
         if (_state.Players.Contains(fullName, StringComparer.OrdinalIgnoreCase)) return false;
         _state.Players.Add(fullName);
         return true;

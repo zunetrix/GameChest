@@ -50,7 +50,9 @@ public class DiceBlackjackGame : GameBase, IChatConsumer {
     }
 
     public override bool TryJoin(string fullName, JoinSource source) {
-        if (_state.Phase != DiceBlackjackPhase.Registering) return false;
+        if (_state.Phase != DiceBlackjackPhase.Registering &&
+            (_state.Phase != DiceBlackjackPhase.Idle || source is not (JoinSource.Manual or JoinSource.Target)))
+            return false;
         if (_state.Players.Any(p => p.Name.Equals(fullName, StringComparison.OrdinalIgnoreCase))) return false;
         _state.Players.Add(new DiceBlackjackPlayerHand(fullName));
         return true;

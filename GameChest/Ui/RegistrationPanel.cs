@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using Dalamud.Bindings.ImGui;
 using Dalamud.Interface;
@@ -58,6 +59,23 @@ public static class RegistrationPanel {
         ImGui.SameLine();
         ImGui.Checkbox($"@World##{id}FullName", ref _showFullName);
         ImGuiUtil.ToolTip("Show full name");
+
+        // Booking row
+        var booking = plugin.Config.PlayerBookingList;
+        if (booking.Count > 0) {
+            var selectedCount = booking.Count(p => p.Selected);
+            using (ImRaii.Disabled(selectedCount == 0))
+            using (selectedCount > 0
+                ? ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonBlueNormal)
+                    .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonBlueHovered)
+                    .Push(ImGuiCol.ButtonActive, Style.Components.ButtonBlueActive)
+                : null) {
+                if (ImGui.Button($"Load Booking (selected: {selectedCount})##{id}LoadBooking")) {
+                    foreach (var p in booking.Where(p => p.Selected))
+                        onAdd(p.FullName);
+                }
+            }
+        }
 
         ImGui.Spacing();
 

@@ -83,7 +83,7 @@ public class DeathRollWindow : Window {
         ImGui.SameLine();
         var (label, color) = state.Phase switch {
             DeathRollPhase.Active => ("[ACTIVE]", Style.Colors.Green),
-            DeathRollPhase.Finished => ("[DONE]", Style.Colors.Yellow),
+            DeathRollPhase.Finished => ("[FINISHED]", Style.Colors.Yellow),
             _ => ("[IDLE]", Style.Colors.Gray),
         };
         using (ImRaii.PushColor(ImGuiCol.Text, color))
@@ -108,7 +108,7 @@ public class DeathRollWindow : Window {
                     dr.SimulateRoll();
             ImGui.SameLine();
         }
-        if (ImGuiUtil.IconButton(FontAwesomeIcon.ClipboardList, "##DrPhrases", "Phrases"))
+        if (ImGuiUtil.IconButton(FontAwesomeIcon.BookOpen, "##DrBooking", "Booking Manager")) Plugin.Ui.BookingManagerWindow.Toggle(); ImGui.SameLine(); if (ImGuiUtil.IconButton(FontAwesomeIcon.ClipboardList, "##DrPhrases", "Phrases"))
             Plugin.Ui.GamePhrasesWindow.OpenToGame(GameMode.DeathRoll);
         ImGui.SameLine();
         if (ImGuiUtil.IconButton(FontAwesomeIcon.Cog, "##DrSettings", "Settings"))

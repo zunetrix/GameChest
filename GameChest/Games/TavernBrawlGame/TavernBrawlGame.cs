@@ -50,7 +50,9 @@ public class TavernBrawlGame : GameBase, IChatConsumer {
     }
 
     public override bool TryJoin(string fullName, JoinSource source) {
-        if (_state.Phase != TavernBrawlPhase.Registering) return false;
+        if (_state.Phase != TavernBrawlPhase.Registering &&
+            (_state.Phase != TavernBrawlPhase.Idle || source is not (JoinSource.Manual or JoinSource.Target)))
+            return false;
         if (_state.Players.Contains(fullName, StringComparer.OrdinalIgnoreCase)) return false;
         _state.Players.Add(fullName);
         return true;

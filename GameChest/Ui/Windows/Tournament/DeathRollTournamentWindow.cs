@@ -96,7 +96,7 @@ public class DeathRollTournamentWindow : Window {
             DeathRollTournamentPhase.Registering => ("[REGISTRATION]", Style.Colors.Yellow),
             DeathRollTournamentPhase.Preparing => ("[PREPARING]", Style.Colors.Orange),
             DeathRollTournamentPhase.Match => ("[MATCH]", Style.Colors.Green),
-            DeathRollTournamentPhase.Finished => ("[DONE]", Style.Colors.Blue),
+            DeathRollTournamentPhase.Finished => ("[FINISHED]", Style.Colors.Blue),
             _ => ("[IDLE]", Style.Colors.Gray),
         };
         using (ImRaii.PushColor(ImGuiCol.Text, color))
@@ -121,7 +121,7 @@ public class DeathRollTournamentWindow : Window {
                     tn.SimulateRoll();
             ImGui.SameLine();
         }
-        if (ImGuiUtil.IconButton(FontAwesomeIcon.ClipboardList, "##TnPhrases", "Phrases"))
+        if (ImGuiUtil.IconButton(FontAwesomeIcon.BookOpen, "##TnBooking", "Booking Manager")) Plugin.Ui.BookingManagerWindow.Toggle(); ImGui.SameLine(); if (ImGuiUtil.IconButton(FontAwesomeIcon.ClipboardList, "##TnPhrases", "Phrases"))
             Plugin.Ui.GamePhrasesWindow.OpenToGame(GameMode.DeathRollTournament);
         ImGui.SameLine();
         if (ImGuiUtil.IconButton(FontAwesomeIcon.Cog, "##TnSettings", "Settings"))
@@ -136,8 +136,6 @@ public class DeathRollTournamentWindow : Window {
 
         switch (state.Phase) {
             case DeathRollTournamentPhase.Idle:
-                DrawIdleSection();
-                break;
             case DeathRollTournamentPhase.Registering:
                 DrawRegistrationSection(tn, state);
                 break;
@@ -220,6 +218,23 @@ public class DeathRollTournamentWindow : Window {
             var target = DalamudApi.TargetManager.Target;
             if (target != null)
                 tn.TryJoin(target.Name.TextValue, JoinSource.Target);
+        }
+
+        // Booking row
+        var booking = Plugin.Config.PlayerBookingList;
+        if (booking.Count > 0) {
+            var selectedCount = booking.Count(p => p.Selected);
+            using (ImRaii.Disabled(selectedCount == 0))
+            using (selectedCount > 0
+                ? ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonBlueNormal)
+                    .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonBlueHovered)
+                    .Push(ImGuiCol.ButtonActive,  Style.Components.ButtonBlueActive)
+                : null) {
+                if (ImGui.Button($"Load Booking ({selectedCount})##TnLoadBooking")) {
+                    foreach (var p in booking.Where(p => p.Selected))
+                        tn.TryJoin(p.FullName, JoinSource.Manual);
+                }
+            }
         }
     }
 

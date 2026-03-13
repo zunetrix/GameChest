@@ -71,7 +71,7 @@ public class AssassinGameWindow : Window {
                     game.SimulateRoll();
             ImGui.SameLine();
         }
-        if (ImGuiUtil.IconButton(FontAwesomeIcon.ClipboardList, "##AgPhrases", "Phrases"))
+        if (ImGuiUtil.IconButton(FontAwesomeIcon.BookOpen, "##AgBooking", "Booking Manager")) Plugin.Ui.BookingManagerWindow.Toggle(); ImGui.SameLine(); if (ImGuiUtil.IconButton(FontAwesomeIcon.ClipboardList, "##AgPhrases", "Phrases"))
             Plugin.Ui.GamePhrasesWindow.OpenToGame(GameMode.AssassinGame);
         ImGui.SameLine();
         if (ImGuiUtil.IconButton(FontAwesomeIcon.Cog, "##AgSettings", "Settings"))
@@ -84,12 +84,7 @@ public class AssassinGameWindow : Window {
 
         ImGui.Spacing();
 
-        if (state.Phase == AssassinPhase.Idle) {
-            using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Gray)) ImGui.Text("Click 'Begin Registration' to start.");
-            return;
-        }
-
-        if (state.Phase == AssassinPhase.Registering) {
+        if (state.Phase is AssassinPhase.Idle or AssassinPhase.Registering) {
             RegistrationPanel.Draw("Ag", state.Players, ref _addPlayerInput, Plugin.Config.AssassinGame.MinPlayers, n => game.TryJoin(n, JoinSource.Manual), Plugin);
             return;
         }
@@ -182,10 +177,10 @@ public class AssassinGameWindow : Window {
 
     private static void DrawPhaseBadge(AssassinGameState state) {
         var (label, color) = state.Phase switch {
-            AssassinPhase.Registering => ("[REG]", Style.Colors.Yellow),
+            AssassinPhase.Registering => ("[REGISTRATION]", Style.Colors.Yellow),
             AssassinPhase.Active => ("[ACTIVE]", Style.Colors.Green),
             AssassinPhase.Attacking => ("[ATTACK]", Style.Colors.Orange),
-            AssassinPhase.Finished => ("[DONE]", Style.Colors.Gray),
+            AssassinPhase.Finished => ("[FINISHED]", Style.Colors.Gray),
             _ => ("[IDLE]", Style.Colors.Gray),
         };
         using (ImRaii.PushColor(ImGuiCol.Text, color)) ImGui.Text(label);

@@ -53,7 +53,9 @@ public class AssassinGame : GameBase {
     }
 
     public override bool TryJoin(string fullName, JoinSource source) {
-        if (_state.Phase != AssassinPhase.Registering) return false;
+        if (_state.Phase != AssassinPhase.Registering &&
+            (_state.Phase != AssassinPhase.Idle || source is not (JoinSource.Manual or JoinSource.Target)))
+            return false;
         if (_state.Players.Contains(fullName, StringComparer.OrdinalIgnoreCase)) return false;
         _state.Players.Add(fullName);
         return true;

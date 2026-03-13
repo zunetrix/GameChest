@@ -103,7 +103,7 @@ public class DiceBlackjackWindow : Window {
                     game.SimulateRoll();
             ImGui.SameLine();
         }
-        if (ImGuiUtil.IconButton(FontAwesomeIcon.ClipboardList, "##DbjPhrases", "Phrases"))
+        if (ImGuiUtil.IconButton(FontAwesomeIcon.BookOpen, "##DbjBooking", "Booking Manager")) Plugin.Ui.BookingManagerWindow.Toggle(); ImGui.SameLine(); if (ImGuiUtil.IconButton(FontAwesomeIcon.ClipboardList, "##DbjPhrases", "Phrases"))
             Plugin.Ui.GamePhrasesWindow.OpenToGame(GameMode.DiceBlackjack);
         ImGui.SameLine();
         if (ImGuiUtil.IconButton(FontAwesomeIcon.Cog, "##DbjSettings", "Settings"))
@@ -113,10 +113,6 @@ public class DiceBlackjackWindow : Window {
     private void DrawGameContent(DiceBlackjackGame game, DiceBlackjackState state) {
         switch (state.Phase) {
             case DiceBlackjackPhase.Idle:
-                using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Gray))
-                    ImGui.Text("Click 'Begin Registration' to start.");
-                return;
-
             case DiceBlackjackPhase.Registering:
                 RegistrationPanel.Draw("Dbj", state.Players.Select(p => p.Name).ToList(),
                     ref _addPlayerInput, Plugin.Config.DiceBlackjack.MinPlayers, n => game.TryJoin(n, JoinSource.Manual), Plugin);
@@ -199,10 +195,10 @@ public class DiceBlackjackWindow : Window {
             ImGuiTableFlags.RowBg | ImGuiTableFlags.PadOuterX | ImGuiTableFlags.NoSavedSettings);
         if (!table) return;
 
-        ImGui.TableSetupColumn("Player",  ImGuiTableColumnFlags.WidthStretch);
-        ImGui.TableSetupColumn("Cards",   ImGuiTableColumnFlags.WidthStretch);
-        ImGui.TableSetupColumn("Total",   ImGuiTableColumnFlags.WidthFixed, 50 * ImGuiHelpers.GlobalScale);
-        ImGui.TableSetupColumn("Status",  ImGuiTableColumnFlags.WidthFixed, 70 * ImGuiHelpers.GlobalScale);
+        ImGui.TableSetupColumn("Player", ImGuiTableColumnFlags.WidthStretch);
+        ImGui.TableSetupColumn("Cards", ImGuiTableColumnFlags.WidthStretch);
+        ImGui.TableSetupColumn("Total", ImGuiTableColumnFlags.WidthFixed, 50 * ImGuiHelpers.GlobalScale);
+        ImGui.TableSetupColumn("Status", ImGuiTableColumnFlags.WidthFixed, 70 * ImGuiHelpers.GlobalScale);
         ImGui.TableHeadersRow();
 
         for (var i = 0; i < state.Players.Count; i++) {
@@ -216,8 +212,8 @@ public class DiceBlackjackWindow : Window {
 
             var (statusLabel, statusColor) = p.Status switch {
                 PlayerHandStatus.Standing => ("Stand", Style.Colors.Blue),
-                PlayerHandStatus.Busted   => ("Bust",  Style.Colors.Red),
-                _                         => (p.DealCount < 2 ? "Dealing" : "Active", Style.Colors.Green),
+                PlayerHandStatus.Busted => ("Bust", Style.Colors.Red),
+                _ => (p.DealCount < 2 ? "Dealing" : "Active", Style.Colors.Green),
             };
 
             ImGui.TableNextRow();
@@ -237,11 +233,11 @@ public class DiceBlackjackWindow : Window {
 
     private static void DrawPhaseBadge(DiceBlackjackState state) {
         var (label, color) = state.Phase switch {
-            DiceBlackjackPhase.Registering => ("[REG]",     Style.Colors.Yellow),
-            DiceBlackjackPhase.PlayerTurns  => ("[PLAYING]", Style.Colors.Green),
-            DiceBlackjackPhase.DealerTurn   => ("[DEALER]",  Style.Colors.Orange),
-            DiceBlackjackPhase.Finished         => ("[DONE]",    Style.Colors.Gray),
-            _                               => ("[IDLE]",    Style.Colors.Gray),
+            DiceBlackjackPhase.Registering => ("[REGISTRATION]", Style.Colors.Yellow),
+            DiceBlackjackPhase.PlayerTurns => ("[PLAYING]", Style.Colors.Green),
+            DiceBlackjackPhase.DealerTurn => ("[DEALER]", Style.Colors.Orange),
+            DiceBlackjackPhase.Finished => ("[FINISHED]", Style.Colors.Gray),
+            _ => ("[IDLE]", Style.Colors.Gray),
         };
         using (ImRaii.PushColor(ImGuiCol.Text, color)) ImGui.Text(label);
     }
