@@ -16,53 +16,23 @@ public static class ImGuiUtil {
     // ------------------------
     // COMPONENTS
     // ------------------------
-    public static bool IconButtonRaii(FontAwesomeIcon icon, string? id = null, string tooltip = null, Vector4? color = null, Vector2? size = null) {
-        using var col = new ImRaii.Color();
-        bool button;
-
-        using (ImRaii.PushColor(ImGuiCol.Text, (Vector4)color, color.HasValue)) {
-
-            if (size.HasValue) {
-                size *= ImGuiHelpers.GlobalScale;
-            }
-
-            using (ImRaii.PushFont(UiBuilder.IconFont)) {
-                var iconSize = ImGui.CalcTextSize(icon.ToIconString());
-                var cursor = ImGui.GetCursorScreenPos();
-
-                var width = size is { X: not 0 } ? size.Value.X : iconSize.X + (ImGui.GetStyle().FramePadding.X * 2);
-                var height = size is { Y: not 0 } ? size.Value.Y : ImGui.GetFrameHeight();
-
-                var buttonSize = new Vector2(width, height);
-
-                using (ImRaii.PushId(icon.ToIconString())) {
-                    button = ImGui.Button(string.Empty, buttonSize);
-                }
-
-                var iconPos = cursor + ((buttonSize - iconSize) / 2f);
-
-                ImGui.GetWindowDrawList().AddText(iconPos, ImGui.GetColorU32(ImGuiCol.Text), icon.ToIconString());
-                if (tooltip != null)
-                    ToolTip(tooltip);
-            }
+    public static bool IconButton(FontAwesomeIcon icon, string? id = null, string? tooltip = null, Vector4? color = null, Vector2? size = null) {
+        using (ImRaii.PushFont(UiBuilder.IconFont))
+        using (ImRaii.PushColor(ImGuiCol.Text, color ?? Vector4.One, color != null)) {
+            var iconButtonSize = ImGui.CalcTextSize(icon.ToIconString()) + ImGui.GetStyle().FramePadding * 2;
+            var buttonSize = size ?? iconButtonSize;
+            var result = ImGui.Button($"{icon.ToIconString()}##{id}", buttonSize);
+            if (tooltip != null) ToolTip(tooltip);
+            return result;
         }
-        return button;
-
     }
 
-    public static bool IconButton(FontAwesomeIcon icon, string? id = null, string tooltip = null, Vector4? color = null, Vector2? size = null) {
+    public static void TextIcon(FontAwesomeIcon icon, Vector4? color = null) {
         using (ImRaii.PushFont(UiBuilder.IconFont)) {
-            try {
-                var iconButtonSize = ImGui.CalcTextSize(icon.ToIconString()) + ImGui.GetStyle().FramePadding * 2;
-                using (ImRaii.PushColor(ImGuiCol.Text, color ?? Vector4.One, color.HasValue)) {
-                    var buttonSize = size != null ? size.Value : iconButtonSize;
-                    return ImGui.Button($"{icon.ToIconString()}##{id}", buttonSize);
-                }
-            } finally {
-                if (tooltip != null) {
-                    ToolTip(tooltip);
-                }
-            }
+            if (color.HasValue)
+                ImGui.TextColored(color.Value, icon.ToIconString());
+            else
+                ImGui.Text(icon.ToIconString());
         }
     }
 
@@ -127,6 +97,38 @@ public static class ImGuiUtil {
         }
 
         return ret;
+    }
+
+    /// <summary>
+    /// Combo com input de busca simples. Recebe uma lista de opções, filtra conforme o input e retorna a opção selecionada.
+    /// </summary>
+    /// <param name="label">Label do combo</param>
+    /// <param name="options">Lista de opções</param>
+    /// <param name="selected">Opção selecionada</param>
+    /// <param name="maxVisible">Máximo de opções visíveis</param>
+    /// <returns>True se selecionou uma opção</returns>
+    public static bool DrawComboSearch(string label, IList<string> options, ref string selected, int maxVisible = 8) {
+        bool changed = false;
+        string filter = "";
+        ImGui.PushID(label);
+        if (ImGui.BeginCombo(label, selected)) {
+            ImGui.SetNextItemWidth(-1);
+            ImGui.InputTextWithHint("##search", "Search...", ref filter, 64);
+            var filtered = string.IsNullOrEmpty(filter)
+                ? options
+                : options.Where(x => x.Contains(filter, StringComparison.OrdinalIgnoreCase)).ToList();
+            int count = 0;
+            foreach (var option in filtered) {
+                if (count++ >= maxVisible) break;
+                if (ImGui.Selectable(option, option == selected)) {
+                    selected = option;
+                    changed = true;
+                }
+            }
+            ImGui.EndCombo();
+        }
+        ImGui.PopID();
+        return changed;
     }
 
     public static void DrawFontawesomeIconOutlined(FontAwesomeIcon icon, Vector4 outlineColor, Vector4 iconColor) {

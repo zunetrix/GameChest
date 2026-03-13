@@ -16,6 +16,7 @@ public class FightGameWindow : Window {
     private Plugin Plugin { get; }
 
     private string _manualRegisterName = string.Empty;
+    private string _bookingCombo        = string.Empty;
 
     public FightGameWindow(Plugin plugin)
         : base("Fight Game###FightGameWindow") {
@@ -248,17 +249,23 @@ public class FightGameWindow : Window {
                     fg.TryJoin(target.Name.TextValue, JoinSource.Target);
             }
 
-            // Booking row
+            // Booking combo + load selected
             var booking = Plugin.Config.PlayerBookingList;
             if (booking.Count > 0) {
+                var names         = booking.Select(p => p.FullName).ToList();
                 var selectedCount = booking.Count(p => p.Selected);
+                ImGui.SetNextItemWidth(200f * ImGuiHelpers.GlobalScale);
+                if (ImGuiUtil.DrawComboSearch("##FgBookingCombo", names, ref _bookingCombo) &&
+                    !string.IsNullOrEmpty(_bookingCombo)) {
+                    fg.TryJoin(_bookingCombo, JoinSource.Manual);
+                    _bookingCombo = string.Empty;
+                }
+                ImGui.SameLine();
                 using (ImRaii.Disabled(selectedCount == 0))
-                using (selectedCount > 0
-                    ? ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonBlueNormal)
-                        .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonBlueHovered)
-                        .Push(ImGuiCol.ButtonActive,  Style.Components.ButtonBlueActive)
-                    : null) {
-                    if (ImGui.Button($"Load Booking ({selectedCount})##FgLoadBooking")) {
+                using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonBlueNormal)
+                    .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonBlueHovered)
+                    .Push(ImGuiCol.ButtonActive,  Style.Components.ButtonBlueActive)) {
+                    if (ImGui.Button($"Load Selected ({selectedCount})##FgLoadSelected")) {
                         foreach (var p in booking.Where(p => p.Selected))
                             fg.TryJoin(p.FullName, JoinSource.Manual);
                     }

@@ -13,6 +13,7 @@ public class DeathRollTournamentWindow : Window {
     private Plugin Plugin { get; }
 
     private string _manualPlayerName = string.Empty;
+    private string _bookingCombo     = string.Empty;
 
     public DeathRollTournamentWindow(Plugin plugin)
         : base("DeathRoll Tournament###DeathRollTournamentWindow") {
@@ -220,17 +221,23 @@ public class DeathRollTournamentWindow : Window {
                 tn.TryJoin(target.Name.TextValue, JoinSource.Target);
         }
 
-        // Booking row
+        // Booking combo + load selected
         var booking = Plugin.Config.PlayerBookingList;
         if (booking.Count > 0) {
+            var names         = booking.Select(p => p.FullName).ToList();
             var selectedCount = booking.Count(p => p.Selected);
+            ImGui.SetNextItemWidth(200f * ImGuiHelpers.GlobalScale);
+            if (ImGuiUtil.DrawComboSearch("##TnBookingCombo", names, ref _bookingCombo) &&
+                !string.IsNullOrEmpty(_bookingCombo)) {
+                tn.TryJoin(_bookingCombo, JoinSource.Manual);
+                _bookingCombo = string.Empty;
+            }
+            ImGui.SameLine();
             using (ImRaii.Disabled(selectedCount == 0))
-            using (selectedCount > 0
-                ? ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonBlueNormal)
-                    .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonBlueHovered)
-                    .Push(ImGuiCol.ButtonActive,  Style.Components.ButtonBlueActive)
-                : null) {
-                if (ImGui.Button($"Load Booking ({selectedCount})##TnLoadBooking")) {
+            using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonBlueNormal)
+                .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonBlueHovered)
+                .Push(ImGuiCol.ButtonActive,  Style.Components.ButtonBlueActive)) {
+                if (ImGui.Button($"Load Selected ({selectedCount})##TnLoadSelected")) {
                     foreach (var p in booking.Where(p => p.Selected))
                         tn.TryJoin(p.FullName, JoinSource.Manual);
                 }
