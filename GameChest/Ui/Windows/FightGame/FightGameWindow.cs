@@ -236,7 +236,7 @@ public class FightGameWindow : Window {
                 .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonSuccessHovered)
                 .Push(ImGuiCol.ButtonActive, Style.Components.ButtonSuccessActive)) {
                 if (ImGui.Button($"{Language.Add}##ManualReg") && !string.IsNullOrWhiteSpace(_manualRegisterName)) {
-                    fg.TryRegister(_manualRegisterName.Trim(), RegistrationSource.Manual);
+                    fg.TryJoin(_manualRegisterName.Trim(), JoinSource.Manual);
                     _manualRegisterName = string.Empty;
                 }
             }
@@ -245,7 +245,7 @@ public class FightGameWindow : Window {
             if (ImGuiUtil.IconButton(FontAwesomeIcon.Crosshairs, "##TargetReg", "Register targeted player")) {
                 var target = DalamudApi.TargetManager.Target;
                 if (target != null)
-                    fg.TryRegister(target.Name.TextValue, RegistrationSource.Target);
+                    fg.TryJoin(target.Name.TextValue, JoinSource.Target);
             }
 
             ImGui.Spacing();

@@ -75,7 +75,7 @@ public class DeathRollTournamentGame : GameBase {
         PublishPhrase(DeathRollTournamentPhraseCategories.RegistrationOpen, new Dictionary<string, string>());
     }
 
-    public bool TryRegisterPlayer(string fullName) {
+    public override bool TryJoin(string fullName, JoinSource source) {
         if (_state.Phase != DeathRollTournamentPhase.Registration && _state.Phase != DeathRollTournamentPhase.Preparing)
             return false;
         if (_state.RegisteredPlayers.ContainsPlayer(fullName))
@@ -103,7 +103,7 @@ public class DeathRollTournamentGame : GameBase {
         // Registration via plain /random (no number → OutOf -1 → effective 999)
         var effective = roll.OutOf == -1 ? 999 : roll.OutOf;
         if (effective != 999) return;
-        TryRegisterPlayer(roll.PlayerName);
+        TryJoin(roll.PlayerName, JoinSource.Roll);
     }
 
     private void Shuffle() {

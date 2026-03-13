@@ -49,7 +49,7 @@ public class HighRollDuelGame : GameBase {
         PublishPhrase(HighRollDuelPhraseCategories.GameCanceled, new Dictionary<string, string>());
     }
 
-    public bool TryRegister(string fullName) {
+    public override bool TryJoin(string fullName, JoinSource source) {
         if (_state.Phase != HighRollDuelPhase.Registration) return false;
         if (_state.Players.Contains(fullName, StringComparer.OrdinalIgnoreCase)) return false;
         _state.Players.Add(fullName);
@@ -98,7 +98,7 @@ public class HighRollDuelGame : GameBase {
 
     public override void ProcessRoll(Roll roll) {
         if (_state.Phase == HighRollDuelPhase.Registration) {
-            TryRegister(roll.PlayerName);
+            TryJoin(roll.PlayerName, JoinSource.Roll);
             return;
         }
 

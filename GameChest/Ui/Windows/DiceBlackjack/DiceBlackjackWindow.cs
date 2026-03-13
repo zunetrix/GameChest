@@ -119,7 +119,7 @@ public class DiceBlackjackWindow : Window {
 
             case DiceBlackjackPhase.Registration:
                 RegistrationPanel.Draw("Dbj", state.Players.Select(p => p.Name).ToList(),
-                    ref _addPlayerInput, Plugin.Config.DiceBlackjack.MinPlayers, n => game.TryRegister(n), Plugin);
+                    ref _addPlayerInput, Plugin.Config.DiceBlackjack.MinPlayers, n => game.TryJoin(n, JoinSource.Manual), Plugin);
                 return;
 
             case DiceBlackjackPhase.PlayerTurns:

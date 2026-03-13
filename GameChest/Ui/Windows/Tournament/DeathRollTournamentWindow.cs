@@ -211,7 +211,7 @@ public class DeathRollTournamentWindow : Window {
             .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonSuccessHovered)
             .Push(ImGuiCol.ButtonActive, Style.Components.ButtonSuccessActive)) {
             if (ImGui.Button("Add##TnManualReg") && !string.IsNullOrWhiteSpace(_manualPlayerName)) {
-                tn.TryRegisterPlayer(_manualPlayerName.Trim());
+                tn.TryJoin(_manualPlayerName.Trim(), JoinSource.Manual);
                 _manualPlayerName = string.Empty;
             }
         }
@@ -219,7 +219,7 @@ public class DeathRollTournamentWindow : Window {
         if (ImGuiUtil.IconButton(FontAwesomeIcon.Crosshairs, "##TnTargetReg", "Register targeted player")) {
             var target = DalamudApi.TargetManager.Target;
             if (target != null)
-                tn.TryRegisterPlayer(target.Name.TextValue);
+                tn.TryJoin(target.Name.TextValue, JoinSource.Target);
         }
     }
 

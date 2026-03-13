@@ -90,7 +90,7 @@ public class AssassinGameWindow : Window {
         }
 
         if (state.Phase == AssassinPhase.Registration) {
-            RegistrationPanel.Draw("Ag", state.Players, ref _addPlayerInput, Plugin.Config.AssassinGame.MinPlayers, n => game.TryRegister(n), Plugin);
+            RegistrationPanel.Draw("Ag", state.Players, ref _addPlayerInput, Plugin.Config.AssassinGame.MinPlayers, n => game.TryJoin(n, JoinSource.Manual), Plugin);
             return;
         }
 

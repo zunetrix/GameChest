@@ -22,6 +22,7 @@ public abstract class GameBase : IGame {
     public abstract IGameState State { get; }
     public bool IsActive => State.IsActive;
     public virtual bool IsRegistering => false;
+    public virtual bool TryJoin(string fullName, JoinSource source) => false;
     public ImGuiMessageDisplay Notification { get; } = new();
     public List<Roll> RollLog { get; } = new();
     public abstract IReadOnlyList<PhraseCategoryMeta> PhraseCategories { get; }

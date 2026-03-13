@@ -21,6 +21,7 @@ public interface IGame {
     void Reset();
     void RestartMatch();
     void ProcessRoll(Roll roll);
+    bool TryJoin(string fullName, JoinSource source);
     void Tick(DateTime now);
     void SetOutputChannel(XivChatType channel);
 }

@@ -49,7 +49,7 @@ public class TavernBrawlGame : GameBase, IChatConsumer {
         PublishPhrase(TavernBrawlPhraseCategories.GameCanceled, new Dictionary<string, string>());
     }
 
-    public bool TryRegister(string fullName) {
+    public override bool TryJoin(string fullName, JoinSource source) {
         if (_state.Phase != TavernBrawlPhase.Registration) return false;
         if (_state.Players.Contains(fullName, StringComparer.OrdinalIgnoreCase)) return false;
         _state.Players.Add(fullName);
@@ -122,7 +122,7 @@ public class TavernBrawlGame : GameBase, IChatConsumer {
 
     public override void ProcessRoll(Roll roll) {
         if (_state.Phase == TavernBrawlPhase.Registration) {
-            TryRegister(roll.PlayerName);
+            TryJoin(roll.PlayerName, JoinSource.Roll);
             return;
         }
 

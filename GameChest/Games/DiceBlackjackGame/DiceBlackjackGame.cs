@@ -49,7 +49,7 @@ public class DiceBlackjackGame : GameBase, IChatConsumer {
         AnnounceCurrentPlayer();
     }
 
-    public bool TryRegister(string fullName) {
+    public override bool TryJoin(string fullName, JoinSource source) {
         if (_state.Phase != DiceBlackjackPhase.Registration) return false;
         if (_state.Players.Any(p => p.Name.Equals(fullName, StringComparison.OrdinalIgnoreCase))) return false;
         _state.Players.Add(new DiceBlackjackPlayerHand(fullName));
@@ -76,7 +76,7 @@ public class DiceBlackjackGame : GameBase, IChatConsumer {
         if (roll.OutOf != Cfg.MaxRoll) return;
 
         if (_state.Phase == DiceBlackjackPhase.Registration) {
-            TryRegister(roll.PlayerName);
+            TryJoin(roll.PlayerName, JoinSource.Roll);
             return;
         }
 

@@ -95,7 +95,7 @@ public class TavernBrawlWindow : Window {
         }
 
         if (state.Phase == TavernBrawlPhase.Registration) {
-            RegistrationPanel.Draw("Tb", state.Players, ref _addPlayerInput, Plugin.Config.TavernBrawl.MinPlayers, n => game.TryRegister(n), Plugin);
+            RegistrationPanel.Draw("Tb", state.Players, ref _addPlayerInput, Plugin.Config.TavernBrawl.MinPlayers, n => game.TryJoin(n, JoinSource.Manual), Plugin);
             return;
         }
 

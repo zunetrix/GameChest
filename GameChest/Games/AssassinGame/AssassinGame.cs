@@ -52,7 +52,7 @@ public class AssassinGame : GameBase {
         PublishPhrase(AssassinGamePhraseCategories.GameCanceled, new Dictionary<string, string>());
     }
 
-    public bool TryRegister(string fullName) {
+    public override bool TryJoin(string fullName, JoinSource source) {
         if (_state.Phase != AssassinPhase.Registration) return false;
         if (_state.Players.Contains(fullName, StringComparer.OrdinalIgnoreCase)) return false;
         _state.Players.Add(fullName);
@@ -91,7 +91,7 @@ public class AssassinGame : GameBase {
     }
 
     public override void ProcessRoll(Roll roll) {
-        if (_state.Phase == AssassinPhase.Registration) { TryRegister(roll.PlayerName); return; }
+        if (_state.Phase == AssassinPhase.Registration) { TryJoin(roll.PlayerName, JoinSource.Roll); return; }
         if (_state.Phase != AssassinPhase.Attacking) return;
         if (roll.OutOf != Cfg.MaxRoll) return;
 

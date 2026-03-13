@@ -96,7 +96,7 @@ public class DiceRoyaleWindow : Window {
         }
 
         if (state.Phase == DiceRoyalePhase.Registration) {
-            RegistrationPanel.Draw("Dr", state.Players, ref _addPlayerInput, Plugin.Config.DiceRoyale.MinPlayers, n => game.TryRegister(n), Plugin);
+            RegistrationPanel.Draw("Dr", state.Players, ref _addPlayerInput, Plugin.Config.DiceRoyale.MinPlayers, n => game.TryJoin(n, JoinSource.Manual), Plugin);
             return;
         }
 

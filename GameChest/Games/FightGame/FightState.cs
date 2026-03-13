@@ -11,21 +11,14 @@ public enum FightPhase {
     Finished,
 }
 
-public enum RegistrationSource {
-    Chat,
-    Roll,
-    Manual,
-    Target,
-}
-
 public sealed class RegisteredFighter {
-    public RegisteredFighter(string fullName, RegistrationSource source) {
+    public RegisteredFighter(string fullName, JoinSource source) {
         FullName = fullName;
         Source = source;
     }
 
     public string FullName { get; }
-    public RegistrationSource Source { get; }
+    public JoinSource Source { get; }
 }
 
 public sealed class FighterState {

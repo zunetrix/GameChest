@@ -49,7 +49,7 @@ public class KingOfTheHillGame : GameBase {
         PublishPhrase(KingOfTheHillPhraseCategories.GameCanceled, new Dictionary<string, string>());
     }
 
-    public bool TryRegister(string fullName) {
+    public override bool TryJoin(string fullName, JoinSource source) {
         if (_state.Phase != KingOfTheHillPhase.Registration) return false;
         if (_state.Players.Contains(fullName, StringComparer.OrdinalIgnoreCase)) return false;
         _state.Players.Add(fullName);
@@ -104,7 +104,7 @@ public class KingOfTheHillGame : GameBase {
     }
 
     public override void ProcessRoll(Roll roll) {
-        if (_state.Phase == KingOfTheHillPhase.Registration) { TryRegister(roll.PlayerName); return; }
+        if (_state.Phase == KingOfTheHillPhase.Registration) { TryJoin(roll.PlayerName, JoinSource.Roll); return; }
         if (_state.Phase != KingOfTheHillPhase.Rolling) return;
         if (roll.OutOf != Cfg.MaxRoll) return;
         if (!_state.Players.Contains(roll.PlayerName, StringComparer.OrdinalIgnoreCase)) return;

@@ -93,7 +93,7 @@ public class KingOfTheHillWindow : Window {
         }
 
         if (state.Phase == KingOfTheHillPhase.Registration) {
-            RegistrationPanel.Draw("Koth", state.Players, ref _addPlayerInput, Plugin.Config.KingOfTheHill.MinPlayers, n => game.TryRegister(n), Plugin);
+            RegistrationPanel.Draw("Koth", state.Players, ref _addPlayerInput, Plugin.Config.KingOfTheHill.MinPlayers, n => game.TryJoin(n, JoinSource.Manual), Plugin);
             return;
         }
 

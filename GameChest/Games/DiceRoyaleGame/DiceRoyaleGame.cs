@@ -49,7 +49,7 @@ public class DiceRoyaleGame : GameBase, IChatConsumer {
         PublishPhrase(DiceRoyalePhraseCategories.GameCanceled, new Dictionary<string, string>());
     }
 
-    public bool TryRegister(string fullName) {
+    public override bool TryJoin(string fullName, JoinSource source) {
         if (_state.Phase != DiceRoyalePhase.Registration) return false;
         if (_state.Players.Contains(fullName, StringComparer.OrdinalIgnoreCase)) return false;
         _state.Players.Add(fullName);
@@ -142,7 +142,7 @@ public class DiceRoyaleGame : GameBase, IChatConsumer {
     }
 
     public override void ProcessRoll(Roll roll) {
-        if (_state.Phase == DiceRoyalePhase.Registration) { TryRegister(roll.PlayerName); return; }
+        if (_state.Phase == DiceRoyalePhase.Registration) { TryJoin(roll.PlayerName, JoinSource.Roll); return; }
         if (_state.Phase != DiceRoyalePhase.Rolling) return;
         if (roll.OutOf != Cfg.MaxRoll) return;
         if (!_state.Players.Contains(roll.PlayerName, StringComparer.OrdinalIgnoreCase)) return;

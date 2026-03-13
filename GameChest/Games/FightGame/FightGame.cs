@@ -78,8 +78,8 @@ public class FightGame : GameBase, IChatConsumer {
         RollLog.Clear();
         _state.Reset();
         _outOfTurnCooldowns.Clear();
-        _state.RegisteredFighters.Add(new RegisteredFighter(nameA, RegistrationSource.Manual));
-        _state.RegisteredFighters.Add(new RegisteredFighter(nameB, RegistrationSource.Manual));
+        _state.RegisteredFighters.Add(new RegisteredFighter(nameA, JoinSource.Manual));
+        _state.RegisteredFighters.Add(new RegisteredFighter(nameB, JoinSource.Manual));
         _state.Phase = FightPhase.Idle;
     }
 
@@ -91,7 +91,7 @@ public class FightGame : GameBase, IChatConsumer {
     public override void ProcessRoll(Roll roll) {
         switch (_state.Phase) {
             case FightPhase.Registration:
-                if (Cfg.RegisterByRoll) TryRegister(roll.PlayerName, RegistrationSource.Roll);
+                if (Cfg.RegisterByRoll) TryJoin(roll.PlayerName, JoinSource.Roll);
                 break;
             case FightPhase.Initiative:
                 ProcessInitiative(roll);
@@ -120,13 +120,13 @@ public class FightGame : GameBase, IChatConsumer {
     public void ProcessChatMessage(string senderFullName, string message, XivChatType chatType) {
         if (Cfg.RegisterByPhrase && message.Contains(Cfg.JoinGamePhrase, StringComparison.InvariantCultureIgnoreCase)) {
             DalamudApi.PluginLog.Debug($"{senderFullName} try join the game via phrase");
-            TryRegister(senderFullName, RegistrationSource.Chat);
+            TryJoin(senderFullName, JoinSource.Chat);
         }
     }
 
-    public bool TryRegister(string fullName, RegistrationSource source) {
+    public override bool TryJoin(string fullName, JoinSource source) {
         var isOpenRegistration = _state.Phase == FightPhase.Registration;
-        var isManualSource = source is RegistrationSource.Manual or RegistrationSource.Target;
+        var isManualSource = source is JoinSource.Manual or JoinSource.Target;
 
         if (!isOpenRegistration && (!isManualSource || _state.Phase != FightPhase.Idle)) return false;
         if (_state.RegisteredFighters.Count >= 2) return false;

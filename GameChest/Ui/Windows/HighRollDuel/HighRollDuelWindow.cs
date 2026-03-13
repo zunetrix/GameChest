@@ -102,7 +102,7 @@ public class HighRollDuelWindow : Window {
         ImGui.Spacing();
 
         if (state.Phase == HighRollDuelPhase.Registration) {
-            RegistrationPanel.Draw("Hrd", state.Players, ref _addPlayerInput, Plugin.Config.HighRollDuel.MinPlayers, n => game.TryRegister(n), Plugin);
+            RegistrationPanel.Draw("Hrd", state.Players, ref _addPlayerInput, Plugin.Config.HighRollDuel.MinPlayers, n => game.TryJoin(n, JoinSource.Manual), Plugin);
             return;
         }
 
