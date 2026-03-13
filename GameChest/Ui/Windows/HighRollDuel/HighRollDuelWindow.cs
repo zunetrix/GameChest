@@ -42,9 +42,9 @@ public class HighRollDuelWindow : Window {
         using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessnNormal)
             .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonSuccessHovered)
             .Push(ImGuiCol.ButtonActive, Style.Components.ButtonSuccessActive)) {
-            if (state.Phase == HighRollDuelPhase.Idle || state.Phase == HighRollDuelPhase.Done) {
+            if (state.Phase == HighRollDuelPhase.Idle || state.Phase == HighRollDuelPhase.Finished) {
                 if (ImGui.Button("Begin Registration##HrdBeginReg")) game.BeginRegistration();
-            } else if (state.Phase == HighRollDuelPhase.Registration) {
+            } else if (state.Phase == HighRollDuelPhase.Registering) {
                 using (ImRaii.Disabled(state.Players.Count < Plugin.Config.HighRollDuel.MinPlayers))
                     if (ImGui.Button("Start##HrdStart")) game.StartRolling();
                 if (state.Players.Count < Plugin.Config.HighRollDuel.MinPlayers)
@@ -76,7 +76,7 @@ public class HighRollDuelWindow : Window {
         var btnCount = Plugin.Config.DebugMode ? 3 : 2;
         ImGui.SameLine(ImGui.GetWindowContentRegionMax().X - (btnW * btnCount + spacing * (btnCount - 1) + marginRight));
         if (Plugin.Config.DebugMode) {
-            using (ImRaii.Disabled(state.Phase is not (HighRollDuelPhase.Registration or HighRollDuelPhase.Rolling)))
+            using (ImRaii.Disabled(state.Phase is not (HighRollDuelPhase.Registering or HighRollDuelPhase.Rolling)))
                 if (ImGuiUtil.IconButton(FontAwesomeIcon.Dice, "##HrdSimRoll", "Simulate Roll"))
                     game.SimulateRoll();
             ImGui.SameLine();
@@ -101,7 +101,7 @@ public class HighRollDuelWindow : Window {
 
         ImGui.Spacing();
 
-        if (state.Phase == HighRollDuelPhase.Registration) {
+        if (state.Phase == HighRollDuelPhase.Registering) {
             RegistrationPanel.Draw("Hrd", state.Players, ref _addPlayerInput, Plugin.Config.HighRollDuel.MinPlayers, n => game.TryJoin(n, JoinSource.Manual), Plugin);
             return;
         }
@@ -146,7 +146,7 @@ public class HighRollDuelWindow : Window {
             return;
         }
 
-        if (state.Phase == HighRollDuelPhase.Done && state.Winner != null) {
+        if (state.Phase == HighRollDuelPhase.Finished && state.Winner != null) {
             ImGui.Spacing();
             using (ImRaii.PushColor(ImGuiCol.Text, Plugin.Config.HighlightColor))
                 ImGui.Text($"Winner: {PlayerName.Short(state.Winner)}");
@@ -210,9 +210,9 @@ public class HighRollDuelWindow : Window {
 
     private static void DrawPhaseBadge(HighRollDuelState state) {
         var (label, color) = state.Phase switch {
-            HighRollDuelPhase.Registration => ("[REG]", Style.Colors.Yellow),
+            HighRollDuelPhase.Registering => ("[REG]", Style.Colors.Yellow),
             HighRollDuelPhase.Rolling => ("[ROLLING]", Style.Colors.Green),
-            HighRollDuelPhase.Done => ("[DONE]", Style.Colors.Gray),
+            HighRollDuelPhase.Finished => ("[DONE]", Style.Colors.Gray),
             _ => ("[IDLE]", Style.Colors.Gray),
         };
         using (ImRaii.PushColor(ImGuiCol.Text, color)) ImGui.Text(label);

@@ -10,7 +10,7 @@ public class KingOfTheHillGame : GameBase {
     public override string Name => "King of the Hill";
     public override GameMode Mode => GameMode.KingOfTheHill;
     public override KingOfTheHillState State => _state;
-    public override bool IsRegistering => _state.Phase == KingOfTheHillPhase.Registration;
+    public override bool IsRegistering => _state.Phase == KingOfTheHillPhase.Registering;
     public override IReadOnlyList<PhraseCategoryMeta> PhraseCategories => KingOfTheHillPhraseCategories.All;
 
     public List<KingOfTheHillResult> MatchHistory { get; } = new();
@@ -30,7 +30,7 @@ public class KingOfTheHillGame : GameBase {
 
     public void BeginRegistration() {
         _state.Reset();
-        _state.Phase = KingOfTheHillPhase.Registration;
+        _state.Phase = KingOfTheHillPhase.Registering;
         PublishPhrase(KingOfTheHillPhraseCategories.RegistrationOpen, new Dictionary<string, string>());
     }
 
@@ -50,7 +50,7 @@ public class KingOfTheHillGame : GameBase {
     }
 
     public override bool TryJoin(string fullName, JoinSource source) {
-        if (_state.Phase != KingOfTheHillPhase.Registration) return false;
+        if (_state.Phase != KingOfTheHillPhase.Registering) return false;
         if (_state.Players.Contains(fullName, StringComparer.OrdinalIgnoreCase)) return false;
         _state.Players.Add(fullName);
         return true;
@@ -93,7 +93,7 @@ public class KingOfTheHillGame : GameBase {
 
     public void SimulateRoll() {
         var outOf = Cfg.MaxRoll;
-        if (_state.Phase == KingOfTheHillPhase.Registration) {
+        if (_state.Phase == KingOfTheHillPhase.Registering) {
             Plugin.RollManager?.ProcessIncomingRollMessage(
                 $"Player{++_simPlayerIdx}@Bahamut", _rng.Next(1, outOf + 1), outOf);
         } else if (_state.Phase == KingOfTheHillPhase.Rolling) {
@@ -104,7 +104,7 @@ public class KingOfTheHillGame : GameBase {
     }
 
     public override void ProcessRoll(Roll roll) {
-        if (_state.Phase == KingOfTheHillPhase.Registration) { TryJoin(roll.PlayerName, JoinSource.Roll); return; }
+        if (_state.Phase == KingOfTheHillPhase.Registering) { TryJoin(roll.PlayerName, JoinSource.Roll); return; }
         if (_state.Phase != KingOfTheHillPhase.Rolling) return;
         if (roll.OutOf != Cfg.MaxRoll) return;
         if (!_state.Players.Contains(roll.PlayerName, StringComparer.OrdinalIgnoreCase)) return;
@@ -128,7 +128,7 @@ public class KingOfTheHillGame : GameBase {
 
     private void EndGame() {
         _state.Winner = _state.King;
-        _state.Phase = KingOfTheHillPhase.Done;
+        _state.Phase = KingOfTheHillPhase.Finished;
         if (_state.King != null) {
             PublishPhrase(KingOfTheHillPhraseCategories.GameEnd, new Dictionary<string, string> {
                 ["winner"] = PlayerName.Short(_state.King),

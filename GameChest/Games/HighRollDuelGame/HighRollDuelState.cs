@@ -3,13 +3,13 @@ using System.Collections.Generic;
 
 namespace GameChest;
 
-public enum HighRollDuelPhase { Idle, Registration, Rolling, Done }
+public enum HighRollDuelPhase { Idle, Registering, Rolling, Finished }
 
 public record HighRollDuelResult(string Winner, int PlayerCount, DateTime PlayedAt);
 
 public sealed class HighRollDuelState : IGameState {
     public HighRollDuelPhase Phase { get; set; } = HighRollDuelPhase.Idle;
-    public bool IsActive => Phase is HighRollDuelPhase.Registration or HighRollDuelPhase.Rolling;
+    public bool IsActive => Phase is HighRollDuelPhase.Registering or HighRollDuelPhase.Rolling;
     public List<string> Players { get; } = new();
     public Dictionary<string, int> CurrentRoundRolls { get; } = new();
     public int Round { get; set; } = 0;
@@ -29,4 +29,6 @@ public sealed class HighRollDuelState : IGameState {
         CurrentRoundRolls.Clear();
         RoundEliminations.Clear();
     }
+
+    GamePhase IGameState.Phase => Phase.ToGamePhase();
 }

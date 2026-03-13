@@ -57,7 +57,7 @@ public class FightGameWindow : Window {
                     fg.BeginRegistration();
             }
             ImGui.SameLine();
-        } else if (state.Phase == FightPhase.Registration) {
+        } else if (state.Phase == FightPhase.Registering) {
             var canStart = state.RegisteredFighters.Count == 2;
             using (ImRaii.Disabled(!canStart))
             using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonBlueNormal)
@@ -123,10 +123,10 @@ public class FightGameWindow : Window {
 
     private static void DrawPhaseBadge(FightPhase phase) {
         var (label, color) = phase switch {
-            FightPhase.Registration => ("REGISTRATION", Style.Colors.Yellow),
+            FightPhase.Registering => ("REGISTRATION", Style.Colors.Yellow),
             FightPhase.Initiative => ("INITIATIVE", Style.Colors.Orange),
             FightPhase.Combat => ("COMBAT", Style.Colors.Green),
-            FightPhase.Finished => ("FINISHED", Style.Colors.Gray),
+            FightPhase.Finished => ("DONE", Style.Colors.Gray),
             _ => ("IDLE", Style.Colors.Gray),
         };
         using (ImRaii.PushColor(ImGuiCol.Text, color))
@@ -140,7 +140,7 @@ public class FightGameWindow : Window {
         ImGui.Spacing();
 
         switch (state.Phase) {
-            case FightPhase.Registration:
+            case FightPhase.Registering:
             case FightPhase.Idle:
                 DrawRegistrationSection(fg, state);
                 break;

@@ -20,7 +20,7 @@ public class DiceBlackjackGameTests {
     public void BeginRegistration_sets_Registration_phase() {
         var (game, state) = Create();
         game.BeginRegistration();
-        state.Phase.ShouldBe(DiceBlackjackPhase.Registration);
+        state.Phase.ShouldBe(DiceBlackjackPhase.Registering);
     }
 
     [Fact]
@@ -102,7 +102,7 @@ public class DiceBlackjackGameTests {
         game.ProcessRoll(new Roll("PlayerA@Bahamut", 10, 100)); // deal 1
         game.ProcessRoll(new Roll("PlayerA@Bahamut", 12, 100)); // deal 2: total=22 -> bust
         // All players busted -> Done without DealerTurn
-        state.Phase.ShouldBe(DiceBlackjackPhase.Done);
+        state.Phase.ShouldBe(DiceBlackjackPhase.Finished);
     }
 
     [Fact]
@@ -143,8 +143,8 @@ public class DiceBlackjackGameTests {
         game.Stand();
 
         state.Phase.ShouldBe(DiceBlackjackPhase.DealerTurn);
-        game.AutoDrawDealer();
-        state.Phase.ShouldBe(DiceBlackjackPhase.Done);
+        game.DealerStand();
+        state.Phase.ShouldBe(DiceBlackjackPhase.Finished);
     }
 
     [Fact]
@@ -179,8 +179,8 @@ public class DiceBlackjackGameTests {
         game.ProcessRoll(new Roll("PlayerA@Bahamut", 8, 100));  // deal 2: total=18
         game.Stand(); // PlayerA stands with 18, DealerTurn
         state.Phase.ShouldBe(DiceBlackjackPhase.DealerTurn);
-        // Dealer draws random cards - just verify game completes
-        game.AutoDrawDealer();
-        state.Phase.ShouldBe(DiceBlackjackPhase.Done);
+        // Dealer draws a busting card (22 > TargetPoints=21)
+        game.ProcessRoll(new Roll("Dealer@Bahamut", 22, 100));
+        state.Phase.ShouldBe(DiceBlackjackPhase.Finished);
     }
 }

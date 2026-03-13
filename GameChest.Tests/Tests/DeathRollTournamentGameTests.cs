@@ -18,7 +18,7 @@ public class DeathRollTournamentGameTests {
     public void BeginRegistration_sets_Registration_phase() {
         var (game, state) = Create();
         game.BeginRegistration();
-        state.Phase.ShouldBe(DeathRollTournamentPhase.Registration);
+        state.Phase.ShouldBe(DeathRollTournamentPhase.Registering);
     }
 
     [Fact]
@@ -98,7 +98,7 @@ public class DeathRollTournamentGameTests {
 
         game.AdvanceToNextMatch();
 
-        state.Phase.ShouldBe(DeathRollTournamentPhase.Done);
+        state.Phase.ShouldBe(DeathRollTournamentPhase.Finished);
         state.TournamentWinner.ShouldBe(p1);
     }
 
@@ -123,7 +123,7 @@ public class DeathRollTournamentGameTests {
         var p1 = state.MatchPlayer1!;
         game.ForfeitToPlayer(p1);
 
-        state.Phase.ShouldBe(DeathRollTournamentPhase.Done);
+        state.Phase.ShouldBe(DeathRollTournamentPhase.Finished);
         state.TournamentWinner.ShouldBe(p1);
     }
 }

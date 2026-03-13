@@ -10,7 +10,7 @@ public class TavernBrawlGame : GameBase, IChatConsumer {
     public override string Name => "Tavern Brawl";
     public override GameMode Mode => GameMode.TavernBrawl;
     public override TavernBrawlState State => _state;
-    public override bool IsRegistering => _state.Phase == TavernBrawlPhase.Registration;
+    public override bool IsRegistering => _state.Phase == TavernBrawlPhase.Registering;
     public override IReadOnlyList<PhraseCategoryMeta> PhraseCategories => TavernBrawlPhraseCategories.All;
 
     public List<TavernBrawlResult> MatchHistory { get; } = new();
@@ -30,7 +30,7 @@ public class TavernBrawlGame : GameBase, IChatConsumer {
 
     public void BeginRegistration() {
         _state.Reset();
-        _state.Phase = TavernBrawlPhase.Registration;
+        _state.Phase = TavernBrawlPhase.Registering;
         PublishPhrase(TavernBrawlPhraseCategories.RegistrationOpen, new Dictionary<string, string>());
     }
 
@@ -50,7 +50,7 @@ public class TavernBrawlGame : GameBase, IChatConsumer {
     }
 
     public override bool TryJoin(string fullName, JoinSource source) {
-        if (_state.Phase != TavernBrawlPhase.Registration) return false;
+        if (_state.Phase != TavernBrawlPhase.Registering) return false;
         if (_state.Players.Contains(fullName, StringComparer.OrdinalIgnoreCase)) return false;
         _state.Players.Add(fullName);
         return true;
@@ -110,7 +110,7 @@ public class TavernBrawlGame : GameBase, IChatConsumer {
 
     public void SimulateRoll() {
         var outOf = Cfg.MaxRoll;
-        if (_state.Phase == TavernBrawlPhase.Registration) {
+        if (_state.Phase == TavernBrawlPhase.Registering) {
             Plugin.RollManager?.ProcessIncomingRollMessage(
                 $"Player{++_simPlayerIdx}@Bahamut", _rng.Next(1, outOf + 1), outOf);
         } else if (_state.Phase == TavernBrawlPhase.Rolling) {
@@ -121,7 +121,7 @@ public class TavernBrawlGame : GameBase, IChatConsumer {
     }
 
     public override void ProcessRoll(Roll roll) {
-        if (_state.Phase == TavernBrawlPhase.Registration) {
+        if (_state.Phase == TavernBrawlPhase.Registering) {
             TryJoin(roll.PlayerName, JoinSource.Roll);
             return;
         }
@@ -147,7 +147,7 @@ public class TavernBrawlGame : GameBase, IChatConsumer {
     private void EndGame() {
         var winner = _state.Players.FirstOrDefault();
         _state.Winner = winner;
-        _state.Phase = TavernBrawlPhase.Done;
+        _state.Phase = TavernBrawlPhase.Finished;
         if (winner != null) {
             PublishPhrase(TavernBrawlPhraseCategories.GameEnd, new Dictionary<string, string> {
                 ["winner"] = PlayerName.Short(winner),

@@ -15,10 +15,10 @@ public class DeathRollGameTests {
     }
 
     [Fact]
-    public void Start_sets_InProgress() {
+    public void Start_sets_Active() {
         var (game, state) = Create();
         game.Start();
-        state.Phase.ShouldBe(DeathRollPhase.InProgress);
+        state.Phase.ShouldBe(DeathRollPhase.Active);
     }
 
     [Fact]
@@ -65,7 +65,7 @@ public class DeathRollGameTests {
         game.Start();
         game.ProcessRoll(new Roll("PlayerA@Bahamut", 50, 999));
         game.ProcessRoll(new Roll("PlayerB@Bahamut", 1, 50));
-        state.Phase.ShouldBe(DeathRollPhase.Done);
+        state.Phase.ShouldBe(DeathRollPhase.Finished);
         state.Loser.ShouldBe("PlayerB@Bahamut");
         state.Winner.ShouldBe("PlayerA@Bahamut");
     }
@@ -75,7 +75,7 @@ public class DeathRollGameTests {
         var (game, state) = Create();
         game.Start();
         game.ProcessRoll(new Roll("PlayerA@Bahamut", 1, 999));
-        state.Phase.ShouldBe(DeathRollPhase.Done);
+        state.Phase.ShouldBe(DeathRollPhase.Finished);
         state.Loser.ShouldBe("PlayerA@Bahamut");
         // No winner since only 1 roll in chain
         state.Winner.ShouldBeNull();

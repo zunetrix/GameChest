@@ -21,6 +21,7 @@ public abstract class GameBase : IGame {
     public abstract GameMode Mode { get; }
     public abstract IGameState State { get; }
     public bool IsActive => State.IsActive;
+    public GamePhase Phase => State.Phase;
     public virtual bool IsRegistering => false;
     public virtual bool TryJoin(string fullName, JoinSource source) => false;
     public ImGuiMessageDisplay Notification { get; } = new();

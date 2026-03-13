@@ -13,7 +13,7 @@ public class FightGame : GameBase, IChatConsumer {
     public override string Name => "Fight Club";
     public override GameMode Mode => GameMode.FightGame;
     public override FightState State => _state;
-    public override bool IsRegistering => _state.Phase == FightPhase.Registration;
+    public override bool IsRegistering => _state.Phase == FightPhase.Registering;
     public override IReadOnlyList<PhraseCategoryMeta> PhraseCategories => FightGamePhraseCategories.All;
 
     public List<FightResult> MatchHistory { get; } = new();
@@ -90,7 +90,7 @@ public class FightGame : GameBase, IChatConsumer {
 
     public override void ProcessRoll(Roll roll) {
         switch (_state.Phase) {
-            case FightPhase.Registration:
+            case FightPhase.Registering:
                 if (Cfg.RegisterByRoll) TryJoin(roll.PlayerName, JoinSource.Roll);
                 break;
             case FightPhase.Initiative:
@@ -104,7 +104,7 @@ public class FightGame : GameBase, IChatConsumer {
 
     public void BeginRegistration() {
         _state.Reset();
-        _state.Phase = FightPhase.Registration;
+        _state.Phase = FightPhase.Registering;
         _state.RegistrationReminderAt = DateTime.UtcNow.AddSeconds(Cfg.RegistrationReminderSeconds);
 
         var localPlayer = DalamudApi.PlayerState;
@@ -125,7 +125,7 @@ public class FightGame : GameBase, IChatConsumer {
     }
 
     public override bool TryJoin(string fullName, JoinSource source) {
-        var isOpenRegistration = _state.Phase == FightPhase.Registration;
+        var isOpenRegistration = _state.Phase == FightPhase.Registering;
         var isManualSource = source is JoinSource.Manual or JoinSource.Target;
 
         if (!isOpenRegistration && (!isManualSource || _state.Phase != FightPhase.Idle)) return false;
@@ -318,7 +318,7 @@ public class FightGame : GameBase, IChatConsumer {
 
     public override void Tick(DateTime now) {
         switch (_state.Phase) {
-            case FightPhase.Registration:
+            case FightPhase.Registering:
                 if (Cfg.RegistrationReminderSeconds > 0
                     && _state.RegistrationReminderAt.HasValue
                     && now >= _state.RegistrationReminderAt.Value) {

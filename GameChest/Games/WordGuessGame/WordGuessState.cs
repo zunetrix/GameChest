@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace GameChest;
 
-public enum WordGuessPhase { Idle, Active, Done }
+public enum WordGuessPhase { Idle, Active, Finished }
 
 public enum WordGuessVictoryMode { Single, Session }
 
@@ -53,4 +53,6 @@ public sealed class WordGuessState : IGameState {
         HintRevealAt = null;
         TimerEndsAt = null;
     }
+
+    GamePhase IGameState.Phase => Phase.ToGamePhase();
 }

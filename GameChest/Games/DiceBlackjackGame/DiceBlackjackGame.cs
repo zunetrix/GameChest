@@ -10,7 +10,7 @@ public class DiceBlackjackGame : GameBase, IChatConsumer {
     public override string Name => "Dice Blackjack";
     public override GameMode Mode => GameMode.DiceBlackjack;
     public override DiceBlackjackState State => _state;
-    public override bool IsRegistering => _state.Phase == DiceBlackjackPhase.Registration;
+    public override bool IsRegistering => _state.Phase == DiceBlackjackPhase.Registering;
     public override IReadOnlyList<PhraseCategoryMeta> PhraseCategories => DiceBlackjackPhraseCategories.All;
 
     private readonly DiceBlackjackState _state = new();
@@ -29,7 +29,7 @@ public class DiceBlackjackGame : GameBase, IChatConsumer {
 
     public void BeginRegistration() {
         _state.Reset();
-        _state.Phase = DiceBlackjackPhase.Registration;
+        _state.Phase = DiceBlackjackPhase.Registering;
         PublishPhrase(DiceBlackjackPhraseCategories.RegistrationOpen, new() { ["maxroll"] = Cfg.MaxRoll.ToString() });
     }
 
@@ -42,7 +42,7 @@ public class DiceBlackjackGame : GameBase, IChatConsumer {
     }
 
     public void StartGame() {
-        if (_state.Phase != DiceBlackjackPhase.Registration) return;
+        if (_state.Phase != DiceBlackjackPhase.Registering) return;
         if (_state.Players.Count < Cfg.MinPlayers) return;
         _state.Phase = DiceBlackjackPhase.PlayerTurns;
         _state.CurrentPlayerIndex = 0;
@@ -50,7 +50,7 @@ public class DiceBlackjackGame : GameBase, IChatConsumer {
     }
 
     public override bool TryJoin(string fullName, JoinSource source) {
-        if (_state.Phase != DiceBlackjackPhase.Registration) return false;
+        if (_state.Phase != DiceBlackjackPhase.Registering) return false;
         if (_state.Players.Any(p => p.Name.Equals(fullName, StringComparison.OrdinalIgnoreCase))) return false;
         _state.Players.Add(new DiceBlackjackPlayerHand(fullName));
         return true;
@@ -75,7 +75,7 @@ public class DiceBlackjackGame : GameBase, IChatConsumer {
     public override void ProcessRoll(Roll roll) {
         if (roll.OutOf != Cfg.MaxRoll) return;
 
-        if (_state.Phase == DiceBlackjackPhase.Registration) {
+        if (_state.Phase == DiceBlackjackPhase.Registering) {
             TryJoin(roll.PlayerName, JoinSource.Roll);
             return;
         }
@@ -125,7 +125,7 @@ public class DiceBlackjackGame : GameBase, IChatConsumer {
 
     public void SimulateRoll() {
         var outOf = Cfg.MaxRoll;
-        if (_state.Phase == DiceBlackjackPhase.Registration) {
+        if (_state.Phase == DiceBlackjackPhase.Registering) {
             Plugin.RollManager?.ProcessIncomingRollMessage($"Player{++_simPlayerIdx}@Bahamut", _rng.Next(1, outOf + 1), outOf);
         } else if (_state.Phase == DiceBlackjackPhase.PlayerTurns) {
             var current = _state.CurrentPlayer;
@@ -166,7 +166,7 @@ public class DiceBlackjackGame : GameBase, IChatConsumer {
 
         if (_state.CurrentPlayerIndex >= _state.Players.Count) {
             if (_state.Players.All(p => p.Status == PlayerHandStatus.Busted)) {
-                _state.Phase = DiceBlackjackPhase.Done;
+                _state.Phase = DiceBlackjackPhase.Finished;
             } else {
                 _state.Phase = DiceBlackjackPhase.DealerTurn;
             }
@@ -195,7 +195,7 @@ public class DiceBlackjackGame : GameBase, IChatConsumer {
     }
 
     private void EndGame() {
-        _state.Phase = DiceBlackjackPhase.Done;
+        _state.Phase = DiceBlackjackPhase.Finished;
         var dealerTotal = HandTotal(_state.DealerCards);
         var dealerBusted = _state.DealerStatus == PlayerHandStatus.Busted;
         string? champion = null;

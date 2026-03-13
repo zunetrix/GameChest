@@ -10,7 +10,7 @@ public class DiceRoyaleGame : GameBase, IChatConsumer {
     public override string Name => "Dice Royale";
     public override GameMode Mode => GameMode.DiceRoyale;
     public override DiceRoyaleState State => _state;
-    public override bool IsRegistering => _state.Phase == DiceRoyalePhase.Registration;
+    public override bool IsRegistering => _state.Phase == DiceRoyalePhase.Registering;
     public override IReadOnlyList<PhraseCategoryMeta> PhraseCategories => DiceRoyalePhraseCategories.All;
 
     public List<DiceRoyaleResult> MatchHistory { get; } = new();
@@ -30,7 +30,7 @@ public class DiceRoyaleGame : GameBase, IChatConsumer {
 
     public void BeginRegistration() {
         _state.Reset();
-        _state.Phase = DiceRoyalePhase.Registration;
+        _state.Phase = DiceRoyalePhase.Registering;
         PublishPhrase(DiceRoyalePhraseCategories.RegistrationOpen, new Dictionary<string, string>());
     }
 
@@ -50,7 +50,7 @@ public class DiceRoyaleGame : GameBase, IChatConsumer {
     }
 
     public override bool TryJoin(string fullName, JoinSource source) {
-        if (_state.Phase != DiceRoyalePhase.Registration) return false;
+        if (_state.Phase != DiceRoyalePhase.Registering) return false;
         if (_state.Players.Contains(fullName, StringComparer.OrdinalIgnoreCase)) return false;
         _state.Players.Add(fullName);
         return true;
@@ -131,7 +131,7 @@ public class DiceRoyaleGame : GameBase, IChatConsumer {
 
     public void SimulateRoll() {
         var outOf = Cfg.MaxRoll;
-        if (_state.Phase == DiceRoyalePhase.Registration) {
+        if (_state.Phase == DiceRoyalePhase.Registering) {
             Plugin.RollManager?.ProcessIncomingRollMessage(
                 $"Player{++_simPlayerIdx}@Bahamut", _rng.Next(1, outOf + 1), outOf);
         } else if (_state.Phase == DiceRoyalePhase.Rolling) {
@@ -142,7 +142,7 @@ public class DiceRoyaleGame : GameBase, IChatConsumer {
     }
 
     public override void ProcessRoll(Roll roll) {
-        if (_state.Phase == DiceRoyalePhase.Registration) { TryJoin(roll.PlayerName, JoinSource.Roll); return; }
+        if (_state.Phase == DiceRoyalePhase.Registering) { TryJoin(roll.PlayerName, JoinSource.Roll); return; }
         if (_state.Phase != DiceRoyalePhase.Rolling) return;
         if (roll.OutOf != Cfg.MaxRoll) return;
         if (!_state.Players.Contains(roll.PlayerName, StringComparer.OrdinalIgnoreCase)) return;
@@ -183,7 +183,7 @@ public class DiceRoyaleGame : GameBase, IChatConsumer {
     private void EndGame() {
         var winner = _state.Players.FirstOrDefault();
         _state.Winner = winner;
-        _state.Phase = DiceRoyalePhase.Done;
+        _state.Phase = DiceRoyalePhase.Finished;
         if (winner != null) {
             PublishPhrase(DiceRoyalePhraseCategories.GameEnd, new Dictionary<string, string> { ["winner"] = PlayerName.Short(winner) });
             MatchHistory.Add(new DiceRoyaleResult(winner, _state.Round, DateTime.Now));

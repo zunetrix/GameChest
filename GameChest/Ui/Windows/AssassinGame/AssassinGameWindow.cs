@@ -38,9 +38,9 @@ public class AssassinGameWindow : Window {
         using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessnNormal)
             .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonSuccessHovered)
             .Push(ImGuiCol.ButtonActive, Style.Components.ButtonSuccessActive)) {
-            if (state.Phase is AssassinPhase.Idle or AssassinPhase.Done) {
+            if (state.Phase is AssassinPhase.Idle or AssassinPhase.Finished) {
                 if (ImGui.Button("Begin Registration##AgBeginReg")) game.BeginRegistration();
-            } else if (state.Phase == AssassinPhase.Registration) {
+            } else if (state.Phase == AssassinPhase.Registering) {
                 using (ImRaii.Disabled(state.Players.Count < Plugin.Config.AssassinGame.MinPlayers))
                     if (ImGui.Button("Assign Targets##AgAssign")) game.AssignTargets();
                 if (state.Players.Count < Plugin.Config.AssassinGame.MinPlayers)
@@ -66,7 +66,7 @@ public class AssassinGameWindow : Window {
         var btnCount = Plugin.Config.DebugMode ? 3 : 2;
         ImGui.SameLine(ImGui.GetWindowContentRegionMax().X - (btnW * btnCount + spacing * (btnCount - 1) + marginRight));
         if (Plugin.Config.DebugMode) {
-            using (ImRaii.Disabled(state.Phase is not (AssassinPhase.Registration or AssassinPhase.Attacking)))
+            using (ImRaii.Disabled(state.Phase is not (AssassinPhase.Registering or AssassinPhase.Attacking)))
                 if (ImGuiUtil.IconButton(FontAwesomeIcon.Dice, "##AgSimRoll", "Simulate Roll"))
                     game.SimulateRoll();
             ImGui.SameLine();
@@ -89,7 +89,7 @@ public class AssassinGameWindow : Window {
             return;
         }
 
-        if (state.Phase == AssassinPhase.Registration) {
+        if (state.Phase == AssassinPhase.Registering) {
             RegistrationPanel.Draw("Ag", state.Players, ref _addPlayerInput, Plugin.Config.AssassinGame.MinPlayers, n => game.TryJoin(n, JoinSource.Manual), Plugin);
             return;
         }
@@ -145,7 +145,7 @@ public class AssassinGameWindow : Window {
             return;
         }
 
-        if (state.Phase == AssassinPhase.Done && state.Winner != null) {
+        if (state.Phase == AssassinPhase.Finished && state.Winner != null) {
             using (ImRaii.PushColor(ImGuiCol.Text, Plugin.Config.HighlightColor))
                 ImGui.Text($"Winner: {PlayerName.Short(state.Winner)}");
         }
@@ -182,10 +182,10 @@ public class AssassinGameWindow : Window {
 
     private static void DrawPhaseBadge(AssassinGameState state) {
         var (label, color) = state.Phase switch {
-            AssassinPhase.Registration => ("[REG]", Style.Colors.Yellow),
+            AssassinPhase.Registering => ("[REG]", Style.Colors.Yellow),
             AssassinPhase.Active => ("[ACTIVE]", Style.Colors.Green),
             AssassinPhase.Attacking => ("[ATTACK]", Style.Colors.Orange),
-            AssassinPhase.Done => ("[DONE]", Style.Colors.Gray),
+            AssassinPhase.Finished => ("[DONE]", Style.Colors.Gray),
             _ => ("[IDLE]", Style.Colors.Gray),
         };
         using (ImRaii.PushColor(ImGuiCol.Text, color)) ImGui.Text(label);

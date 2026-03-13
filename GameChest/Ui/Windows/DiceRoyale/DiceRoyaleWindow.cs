@@ -39,9 +39,9 @@ public class DiceRoyaleWindow : Window {
         using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessnNormal)
             .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonSuccessHovered)
             .Push(ImGuiCol.ButtonActive, Style.Components.ButtonSuccessActive)) {
-            if (state.Phase is DiceRoyalePhase.Idle or DiceRoyalePhase.Done) {
+            if (state.Phase is DiceRoyalePhase.Idle or DiceRoyalePhase.Finished) {
                 if (ImGui.Button("Begin Registration##DrBeginReg")) game.BeginRegistration();
-            } else if (state.Phase == DiceRoyalePhase.Registration) {
+            } else if (state.Phase == DiceRoyalePhase.Registering) {
                 using (ImRaii.Disabled(state.Players.Count < Plugin.Config.DiceRoyale.MinPlayers))
                     if (ImGui.Button("Start##DrStart")) game.StartRolling();
             } else if (state.Phase == DiceRoyalePhase.Rolling) {
@@ -72,7 +72,7 @@ public class DiceRoyaleWindow : Window {
         var btnCount = Plugin.Config.DebugMode ? 3 : 2;
         ImGui.SameLine(ImGui.GetWindowContentRegionMax().X - (btnW * btnCount + spacing * (btnCount - 1) + marginRight));
         if (Plugin.Config.DebugMode) {
-            using (ImRaii.Disabled(state.Phase is not (DiceRoyalePhase.Registration or DiceRoyalePhase.Rolling)))
+            using (ImRaii.Disabled(state.Phase is not (DiceRoyalePhase.Registering or DiceRoyalePhase.Rolling)))
                 if (ImGuiUtil.IconButton(FontAwesomeIcon.Dice, "##DrSimRoll", "Simulate Roll"))
                     game.SimulateRoll();
             ImGui.SameLine();
@@ -95,7 +95,7 @@ public class DiceRoyaleWindow : Window {
             return;
         }
 
-        if (state.Phase == DiceRoyalePhase.Registration) {
+        if (state.Phase == DiceRoyalePhase.Registering) {
             RegistrationPanel.Draw("Dr", state.Players, ref _addPlayerInput, Plugin.Config.DiceRoyale.MinPlayers, n => game.TryJoin(n, JoinSource.Manual), Plugin);
             return;
         }
@@ -124,7 +124,7 @@ public class DiceRoyaleWindow : Window {
             return;
         }
 
-        if (state.Phase == DiceRoyalePhase.Done && state.Winner != null) {
+        if (state.Phase == DiceRoyalePhase.Finished && state.Winner != null) {
             using (ImRaii.PushColor(ImGuiCol.Text, Plugin.Config.HighlightColor))
                 ImGui.Text($"Winner: {PlayerName.Short(state.Winner)}");
         }
@@ -184,10 +184,10 @@ public class DiceRoyaleWindow : Window {
 
     private static void DrawPhaseBadge(DiceRoyaleState state) {
         var (label, color) = state.Phase switch {
-            DiceRoyalePhase.Registration => ("[REG]", Style.Colors.Yellow),
+            DiceRoyalePhase.Registering => ("[REG]", Style.Colors.Yellow),
             DiceRoyalePhase.Rolling => ("[ROLLING]", Style.Colors.Green),
             DiceRoyalePhase.PendingElimination => ("[CHOOSE]", Style.Colors.Orange),
-            DiceRoyalePhase.Done => ("[DONE]", Style.Colors.Gray),
+            DiceRoyalePhase.Finished => ("[DONE]", Style.Colors.Gray),
             _ => ("[IDLE]", Style.Colors.Gray),
         };
         using (ImRaii.PushColor(ImGuiCol.Text, color)) ImGui.Text(label);

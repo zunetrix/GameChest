@@ -14,7 +14,7 @@ public class DeathRollTournamentGame : GameBase {
     public override string Name => "DeathRoll Tournament";
     public override GameMode Mode => GameMode.DeathRollTournament;
     public override DeathRollTournamentState State => _state;
-    public override bool IsRegistering => _state.Phase == DeathRollTournamentPhase.Registration;
+    public override bool IsRegistering => _state.Phase == DeathRollTournamentPhase.Registering;
     public override IReadOnlyList<PhraseCategoryMeta> PhraseCategories => DeathRollTournamentPhraseCategories.All;
 
     public List<DeathRollTournamentResult> MatchHistory { get; } = new();
@@ -60,7 +60,7 @@ public class DeathRollTournamentGame : GameBase {
 
     public override void ProcessRoll(Roll roll) {
         switch (_state.Phase) {
-            case DeathRollTournamentPhase.Registration:
+            case DeathRollTournamentPhase.Registering:
                 ProcessRegistrationRoll(roll);
                 break;
             case DeathRollTournamentPhase.Match when _state.MatchWinner == null:
@@ -71,12 +71,12 @@ public class DeathRollTournamentGame : GameBase {
 
     public void BeginRegistration() {
         _state.Reset();
-        _state.Phase = DeathRollTournamentPhase.Registration;
+        _state.Phase = DeathRollTournamentPhase.Registering;
         PublishPhrase(DeathRollTournamentPhraseCategories.RegistrationOpen, new Dictionary<string, string>());
     }
 
     public override bool TryJoin(string fullName, JoinSource source) {
-        if (_state.Phase != DeathRollTournamentPhase.Registration && _state.Phase != DeathRollTournamentPhase.Preparing)
+        if (_state.Phase != DeathRollTournamentPhase.Registering && _state.Phase != DeathRollTournamentPhase.Preparing)
             return false;
         if (_state.RegisteredPlayers.ContainsPlayer(fullName))
             return false;
@@ -200,9 +200,9 @@ public class DeathRollTournamentGame : GameBase {
                 .ToList();
 
             if (winners.Count <= 1) {
-                // Tournament done
+                // Tournament Finished
                 _state.TournamentWinner = winners.FirstOrDefault();
-                _state.Phase = DeathRollTournamentPhase.Done;
+                _state.Phase = DeathRollTournamentPhase.Finished;
                 if (_state.TournamentWinner != null) {
                     var vars = new Dictionary<string, string> {
                         ["winner"] = PlayerName.Short(_state.TournamentWinner),

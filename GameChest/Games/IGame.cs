@@ -11,6 +11,7 @@ public interface IGame {
     IGameState State { get; }
     bool IsActive { get; }
     bool IsRegistering { get; }
+    GamePhase Phase { get; }
     ImGuiMessageDisplay Notification { get; }
     IReadOnlyList<PhraseCategoryMeta> PhraseCategories { get; }
     PhraseCollection Phrases { get; }

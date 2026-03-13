@@ -18,7 +18,7 @@ public class KingOfTheHillGameTests {
     public void BeginRegistration_sets_Registration_phase() {
         var (game, state) = Create();
         game.BeginRegistration();
-        state.Phase.ShouldBe(KingOfTheHillPhase.Registration);
+        state.Phase.ShouldBe(KingOfTheHillPhase.Registering);
     }
 
     [Fact]
@@ -109,7 +109,7 @@ public class KingOfTheHillGameTests {
             game.ProcessRoll(new Roll("PlayerB@Bahamut", 40, 100));
         }
 
-        state.Phase.ShouldBe(KingOfTheHillPhase.Done);
+        state.Phase.ShouldBe(KingOfTheHillPhase.Finished);
         state.Winner.ShouldBe("PlayerA@Bahamut");
     }
 

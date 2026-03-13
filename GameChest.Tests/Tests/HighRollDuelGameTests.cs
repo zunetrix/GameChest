@@ -18,7 +18,7 @@ public class HighRollDuelGameTests {
     public void BeginRegistration_sets_Registration_phase() {
         var (game, state) = Create();
         game.BeginRegistration();
-        state.Phase.ShouldBe(HighRollDuelPhase.Registration);
+        state.Phase.ShouldBe(HighRollDuelPhase.Registering);
     }
 
     [Fact]
@@ -89,7 +89,7 @@ public class HighRollDuelGameTests {
         game.ProcessRoll(new Roll("PlayerB@Bahamut", 20, 100));
         game.CloseRound();
 
-        state.Phase.ShouldBe(HighRollDuelPhase.Done);
+        state.Phase.ShouldBe(HighRollDuelPhase.Finished);
         state.Winner.ShouldBe("PlayerA@Bahamut");
     }
 
@@ -106,7 +106,7 @@ public class HighRollDuelGameTests {
         game.ProcessRoll(new Roll("PlayerB@Bahamut", 20, 100));
 
         // Should have advanced past round 1 automatically
-        state.Phase.ShouldBe(HighRollDuelPhase.Done);
+        state.Phase.ShouldBe(HighRollDuelPhase.Finished);
         state.Winner.ShouldBe("PlayerA@Bahamut");
     }
 
@@ -125,7 +125,7 @@ public class HighRollDuelGameTests {
         // Without CloseRound, phase stays Rolling
         state.Phase.ShouldBe(HighRollDuelPhase.Rolling);
         game.CloseRound();
-        state.Phase.ShouldBe(HighRollDuelPhase.Done);
+        state.Phase.ShouldBe(HighRollDuelPhase.Finished);
     }
 
     [Fact]

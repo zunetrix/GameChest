@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace GameChest;
 
-public enum DiceBlackjackPhase { Idle, Registration, PlayerTurns, DealerTurn, Done }
+public enum DiceBlackjackPhase { Idle, Registering, PlayerTurns, DealerTurn, Finished }
 public enum PlayerHandStatus { Active, Standing, Busted }
 
 public class DiceBlackjackPlayerHand {
@@ -17,7 +17,7 @@ public class DiceBlackjackPlayerHand {
 
 public class DiceBlackjackState : IGameState {
     public DiceBlackjackPhase Phase { get; set; } = DiceBlackjackPhase.Idle;
-    public bool IsActive => Phase is not (DiceBlackjackPhase.Idle or DiceBlackjackPhase.Done);
+    public bool IsActive => Phase is not (DiceBlackjackPhase.Idle or DiceBlackjackPhase.Finished);
     public List<DiceBlackjackPlayerHand> Players { get; } = new();
     public int CurrentPlayerIndex { get; set; } = 0;
     public DiceBlackjackPlayerHand? CurrentPlayer =>
@@ -36,4 +36,6 @@ public class DiceBlackjackState : IGameState {
         DealerStatus = PlayerHandStatus.Active;
         Winner = null;
     }
+
+    GamePhase IGameState.Phase => Phase.ToGamePhase();
 }

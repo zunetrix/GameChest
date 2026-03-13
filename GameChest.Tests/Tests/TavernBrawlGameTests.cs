@@ -23,7 +23,7 @@ public class TavernBrawlGameTests {
     public void BeginRegistration_sets_Registration_phase() {
         var (game, state) = Create();
         game.BeginRegistration();
-        state.Phase.ShouldBe(TavernBrawlPhase.Registration);
+        state.Phase.ShouldBe(TavernBrawlPhase.Registering);
     }
 
     [Fact]
@@ -57,8 +57,8 @@ public class TavernBrawlGameTests {
         game.ProcessRoll(new Roll("PlayerA@Bahamut", 80, 100));
         game.ProcessRoll(new Roll("PlayerB@Bahamut", 30, 100)); // lowest
 
-        // Round auto-closes; B eliminated; only A left -> Done
-        state.Phase.ShouldBe(TavernBrawlPhase.Done);
+        // Round auto-closes; B eliminated; only A left -> Finished
+        state.Phase.ShouldBe(TavernBrawlPhase.Finished);
         state.Winner.ShouldBe("PlayerA@Bahamut");
     }
 
@@ -99,8 +99,8 @@ public class TavernBrawlGameTests {
         game.EliminateByChoice("PlayerC@Bahamut");
 
         state.Players.ShouldNotContain("PlayerC@Bahamut");
-        // Now only A remains -> Done
-        state.Phase.ShouldBe(TavernBrawlPhase.Done);
+        // Now only A remains -> Finished
+        state.Phase.ShouldBe(TavernBrawlPhase.Finished);
         state.Winner.ShouldBe("PlayerA@Bahamut");
     }
 

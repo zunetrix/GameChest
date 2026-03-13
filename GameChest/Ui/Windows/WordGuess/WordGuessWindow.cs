@@ -187,7 +187,7 @@ public class WordGuessWindow : Window {
                 using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Gray))
                     ImGui.Text("Press Next to continue.");
             }
-        } else if (state.Phase == WordGuessPhase.Done) {
+        } else if (state.Phase == WordGuessPhase.Finished) {
             ImGui.Spacing();
             using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Green))
                 ImGui.Text("Session complete!");
@@ -344,7 +344,7 @@ public class WordGuessWindow : Window {
     private static void DrawPhaseBadge(WordGuessState state) {
         var (label, color) = state.Phase switch {
             WordGuessPhase.Active => ("[ACTIVE]", Style.Colors.Green),
-            WordGuessPhase.Done => ("[DONE]", Style.Colors.Gray),
+            WordGuessPhase.Finished => ("[DONE]", Style.Colors.Gray),
             _ => ("[IDLE]", Style.Colors.Gray),
         };
         using (ImRaii.PushColor(ImGuiCol.Text, color))

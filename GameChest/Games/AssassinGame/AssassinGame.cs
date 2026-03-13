@@ -10,7 +10,7 @@ public class AssassinGame : GameBase {
     public override string Name => "Assassin";
     public override GameMode Mode => GameMode.AssassinGame;
     public override AssassinGameState State => _state;
-    public override bool IsRegistering => _state.Phase == AssassinPhase.Registration;
+    public override bool IsRegistering => _state.Phase == AssassinPhase.Registering;
     public override IReadOnlyList<PhraseCategoryMeta> PhraseCategories => AssassinGamePhraseCategories.All;
 
     public List<AssassinResult> MatchHistory { get; } = new();
@@ -30,7 +30,7 @@ public class AssassinGame : GameBase {
 
     public void BeginRegistration() {
         _state.Reset();
-        _state.Phase = AssassinPhase.Registration;
+        _state.Phase = AssassinPhase.Registering;
         PublishPhrase(AssassinGamePhraseCategories.RegistrationOpen, new Dictionary<string, string>());
     }
 
@@ -53,7 +53,7 @@ public class AssassinGame : GameBase {
     }
 
     public override bool TryJoin(string fullName, JoinSource source) {
-        if (_state.Phase != AssassinPhase.Registration) return false;
+        if (_state.Phase != AssassinPhase.Registering) return false;
         if (_state.Players.Contains(fullName, StringComparer.OrdinalIgnoreCase)) return false;
         _state.Players.Add(fullName);
         return true;
@@ -77,7 +77,7 @@ public class AssassinGame : GameBase {
 
     public void SimulateRoll() {
         var outOf = Cfg.MaxRoll;
-        if (_state.Phase == AssassinPhase.Registration) {
+        if (_state.Phase == AssassinPhase.Registering) {
             Plugin.RollManager?.ProcessIncomingRollMessage(
                 $"Player{++_simPlayerIdx}@Bahamut", _rng.Next(1, outOf + 1), outOf);
         } else if (_state.Phase == AssassinPhase.Attacking) {
@@ -91,7 +91,7 @@ public class AssassinGame : GameBase {
     }
 
     public override void ProcessRoll(Roll roll) {
-        if (_state.Phase == AssassinPhase.Registration) { TryJoin(roll.PlayerName, JoinSource.Roll); return; }
+        if (_state.Phase == AssassinPhase.Registering) { TryJoin(roll.PlayerName, JoinSource.Roll); return; }
         if (_state.Phase != AssassinPhase.Attacking) return;
         if (roll.OutOf != Cfg.MaxRoll) return;
 
@@ -146,7 +146,7 @@ public class AssassinGame : GameBase {
     private void EndGame() {
         var winner = _state.Players.FirstOrDefault();
         _state.Winner = winner;
-        _state.Phase = AssassinPhase.Done;
+        _state.Phase = AssassinPhase.Finished;
         if (winner != null) {
             PublishPhrase(AssassinGamePhraseCategories.GameEnd, new Dictionary<string, string> { ["winner"] = PlayerName.Short(winner) });
             MatchHistory.Add(new AssassinResult(winner, _state.Players.Count, DateTime.Now));

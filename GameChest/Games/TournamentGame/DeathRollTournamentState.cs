@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace GameChest;
 
-public enum DeathRollTournamentPhase { Idle, Registration, Preparing, Match, Done }
+public enum DeathRollTournamentPhase { Idle, Registering, Preparing, Match, Finished }
 
 public sealed class DeathRollTournamentMatch {
     public const string PlaceholderPlayer = "John Doe (Placeholder)";
@@ -21,7 +21,7 @@ public sealed class DeathRollTournamentRound {
 
 public sealed class DeathRollTournamentState : IGameState {
     public DeathRollTournamentPhase Phase { get; set; } = DeathRollTournamentPhase.Idle;
-    public bool IsActive => Phase != DeathRollTournamentPhase.Idle;
+    public bool IsActive => Phase is not (DeathRollTournamentPhase.Idle or DeathRollTournamentPhase.Finished);
 
     // Registration
     public List<string> RegisteredPlayers { get; } = new();
@@ -61,4 +61,6 @@ public sealed class DeathRollTournamentState : IGameState {
         MatchWinner = null;
         TournamentWinner = null;
     }
+
+    GamePhase IGameState.Phase => Phase.ToGamePhase();
 }

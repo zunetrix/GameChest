@@ -39,9 +39,9 @@ public class DiceBlackjackWindow : Window {
         using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessnNormal)
             .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonSuccessHovered)
             .Push(ImGuiCol.ButtonActive, Style.Components.ButtonSuccessActive)) {
-            if (state.Phase is DiceBlackjackPhase.Idle or DiceBlackjackPhase.Done) {
+            if (state.Phase is DiceBlackjackPhase.Idle or DiceBlackjackPhase.Finished) {
                 if (ImGui.Button("Begin Registration##DbjBeginReg")) game.BeginRegistration();
-            } else if (state.Phase == DiceBlackjackPhase.Registration) {
+            } else if (state.Phase == DiceBlackjackPhase.Registering) {
                 var canStart = state.Players.Count >= Plugin.Config.DiceBlackjack.MinPlayers;
                 using (ImRaii.Disabled(!canStart))
                     if (ImGui.Button("Start Game##DbjStart")) game.StartGame();
@@ -71,7 +71,7 @@ public class DiceBlackjackWindow : Window {
             ImGui.SameLine();
         }
 
-        if (state.Phase != DiceBlackjackPhase.Idle && state.Phase != DiceBlackjackPhase.Done)
+        if (state.Phase != DiceBlackjackPhase.Idle && state.Phase != DiceBlackjackPhase.Finished)
             ImGui.SameLine();
 
         using (ImRaii.Disabled(!state.IsActive))
@@ -98,7 +98,7 @@ public class DiceBlackjackWindow : Window {
         var btnCount = Plugin.Config.DebugMode ? 3 : 2;
         ImGui.SameLine(ImGui.GetWindowContentRegionMax().X - (btnW * btnCount + spacing * (btnCount - 1) + marginRight));
         if (Plugin.Config.DebugMode) {
-            using (ImRaii.Disabled(state.Phase is not (DiceBlackjackPhase.Registration or DiceBlackjackPhase.PlayerTurns or DiceBlackjackPhase.DealerTurn)))
+            using (ImRaii.Disabled(state.Phase is not (DiceBlackjackPhase.Registering or DiceBlackjackPhase.PlayerTurns or DiceBlackjackPhase.DealerTurn)))
                 if (ImGuiUtil.IconButton(FontAwesomeIcon.Dice, "##DbjSimRoll", "Simulate Roll"))
                     game.SimulateRoll();
             ImGui.SameLine();
@@ -117,7 +117,7 @@ public class DiceBlackjackWindow : Window {
                     ImGui.Text("Click 'Begin Registration' to start.");
                 return;
 
-            case DiceBlackjackPhase.Registration:
+            case DiceBlackjackPhase.Registering:
                 RegistrationPanel.Draw("Dbj", state.Players.Select(p => p.Name).ToList(),
                     ref _addPlayerInput, Plugin.Config.DiceBlackjack.MinPlayers, n => game.TryJoin(n, JoinSource.Manual), Plugin);
                 return;
@@ -130,7 +130,7 @@ public class DiceBlackjackWindow : Window {
                 DrawDealerTurn(game, state);
                 return;
 
-            case DiceBlackjackPhase.Done:
+            case DiceBlackjackPhase.Finished:
                 DrawResults(game, state);
                 return;
         }
@@ -237,10 +237,10 @@ public class DiceBlackjackWindow : Window {
 
     private static void DrawPhaseBadge(DiceBlackjackState state) {
         var (label, color) = state.Phase switch {
-            DiceBlackjackPhase.Registration => ("[REG]",     Style.Colors.Yellow),
+            DiceBlackjackPhase.Registering => ("[REG]",     Style.Colors.Yellow),
             DiceBlackjackPhase.PlayerTurns  => ("[PLAYING]", Style.Colors.Green),
             DiceBlackjackPhase.DealerTurn   => ("[DEALER]",  Style.Colors.Orange),
-            DiceBlackjackPhase.Done         => ("[DONE]",    Style.Colors.Gray),
+            DiceBlackjackPhase.Finished         => ("[DONE]",    Style.Colors.Gray),
             _                               => ("[IDLE]",    Style.Colors.Gray),
         };
         using (ImRaii.PushColor(ImGuiCol.Text, color)) ImGui.Text(label);

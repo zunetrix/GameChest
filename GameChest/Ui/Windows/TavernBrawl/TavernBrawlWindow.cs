@@ -39,9 +39,9 @@ public class TavernBrawlWindow : Window {
         using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessnNormal)
             .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonSuccessHovered)
             .Push(ImGuiCol.ButtonActive, Style.Components.ButtonSuccessActive)) {
-            if (state.Phase is TavernBrawlPhase.Idle or TavernBrawlPhase.Done) {
+            if (state.Phase is TavernBrawlPhase.Idle or TavernBrawlPhase.Finished) {
                 if (ImGui.Button("Begin Registration##TbBeginReg")) game.BeginRegistration();
-            } else if (state.Phase == TavernBrawlPhase.Registration) {
+            } else if (state.Phase == TavernBrawlPhase.Registering) {
                 using (ImRaii.Disabled(state.Players.Count < Plugin.Config.TavernBrawl.MinPlayers))
                     if (ImGui.Button("Start##TbStart")) game.StartRolling();
             } else if (state.Phase == TavernBrawlPhase.Rolling) {
@@ -71,7 +71,7 @@ public class TavernBrawlWindow : Window {
         var btnCount = Plugin.Config.DebugMode ? 3 : 2;
         ImGui.SameLine(ImGui.GetWindowContentRegionMax().X - (btnW * btnCount + spacing * (btnCount - 1) + marginRight));
         if (Plugin.Config.DebugMode) {
-            using (ImRaii.Disabled(state.Phase is not (TavernBrawlPhase.Registration or TavernBrawlPhase.Rolling)))
+            using (ImRaii.Disabled(state.Phase is not (TavernBrawlPhase.Registering or TavernBrawlPhase.Rolling)))
                 if (ImGuiUtil.IconButton(FontAwesomeIcon.Dice, "##TbSimRoll", "Simulate Roll"))
                     game.SimulateRoll();
             ImGui.SameLine();
@@ -94,7 +94,7 @@ public class TavernBrawlWindow : Window {
             return;
         }
 
-        if (state.Phase == TavernBrawlPhase.Registration) {
+        if (state.Phase == TavernBrawlPhase.Registering) {
             RegistrationPanel.Draw("Tb", state.Players, ref _addPlayerInput, Plugin.Config.TavernBrawl.MinPlayers, n => game.TryJoin(n, JoinSource.Manual), Plugin);
             return;
         }
@@ -124,7 +124,7 @@ public class TavernBrawlWindow : Window {
             return;
         }
 
-        if (state.Phase == TavernBrawlPhase.Done && state.Winner != null) {
+        if (state.Phase == TavernBrawlPhase.Finished && state.Winner != null) {
             using (ImRaii.PushColor(ImGuiCol.Text, Plugin.Config.HighlightColor))
                 ImGui.Text($"Winner: {PlayerName.Short(state.Winner)}");
         }
@@ -186,10 +186,10 @@ public class TavernBrawlWindow : Window {
 
     private static void DrawPhaseBadge(TavernBrawlState state) {
         var (label, color) = state.Phase switch {
-            TavernBrawlPhase.Registration => ("[REG]", Style.Colors.Yellow),
+            TavernBrawlPhase.Registering => ("[REG]", Style.Colors.Yellow),
             TavernBrawlPhase.Rolling => ("[ROLLING]", Style.Colors.Green),
             TavernBrawlPhase.PendingChoice => ("[CHOOSE]", Style.Colors.Orange),
-            TavernBrawlPhase.Done => ("[DONE]", Style.Colors.Gray),
+            TavernBrawlPhase.Finished => ("[DONE]", Style.Colors.Gray),
             _ => ("[IDLE]", Style.Colors.Gray),
         };
         using (ImRaii.PushColor(ImGuiCol.Text, color)) ImGui.Text(label);

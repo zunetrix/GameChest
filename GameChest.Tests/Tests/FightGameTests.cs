@@ -25,7 +25,7 @@ public class FightGameTests {
     public void BeginRegistration_sets_Registration_phase() {
         var (game, state) = Create();
         game.BeginRegistration();
-        state.Phase.ShouldBe(FightPhase.Registration);
+        state.Phase.ShouldBe(FightPhase.Registering);
     }
 
     [Fact]

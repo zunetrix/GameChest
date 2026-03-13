@@ -10,7 +10,7 @@ public class HighRollDuelGame : GameBase {
     public override string Name => "High Roll Duel";
     public override GameMode Mode => GameMode.HighRollDuel;
     public override HighRollDuelState State => _state;
-    public override bool IsRegistering => _state.Phase == HighRollDuelPhase.Registration;
+    public override bool IsRegistering => _state.Phase == HighRollDuelPhase.Registering;
     public override IReadOnlyList<PhraseCategoryMeta> PhraseCategories => HighRollDuelPhraseCategories.All;
 
     public List<HighRollDuelResult> MatchHistory { get; } = new();
@@ -30,7 +30,7 @@ public class HighRollDuelGame : GameBase {
 
     public void BeginRegistration() {
         _state.Reset();
-        _state.Phase = HighRollDuelPhase.Registration;
+        _state.Phase = HighRollDuelPhase.Registering;
         PublishPhrase(HighRollDuelPhraseCategories.RegistrationOpen, new Dictionary<string, string>());
     }
 
@@ -50,7 +50,7 @@ public class HighRollDuelGame : GameBase {
     }
 
     public override bool TryJoin(string fullName, JoinSource source) {
-        if (_state.Phase != HighRollDuelPhase.Registration) return false;
+        if (_state.Phase != HighRollDuelPhase.Registering) return false;
         if (_state.Players.Contains(fullName, StringComparer.OrdinalIgnoreCase)) return false;
         _state.Players.Add(fullName);
         return true;
@@ -86,7 +86,7 @@ public class HighRollDuelGame : GameBase {
 
     public void SimulateRoll() {
         var outOf = Cfg.MaxRoll;
-        if (_state.Phase == HighRollDuelPhase.Registration) {
+        if (_state.Phase == HighRollDuelPhase.Registering) {
             Plugin.RollManager?.ProcessIncomingRollMessage(
                 $"Player{++_simPlayerIdx}@Bahamut", _rng.Next(1, outOf + 1), outOf);
         } else if (_state.Phase == HighRollDuelPhase.Rolling) {
@@ -97,7 +97,7 @@ public class HighRollDuelGame : GameBase {
     }
 
     public override void ProcessRoll(Roll roll) {
-        if (_state.Phase == HighRollDuelPhase.Registration) {
+        if (_state.Phase == HighRollDuelPhase.Registering) {
             TryJoin(roll.PlayerName, JoinSource.Roll);
             return;
         }
@@ -123,7 +123,7 @@ public class HighRollDuelGame : GameBase {
     private void EndGame() {
         var winner = _state.Players.FirstOrDefault();
         _state.Winner = winner;
-        _state.Phase = HighRollDuelPhase.Done;
+        _state.Phase = HighRollDuelPhase.Finished;
         if (winner != null) {
             PublishPhrase(HighRollDuelPhraseCategories.GameEnd, new Dictionary<string, string> {
                 ["winner"] = PlayerName.Short(winner),

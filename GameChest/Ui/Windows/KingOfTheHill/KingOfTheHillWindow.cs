@@ -38,9 +38,9 @@ public class KingOfTheHillWindow : Window {
         using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessnNormal)
             .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonSuccessHovered)
             .Push(ImGuiCol.ButtonActive, Style.Components.ButtonSuccessActive)) {
-            if (state.Phase is KingOfTheHillPhase.Idle or KingOfTheHillPhase.Done) {
+            if (state.Phase is KingOfTheHillPhase.Idle or KingOfTheHillPhase.Finished) {
                 if (ImGui.Button("Begin Registration##KothBeginReg")) game.BeginRegistration();
-            } else if (state.Phase == KingOfTheHillPhase.Registration) {
+            } else if (state.Phase == KingOfTheHillPhase.Registering) {
                 using (ImRaii.Disabled(state.Players.Count < Plugin.Config.KingOfTheHill.MinPlayers))
                     if (ImGui.Button("Start##KothStart")) game.StartRolling();
             } else if (state.Phase == KingOfTheHillPhase.Rolling) {
@@ -69,7 +69,7 @@ public class KingOfTheHillWindow : Window {
         var btnCount = Plugin.Config.DebugMode ? 3 : 2;
         ImGui.SameLine(ImGui.GetWindowContentRegionMax().X - (btnW * btnCount + spacing * (btnCount - 1) + marginRight));
         if (Plugin.Config.DebugMode) {
-            using (ImRaii.Disabled(state.Phase is not (KingOfTheHillPhase.Registration or KingOfTheHillPhase.Rolling)))
+            using (ImRaii.Disabled(state.Phase is not (KingOfTheHillPhase.Registering or KingOfTheHillPhase.Rolling)))
                 if (ImGuiUtil.IconButton(FontAwesomeIcon.Dice, "##KothSimRoll", "Simulate Roll"))
                     game.SimulateRoll();
             ImGui.SameLine();
@@ -92,7 +92,7 @@ public class KingOfTheHillWindow : Window {
             return;
         }
 
-        if (state.Phase == KingOfTheHillPhase.Registration) {
+        if (state.Phase == KingOfTheHillPhase.Registering) {
             RegistrationPanel.Draw("Koth", state.Players, ref _addPlayerInput, Plugin.Config.KingOfTheHill.MinPlayers, n => game.TryJoin(n, JoinSource.Manual), Plugin);
             return;
         }
@@ -138,7 +138,7 @@ public class KingOfTheHillWindow : Window {
             return;
         }
 
-        if (state.Phase == KingOfTheHillPhase.Done && state.Winner != null) {
+        if (state.Phase == KingOfTheHillPhase.Finished && state.Winner != null) {
             using (ImRaii.PushColor(ImGuiCol.Text, Plugin.Config.HighlightColor))
                 ImGui.Text($"Winner: {PlayerName.Short(state.Winner)}");
         }
@@ -175,9 +175,9 @@ public class KingOfTheHillWindow : Window {
 
     private static void DrawPhaseBadge(KingOfTheHillState state) {
         var (label, color) = state.Phase switch {
-            KingOfTheHillPhase.Registration => ("[REG]", Style.Colors.Yellow),
+            KingOfTheHillPhase.Registering => ("[REG]", Style.Colors.Yellow),
             KingOfTheHillPhase.Rolling => ("[ROLLING]", Style.Colors.Green),
-            KingOfTheHillPhase.Done => ("[DONE]", Style.Colors.Gray),
+            KingOfTheHillPhase.Finished => ("[DONE]", Style.Colors.Gray),
             _ => ("[IDLE]", Style.Colors.Gray),
         };
         using (ImRaii.PushColor(ImGuiCol.Text, color)) ImGui.Text(label);

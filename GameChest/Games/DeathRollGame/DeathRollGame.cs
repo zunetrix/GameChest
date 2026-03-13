@@ -39,7 +39,7 @@ public class DeathRollGame : GameBase {
 
     public override void Start() {
         _state.Reset();
-        _state.Phase = DeathRollPhase.InProgress;
+        _state.Phase = DeathRollPhase.Active;
         var vars = new Dictionary<string, string> {
             ["max"] = Cfg.StartingRoll == 999 ? "" : Cfg.StartingRoll.ToString(),
         };
@@ -56,7 +56,7 @@ public class DeathRollGame : GameBase {
         _state.Chain.Clear();
         _state.Winner = null;
         _state.Loser = null;
-        _state.Phase = DeathRollPhase.InProgress;
+        _state.Phase = DeathRollPhase.Active;
         var vars = new Dictionary<string, string> {
             ["max"] = Cfg.StartingRoll == 999 ? "" : Cfg.StartingRoll.ToString(),
         };
@@ -69,7 +69,7 @@ public class DeathRollGame : GameBase {
     }
 
     public override void ProcessRoll(Roll roll) {
-        if (_state.Phase != DeathRollPhase.InProgress) return;
+        if (_state.Phase != DeathRollPhase.Active) return;
 
         var effective = roll.OutOf == -1 ? 999 : roll.OutOf;
 
@@ -98,7 +98,7 @@ public class DeathRollGame : GameBase {
 
         _state.Winner = winner;
         _state.Loser = loser;
-        _state.Phase = DeathRollPhase.Done;
+        _state.Phase = DeathRollPhase.Finished;
 
         if (winner != null) {
             var vars = new Dictionary<string, string> {

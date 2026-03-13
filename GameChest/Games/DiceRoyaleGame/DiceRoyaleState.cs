@@ -3,13 +3,13 @@ using System.Collections.Generic;
 
 namespace GameChest;
 
-public enum DiceRoyalePhase { Idle, Registration, Rolling, PendingElimination, Done }
+public enum DiceRoyalePhase { Idle, Registering, Rolling, PendingElimination, Finished }
 
 public record DiceRoyaleResult(string Winner, int PlayerCount, DateTime PlayedAt);
 
 public sealed class DiceRoyaleState : IGameState {
     public DiceRoyalePhase Phase { get; set; } = DiceRoyalePhase.Idle;
-    public bool IsActive => Phase is DiceRoyalePhase.Registration or DiceRoyalePhase.Rolling or DiceRoyalePhase.PendingElimination;
+    public bool IsActive => Phase is DiceRoyalePhase.Registering or DiceRoyalePhase.Rolling or DiceRoyalePhase.PendingElimination;
     public List<string> Players { get; } = new();
     public Dictionary<string, int> CurrentRoundRolls { get; } = new();
     public int Round { get; set; } = 0;
@@ -33,4 +33,6 @@ public sealed class DiceRoyaleState : IGameState {
         PendingEliminators.Clear();
         CurrentEliminator = null;
     }
+
+    GamePhase IGameState.Phase => Phase.ToGamePhase();
 }

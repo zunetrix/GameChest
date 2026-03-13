@@ -20,7 +20,7 @@ public class DiceRoyaleGameTests {
     public void BeginRegistration_sets_Registration_phase() {
         var (game, state) = Create();
         game.BeginRegistration();
-        state.Phase.ShouldBe(DiceRoyalePhase.Registration);
+        state.Phase.ShouldBe(DiceRoyalePhase.Registering);
     }
 
     [Fact]
@@ -128,7 +128,7 @@ public class DiceRoyaleGameTests {
         game.ProcessRoll(new Roll("PlayerA@Bahamut", 50, 100)); // survive
         game.ProcessRoll(new Roll("PlayerB@Bahamut", 10, 100)); // eliminated
 
-        state.Phase.ShouldBe(DiceRoyalePhase.Done);
+        state.Phase.ShouldBe(DiceRoyalePhase.Finished);
         state.Winner.ShouldBe("PlayerA@Bahamut");
     }
 

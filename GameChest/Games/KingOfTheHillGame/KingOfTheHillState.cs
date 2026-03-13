@@ -3,13 +3,13 @@ using System.Collections.Generic;
 
 namespace GameChest;
 
-public enum KingOfTheHillPhase { Idle, Registration, Rolling, Done }
+public enum KingOfTheHillPhase { Idle, Registering, Rolling, Finished }
 
 public record KingOfTheHillResult(string Winner, int Rounds, DateTime PlayedAt);
 
 public sealed class KingOfTheHillState : IGameState {
     public KingOfTheHillPhase Phase { get; set; } = KingOfTheHillPhase.Idle;
-    public bool IsActive => Phase is KingOfTheHillPhase.Registration or KingOfTheHillPhase.Rolling;
+    public bool IsActive => Phase is KingOfTheHillPhase.Registering or KingOfTheHillPhase.Rolling;
     public List<string> Players { get; } = new();
     public Dictionary<string, int> CurrentRoundRolls { get; } = new();
     public string? King { get; set; }
@@ -28,4 +28,6 @@ public sealed class KingOfTheHillState : IGameState {
     }
 
     public void ResetRound() => CurrentRoundRolls.Clear();
+
+    GamePhase IGameState.Phase => Phase.ToGamePhase();
 }

@@ -18,7 +18,7 @@ public class AssassinGameTests {
     public void BeginRegistration_sets_Registration_phase() {
         var (game, state) = Create();
         game.BeginRegistration();
-        state.Phase.ShouldBe(AssassinPhase.Registration);
+        state.Phase.ShouldBe(AssassinPhase.Registering);
     }
 
     [Fact]
@@ -57,7 +57,7 @@ public class AssassinGameTests {
         game.ProcessRoll(new Roll("PlayerB@Bahamut", 5, 20));
         // Only 2 players, MinPlayers = 3 -> AssignTargets should not advance
         game.AssignTargets();
-        state.Phase.ShouldBe(AssassinPhase.Registration);
+        state.Phase.ShouldBe(AssassinPhase.Registering);
     }
 
     [Fact]
@@ -136,7 +136,7 @@ public class AssassinGameTests {
             game.ProcessRoll(new Roll(defender, 1, 20));
         }
 
-        state.Phase.ShouldBe(AssassinPhase.Done);
+        state.Phase.ShouldBe(AssassinPhase.Finished);
         state.Winner.ShouldNotBeNull();
     }
 

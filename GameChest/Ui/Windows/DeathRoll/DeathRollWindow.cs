@@ -43,7 +43,7 @@ public class DeathRollWindow : Window {
 
     private void DrawControls(DeathRollGame dr, DeathRollState state) {
         // Start
-        using (ImRaii.Disabled(state.Phase == DeathRollPhase.InProgress))
+        using (ImRaii.Disabled(state.Phase == DeathRollPhase.Active))
         using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessnNormal)
             .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonSuccessHovered)
             .Push(ImGuiCol.ButtonActive, Style.Components.ButtonSuccessActive)) {
@@ -54,7 +54,7 @@ public class DeathRollWindow : Window {
         ImGui.SameLine();
 
         // Stop
-        using (ImRaii.Disabled(state.Phase != DeathRollPhase.InProgress))
+        using (ImRaii.Disabled(state.Phase != DeathRollPhase.Active))
         using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonDangerNormal)
             .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonDangerHovered)
             .Push(ImGuiCol.ButtonActive, Style.Components.ButtonDangerActive)) {
@@ -82,8 +82,8 @@ public class DeathRollWindow : Window {
         // Status badge
         ImGui.SameLine();
         var (label, color) = state.Phase switch {
-            DeathRollPhase.InProgress => ("[ACTIVE]", Style.Colors.Green),
-            DeathRollPhase.Done => ("[DONE]", Style.Colors.Yellow),
+            DeathRollPhase.Active => ("[ACTIVE]", Style.Colors.Green),
+            DeathRollPhase.Finished => ("[DONE]", Style.Colors.Yellow),
             _ => ("[IDLE]", Style.Colors.Gray),
         };
         using (ImRaii.PushColor(ImGuiCol.Text, color))
@@ -121,8 +121,8 @@ public class DeathRollWindow : Window {
 
         ImGui.Spacing();
 
-        // Winner / Loser when done
-        if (state.Phase == DeathRollPhase.Done) {
+        // Winner / Loser when Finished
+        if (state.Phase == DeathRollPhase.Finished) {
             if (state.Winner != null) {
                 using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Green))
                     ImGui.Text($"\uE05D WINNER: {state.Winner}");
@@ -162,7 +162,7 @@ public class DeathRollWindow : Window {
             ImGui.Text($"{i + 1:00}");
 
             ImGui.TableNextColumn();
-            var isLoser = state.Phase == DeathRollPhase.Done && isLast;
+            var isLoser = state.Phase == DeathRollPhase.Finished && isLast;
             using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Red, isLoser))
                 ImGui.Text(PlayerName.Short(entry.PlayerName));
 

@@ -5,7 +5,7 @@ namespace GameChest;
 
 public enum FightPhase {
     Idle,
-    Registration,
+    Registering,
     Initiative,
     Combat,
     Finished,
@@ -51,7 +51,7 @@ public sealed class FightState : IGameState {
     public DateTime? RegistrationReminderAt { get; set; }
     public DateTime? InactivityReminderAt { get; set; }
 
-    public bool IsActive => Phase is FightPhase.Registration or FightPhase.Initiative or FightPhase.Combat;
+    public bool IsActive => Phase is FightPhase.Registering or FightPhase.Initiative or FightPhase.Combat;
 
     public void Reset() {
         Phase = FightPhase.Idle;
@@ -66,4 +66,6 @@ public sealed class FightState : IGameState {
         RegistrationReminderAt = null;
         InactivityReminderAt = null;
     }
+
+    GamePhase IGameState.Phase => Phase.ToGamePhase();
 }

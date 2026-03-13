@@ -142,10 +142,10 @@ public class MainWindow : Window {
 
     private void DrawFightStatus(FightState state) {
         var (label, color) = state.Phase switch {
-            FightPhase.Registration => ("REGISTRATION", Style.Colors.Yellow),
+            FightPhase.Registering => ("REGISTRATION", Style.Colors.Yellow),
             FightPhase.Initiative => ("INITIATIVE", Style.Colors.Orange),
             FightPhase.Combat => ("COMBAT", Style.Colors.Green),
-            FightPhase.Finished => ("FINISHED", Style.Colors.Gray),
+            FightPhase.Finished => ("DONE", Style.Colors.Gray),
             _ => ("IDLE", Style.Colors.Gray),
         };
         using (ImRaii.PushColor(ImGuiCol.Text, color))
@@ -165,7 +165,7 @@ public class MainWindow : Window {
                 }
                 break;
 
-            case FightPhase.Registration:
+            case FightPhase.Registering:
                 ImGui.Text($"  Fighters: {state.RegisteredFighters.Count}/2");
                 break;
 
@@ -248,12 +248,12 @@ public class MainWindow : Window {
 
             ImGui.SameLine(8f * ImGuiHelpers.GlobalScale);
             switch (state.Phase) {
-                case DeathRollPhase.InProgress:
+                case DeathRollPhase.Active:
                     using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Green))
                         ImGui.Text("[ACTIVE]");
                     ImGui.Text($"  Chain: {state.Chain.Count} roll{(state.Chain.Count != 1 ? "s" : "")}");
                     break;
-                case DeathRollPhase.Done:
+                case DeathRollPhase.Finished:
                     using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Yellow))
                         ImGui.Text("[DONE]");
                     if (state.Winner != null)
@@ -285,24 +285,24 @@ public class MainWindow : Window {
 
             ImGui.SameLine(8f * ImGuiHelpers.GlobalScale);
             var (cardLabel, cardCol) = state.Phase switch {
-                DeathRollTournamentPhase.Registration => ("[REGISTRATION]", Style.Colors.Yellow),
+                DeathRollTournamentPhase.Registering => ("[REGISTRATION]", Style.Colors.Yellow),
                 DeathRollTournamentPhase.Preparing => ("[PREPARING]", Style.Colors.Orange),
                 DeathRollTournamentPhase.Match => ("[MATCH]", Style.Colors.Green),
-                DeathRollTournamentPhase.Done => ("[DONE]", Style.Colors.Blue),
+                DeathRollTournamentPhase.Finished => ("[DONE]", Style.Colors.Blue),
                 _ => ("[IDLE]", Style.Colors.Gray),
             };
             using (ImRaii.PushColor(ImGuiCol.Text, cardCol))
                 ImGui.Text(cardLabel);
 
             switch (state.Phase) {
-                case DeathRollTournamentPhase.Registration:
+                case DeathRollTournamentPhase.Registering:
                     ImGui.Text($"  {state.RegisteredPlayers.Count} registered");
                     break;
                 case DeathRollTournamentPhase.Match when state.MatchPlayer1 != null && state.MatchPlayer2 != null:
                     using (ImRaii.PushColor(ImGuiCol.Text, Plugin.Config.HighlightColor))
                         ImGui.Text($"  {PlayerName.Short(state.MatchPlayer1)} vs {PlayerName.Short(state.MatchPlayer2)}");
                     break;
-                case DeathRollTournamentPhase.Done when state.TournamentWinner != null:
+                case DeathRollTournamentPhase.Finished when state.TournamentWinner != null:
                     using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Yellow))
                         ImGui.Text($"  Champion: {PlayerName.Short(state.TournamentWinner)}");
                     break;
@@ -332,7 +332,7 @@ public class MainWindow : Window {
             ImGui.SameLine(8f * ImGuiHelpers.GlobalScale);
             var (cardLabel, cardCol) = state.Phase switch {
                 WordGuessPhase.Active => ("[ACTIVE]", Style.Colors.Green),
-                WordGuessPhase.Done => ("[DONE]", Style.Colors.Blue),
+                WordGuessPhase.Finished => ("[DONE]", Style.Colors.Blue),
                 _ => ("[IDLE]", Style.Colors.Gray),
             };
             using (ImRaii.PushColor(ImGuiCol.Text, cardCol))
@@ -343,7 +343,7 @@ public class MainWindow : Window {
                     using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Gray))
                         ImGui.Text($"  Q {state.CurrentQuestionIndex + 1}/{cfg.Questions.Count}");
                     break;
-                case WordGuessPhase.Done:
+                case WordGuessPhase.Finished:
                     using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Blue))
                         ImGui.Text($"  Session complete - {state.SessionRounds.Count} rounds");
                     break;
@@ -368,20 +368,20 @@ public class MainWindow : Window {
             }
             ImGui.SameLine(8f * ImGuiHelpers.GlobalScale);
             var (label, col) = state.Phase switch {
-                HighRollDuelPhase.Registration => ("[REG]", Style.Colors.Yellow),
+                HighRollDuelPhase.Registering => ("[REG]", Style.Colors.Yellow),
                 HighRollDuelPhase.Rolling => ("[ROLLING]", Style.Colors.Green),
-                HighRollDuelPhase.Done => ("[DONE]", Style.Colors.Gray),
+                HighRollDuelPhase.Finished => ("[DONE]", Style.Colors.Gray),
                 _ => ("[IDLE]", Style.Colors.Gray),
             };
             using (ImRaii.PushColor(ImGuiCol.Text, col)) ImGui.Text(label);
             switch (state.Phase) {
-                case HighRollDuelPhase.Registration:
+                case HighRollDuelPhase.Registering:
                     ImGui.Text($"  {state.Players.Count} registered");
                     break;
                 case HighRollDuelPhase.Rolling:
                     ImGui.Text($"  Round {state.Round} - {state.CurrentRoundRolls.Count}/{state.Players.Count} rolled");
                     break;
-                case HighRollDuelPhase.Done when state.Winner != null:
+                case HighRollDuelPhase.Finished when state.Winner != null:
                     using (ImRaii.PushColor(ImGuiCol.Text, Plugin.Config.HighlightColor))
                         ImGui.Text($"  Winner: {PlayerName.Short(state.Winner)}");
                     break;
@@ -406,15 +406,15 @@ public class MainWindow : Window {
             }
             ImGui.SameLine(8f * ImGuiHelpers.GlobalScale);
             var (label, col) = state.Phase switch {
-                TavernBrawlPhase.Registration => ("[REG]", Style.Colors.Yellow),
+                TavernBrawlPhase.Registering => ("[REG]", Style.Colors.Yellow),
                 TavernBrawlPhase.Rolling => ("[ROLLING]", Style.Colors.Green),
                 TavernBrawlPhase.PendingChoice => ("[CHOICE]", Style.Colors.Orange),
-                TavernBrawlPhase.Done => ("[DONE]", Style.Colors.Gray),
+                TavernBrawlPhase.Finished => ("[DONE]", Style.Colors.Gray),
                 _ => ("[IDLE]", Style.Colors.Gray),
             };
             using (ImRaii.PushColor(ImGuiCol.Text, col)) ImGui.Text(label);
             switch (state.Phase) {
-                case TavernBrawlPhase.Registration:
+                case TavernBrawlPhase.Registering:
                     ImGui.Text($"  {state.Players.Count} registered");
                     break;
                 case TavernBrawlPhase.Rolling:
@@ -424,7 +424,7 @@ public class MainWindow : Window {
                     using (ImRaii.PushColor(ImGuiCol.Text, Plugin.Config.HighlightColor))
                         ImGui.Text($"  {PlayerName.Short(state.HighestRoller)} chooses");
                     break;
-                case TavernBrawlPhase.Done when state.Winner != null:
+                case TavernBrawlPhase.Finished when state.Winner != null:
                     using (ImRaii.PushColor(ImGuiCol.Text, Plugin.Config.HighlightColor))
                         ImGui.Text($"  Winner: {PlayerName.Short(state.Winner)}");
                     break;
@@ -449,15 +449,15 @@ public class MainWindow : Window {
             }
             ImGui.SameLine(8f * ImGuiHelpers.GlobalScale);
             var (label, col) = state.Phase switch {
-                DiceRoyalePhase.Registration => ("[REG]", Style.Colors.Yellow),
+                DiceRoyalePhase.Registering => ("[REG]", Style.Colors.Yellow),
                 DiceRoyalePhase.Rolling => ("[ROLLING]", Style.Colors.Green),
                 DiceRoyalePhase.PendingElimination => ("[ELIM]", Style.Colors.Orange),
-                DiceRoyalePhase.Done => ("[DONE]", Style.Colors.Gray),
+                DiceRoyalePhase.Finished => ("[DONE]", Style.Colors.Gray),
                 _ => ("[IDLE]", Style.Colors.Gray),
             };
             using (ImRaii.PushColor(ImGuiCol.Text, col)) ImGui.Text(label);
             switch (state.Phase) {
-                case DiceRoyalePhase.Registration:
+                case DiceRoyalePhase.Registering:
                     ImGui.Text($"  {state.Players.Count} registered");
                     break;
                 case DiceRoyalePhase.Rolling:
@@ -467,7 +467,7 @@ public class MainWindow : Window {
                     using (ImRaii.PushColor(ImGuiCol.Text, Plugin.Config.HighlightColor))
                         ImGui.Text($"  {PlayerName.Short(state.CurrentEliminator)} eliminates");
                     break;
-                case DiceRoyalePhase.Done when state.Winner != null:
+                case DiceRoyalePhase.Finished when state.Winner != null:
                     using (ImRaii.PushColor(ImGuiCol.Text, Plugin.Config.HighlightColor))
                         ImGui.Text($"  Winner: {PlayerName.Short(state.Winner)}");
                     break;
@@ -492,21 +492,21 @@ public class MainWindow : Window {
             }
             ImGui.SameLine(8f * ImGuiHelpers.GlobalScale);
             var (label, col) = state.Phase switch {
-                KingOfTheHillPhase.Registration => ("[REG]", Style.Colors.Yellow),
+                KingOfTheHillPhase.Registering => ("[REG]", Style.Colors.Yellow),
                 KingOfTheHillPhase.Rolling => ("[ROLLING]", Style.Colors.Green),
-                KingOfTheHillPhase.Done => ("[DONE]", Style.Colors.Gray),
+                KingOfTheHillPhase.Finished => ("[DONE]", Style.Colors.Gray),
                 _ => ("[IDLE]", Style.Colors.Gray),
             };
             using (ImRaii.PushColor(ImGuiCol.Text, col)) ImGui.Text(label);
             switch (state.Phase) {
-                case KingOfTheHillPhase.Registration:
+                case KingOfTheHillPhase.Registering:
                     ImGui.Text($"  {state.Players.Count} registered");
                     break;
                 case KingOfTheHillPhase.Rolling when state.King != null:
                     using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Yellow))
                         ImGui.Text($"  King: {PlayerName.Short(state.King)} ({state.KingHoldCount}/{Plugin.Config.KingOfTheHill.CrownHoldRounds})");
                     break;
-                case KingOfTheHillPhase.Done when state.Winner != null:
+                case KingOfTheHillPhase.Finished when state.Winner != null:
                     using (ImRaii.PushColor(ImGuiCol.Text, Plugin.Config.HighlightColor))
                         ImGui.Text($"  Champion: {PlayerName.Short(state.Winner)}");
                     break;
@@ -531,15 +531,15 @@ public class MainWindow : Window {
             }
             ImGui.SameLine(8f * ImGuiHelpers.GlobalScale);
             var (label, col) = state.Phase switch {
-                AssassinPhase.Registration => ("[REG]", Style.Colors.Yellow),
+                AssassinPhase.Registering => ("[REG]", Style.Colors.Yellow),
                 AssassinPhase.Active => ("[ACTIVE]", Style.Colors.Green),
                 AssassinPhase.Attacking => ("[ATTACK]", Style.Colors.Orange),
-                AssassinPhase.Done => ("[DONE]", Style.Colors.Gray),
+                AssassinPhase.Finished => ("[DONE]", Style.Colors.Gray),
                 _ => ("[IDLE]", Style.Colors.Gray),
             };
             using (ImRaii.PushColor(ImGuiCol.Text, col)) ImGui.Text(label);
             switch (state.Phase) {
-                case AssassinPhase.Registration:
+                case AssassinPhase.Registering:
                     ImGui.Text($"  {state.Players.Count} registered");
                     break;
                 case AssassinPhase.Active:
@@ -549,7 +549,7 @@ public class MainWindow : Window {
                     using (ImRaii.PushColor(ImGuiCol.Text, Plugin.Config.HighlightColor))
                         ImGui.Text($"  {PlayerName.Short(state.CurrentAttacker)} vs {PlayerName.Short(state.CurrentDefender)}");
                     break;
-                case AssassinPhase.Done when state.Winner != null:
+                case AssassinPhase.Finished when state.Winner != null:
                     using (ImRaii.PushColor(ImGuiCol.Text, Plugin.Config.HighlightColor))
                         ImGui.Text($"  Winner: {PlayerName.Short(state.Winner)}");
                     break;
@@ -574,15 +574,15 @@ public class MainWindow : Window {
             }
             ImGui.SameLine(8f * ImGuiHelpers.GlobalScale);
             var (label, col) = state.Phase switch {
-                DiceBlackjackPhase.Registration => ("[REG]", Style.Colors.Yellow),
+                DiceBlackjackPhase.Registering => ("[REG]", Style.Colors.Yellow),
                 DiceBlackjackPhase.PlayerTurns => ("[PLAYING]", Style.Colors.Green),
                 DiceBlackjackPhase.DealerTurn => ("[DEALER]", Style.Colors.Orange),
-                DiceBlackjackPhase.Done => ("[DONE]", Style.Colors.Gray),
+                DiceBlackjackPhase.Finished => ("[DONE]", Style.Colors.Gray),
                 _ => ("[IDLE]", Style.Colors.Gray),
             };
             using (ImRaii.PushColor(ImGuiCol.Text, col)) ImGui.Text(label);
             switch (state.Phase) {
-                case DiceBlackjackPhase.Registration:
+                case DiceBlackjackPhase.Registering:
                     ImGui.Text($"  {state.Players.Count} registered");
                     break;
                 case DiceBlackjackPhase.PlayerTurns when state.CurrentPlayer != null:
@@ -593,7 +593,7 @@ public class MainWindow : Window {
                     using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Orange))
                         ImGui.Text("  Dealer's turn");
                     break;
-                case DiceBlackjackPhase.Done when state.Winner != null:
+                case DiceBlackjackPhase.Finished when state.Winner != null:
                     using (ImRaii.PushColor(ImGuiCol.Text, Plugin.Config.HighlightColor))
                         ImGui.Text($"  Winner: {PlayerName.Short(state.Winner)}");
                     break;

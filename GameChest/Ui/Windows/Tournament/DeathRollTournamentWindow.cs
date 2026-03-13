@@ -45,7 +45,7 @@ public class DeathRollTournamentWindow : Window {
 
     private void DrawControls(DeathRollTournamentGame tn, DeathRollTournamentState state) {
         // Phase-based action button
-        if (state.Phase is DeathRollTournamentPhase.Idle or DeathRollTournamentPhase.Done) {
+        if (state.Phase is DeathRollTournamentPhase.Idle or DeathRollTournamentPhase.Finished) {
             using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessnNormal)
                 .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonSuccessHovered)
                 .Push(ImGuiCol.ButtonActive, Style.Components.ButtonSuccessActive)) {
@@ -53,7 +53,7 @@ public class DeathRollTournamentWindow : Window {
                     tn.BeginRegistration();
             }
             ImGui.SameLine();
-        } else if (state.Phase == DeathRollTournamentPhase.Registration) {
+        } else if (state.Phase == DeathRollTournamentPhase.Registering) {
             using (ImRaii.Disabled(state.RegisteredPlayers.Count < 2))
             using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonBlueNormal)
                 .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonBlueHovered)
@@ -93,10 +93,10 @@ public class DeathRollTournamentWindow : Window {
 
         // Status badge
         var (label, color) = state.Phase switch {
-            DeathRollTournamentPhase.Registration => ("[REGISTRATION]", Style.Colors.Yellow),
+            DeathRollTournamentPhase.Registering => ("[REGISTRATION]", Style.Colors.Yellow),
             DeathRollTournamentPhase.Preparing => ("[PREPARING]", Style.Colors.Orange),
             DeathRollTournamentPhase.Match => ("[MATCH]", Style.Colors.Green),
-            DeathRollTournamentPhase.Done => ("[DONE]", Style.Colors.Blue),
+            DeathRollTournamentPhase.Finished => ("[DONE]", Style.Colors.Blue),
             _ => ("[IDLE]", Style.Colors.Gray),
         };
         using (ImRaii.PushColor(ImGuiCol.Text, color))
@@ -138,7 +138,7 @@ public class DeathRollTournamentWindow : Window {
             case DeathRollTournamentPhase.Idle:
                 DrawIdleSection();
                 break;
-            case DeathRollTournamentPhase.Registration:
+            case DeathRollTournamentPhase.Registering:
                 DrawRegistrationSection(tn, state);
                 break;
             case DeathRollTournamentPhase.Preparing:
@@ -147,7 +147,7 @@ public class DeathRollTournamentWindow : Window {
             case DeathRollTournamentPhase.Match:
                 DrawMatchSection(tn, state);
                 break;
-            case DeathRollTournamentPhase.Done:
+            case DeathRollTournamentPhase.Finished:
                 DrawDoneSection(state);
                 break;
         }

@@ -131,7 +131,7 @@ public class WordGuessGameTests {
         var game = new WordGuessGame(ctx);
         game.Start();
         game.ProcessChatMessage("PlayerA@Bahamut", "correct", XivChatType.Say);
-        // AutoAdvance with no more questions -> Done
-        game.State.Phase.ShouldBe(WordGuessPhase.Done);
+        // AutoAdvance with no more questions -> Finished
+        game.State.Phase.ShouldBe(WordGuessPhase.Finished);
     }
 }

@@ -35,7 +35,7 @@ public class WordGuessGame : GameBase, IChatConsumer {
     }
 
     public override void Stop() {
-        if (!_state.IsActive && _state.Phase != WordGuessPhase.Done) return;
+        if (!_state.IsActive && _state.Phase != WordGuessPhase.Finished) return;
         PublishPhrase(WordGuessPhraseCategories.GameCanceled, new Dictionary<string, string>());
         FinishSession(canceled: true);
     }
@@ -183,7 +183,7 @@ public class WordGuessGame : GameBase, IChatConsumer {
     }
 
     private void EndSession() {
-        _state.Phase = WordGuessPhase.Done;
+        _state.Phase = WordGuessPhase.Finished;
 
         if (Cfg.VictoryMode == WordGuessVictoryMode.Session && _state.Scores.Count > 0) {
             var (sessionWinner, score) = _state.Scores.OrderByDescending(kv => kv.Value).First();
@@ -199,7 +199,7 @@ public class WordGuessGame : GameBase, IChatConsumer {
     }
 
     private void FinishSession(bool canceled) {
-        _state.Phase = WordGuessPhase.Done;
+        _state.Phase = WordGuessPhase.Finished;
         if (!canceled) RecordHistory(null);
         else _state.Reset();
     }
