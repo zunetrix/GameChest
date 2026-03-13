@@ -1,6 +1,6 @@
 <Project Sdk="Dalamud.NET.Sdk/14.0.2">
   <PropertyGroup>
-    <Version>1.0.0.8</Version>
+    <Version>1.0.0.9</Version>
   </PropertyGroup>
   <PropertyGroup>
     <Author>Zune, Manglers, Potatoes</Author>
@@ -24,7 +24,7 @@
     <!-- <UseWpf>true</UseWpf> -->
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Any CPU'">
-    <Version>1.0.0.8</Version>
+    <Version>1.0.0.9</Version>
     <DefineConstants>DEBUG</DefineConstants>
   </PropertyGroup>
   <!-- Linux build -->

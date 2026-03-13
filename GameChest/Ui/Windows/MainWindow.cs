@@ -8,6 +8,7 @@ using Dalamud.Interface.Utility.Raii;
 using Dalamud.Interface.Windowing;
 
 using GameChest.Resources;
+using GameChest.Util;
 using GameChest.Util.ImGuiExt;
 
 namespace GameChest;
@@ -83,17 +84,17 @@ public class MainWindow : Window {
 
         var c = Plugin.Config.MainWindowCards;
         var changed = false;
-        if (ImGui.Checkbox("Prize Roll",             ref c.PrizeRoll))           changed = true;
-        if (ImGui.Checkbox("Fight Club",             ref c.FightGame))           changed = true;
-        if (ImGui.Checkbox("Death Roll",             ref c.DeathRoll))           changed = true;
-        if (ImGui.Checkbox("DeathRoll Tournament",   ref c.DeathRollTournament)) changed = true;
-        if (ImGui.Checkbox("Word Guess",             ref c.WordGuess))           changed = true;
-        if (ImGui.Checkbox("High Roll Duel",         ref c.HighRollDuel))        changed = true;
-        if (ImGui.Checkbox("Tavern Brawl",           ref c.TavernBrawl))         changed = true;
-        if (ImGui.Checkbox("Dice Royale",            ref c.DiceRoyale))          changed = true;
-        if (ImGui.Checkbox("King of the Hill",       ref c.KingOfTheHill))       changed = true;
-        if (ImGui.Checkbox("Assassin Game",          ref c.AssassinGame))        changed = true;
-        if (ImGui.Checkbox("Dice Blackjack",          ref c.DiceBlackjack))       changed = true;
+        if (ImGui.Checkbox("Prize Roll", ref c.PrizeRoll)) changed = true;
+        if (ImGui.Checkbox("Fight Club", ref c.FightGame)) changed = true;
+        if (ImGui.Checkbox("Death Roll", ref c.DeathRoll)) changed = true;
+        if (ImGui.Checkbox("DeathRoll Tournament", ref c.DeathRollTournament)) changed = true;
+        if (ImGui.Checkbox("Word Guess", ref c.WordGuess)) changed = true;
+        if (ImGui.Checkbox("High Roll Duel", ref c.HighRollDuel)) changed = true;
+        if (ImGui.Checkbox("Tavern Brawl", ref c.TavernBrawl)) changed = true;
+        if (ImGui.Checkbox("Dice Royale", ref c.DiceRoyale)) changed = true;
+        if (ImGui.Checkbox("King of the Hill", ref c.KingOfTheHill)) changed = true;
+        if (ImGui.Checkbox("Assassin Game", ref c.AssassinGame)) changed = true;
+        if (ImGui.Checkbox("Dice Blackjack", ref c.DiceBlackjack)) changed = true;
         if (changed) Plugin.Config.Save();
     }
 
@@ -108,17 +109,17 @@ public class MainWindow : Window {
             first = false;
         }
 
-        Card(v.PrizeRoll,           DrawPrizeRollCard);
-        Card(v.FightGame,           DrawFightGameCard);
-        Card(v.DeathRoll,           DrawDeathRollCard);
+        Card(v.PrizeRoll, DrawPrizeRollCard);
+        Card(v.FightGame, DrawFightGameCard);
+        Card(v.DeathRoll, DrawDeathRollCard);
         Card(v.DeathRollTournament, DrawTournamentCard);
-        Card(v.WordGuess,           DrawWordGuessCard);
-        Card(v.HighRollDuel,        DrawHighRollDuelCard);
-        Card(v.TavernBrawl,         DrawTavernBrawlCard);
-        Card(v.DiceRoyale,          DrawDiceRoyaleCard);
-        Card(v.KingOfTheHill,       DrawKingOfTheHillCard);
-        Card(v.AssassinGame,        DrawAssassinGameCard);
-        Card(v.DiceBlackjack,       DrawDiceBlackjackCard);
+        Card(v.WordGuess, DrawWordGuessCard);
+        Card(v.HighRollDuel, DrawHighRollDuelCard);
+        Card(v.TavernBrawl, DrawTavernBrawlCard);
+        Card(v.DiceRoyale, DrawDiceRoyaleCard);
+        Card(v.KingOfTheHill, DrawKingOfTheHillCard);
+        Card(v.AssassinGame, DrawAssassinGameCard);
+        Card(v.DiceBlackjack, DrawDiceBlackjackCard);
     }
 
     private void DrawFightGameCard() {
@@ -573,11 +574,11 @@ public class MainWindow : Window {
             }
             ImGui.SameLine(8f * ImGuiHelpers.GlobalScale);
             var (label, col) = state.Phase switch {
-                DiceBlackjackPhase.Registration => ("[REG]",     Style.Colors.Yellow),
-                DiceBlackjackPhase.PlayerTurns  => ("[PLAYING]", Style.Colors.Green),
-                DiceBlackjackPhase.DealerTurn   => ("[DEALER]",  Style.Colors.Orange),
-                DiceBlackjackPhase.Done         => ("[DONE]",    Style.Colors.Gray),
-                _                               => ("[IDLE]",    Style.Colors.Gray),
+                DiceBlackjackPhase.Registration => ("[REG]", Style.Colors.Yellow),
+                DiceBlackjackPhase.PlayerTurns => ("[PLAYING]", Style.Colors.Green),
+                DiceBlackjackPhase.DealerTurn => ("[DEALER]", Style.Colors.Orange),
+                DiceBlackjackPhase.Done => ("[DONE]", Style.Colors.Gray),
+                _ => ("[IDLE]", Style.Colors.Gray),
             };
             using (ImRaii.PushColor(ImGuiCol.Text, col)) ImGui.Text(label);
             switch (state.Phase) {
@@ -614,6 +615,13 @@ public class MainWindow : Window {
                 Icon = FontAwesomeIcon.Cog,
                 ShowTooltip = () => ImGuiUtil.ToolTip(Language.SettingsTitle),
                 Click = _ => Ui.SettingsWindow.Toggle()
+            });
+
+            TitleBarButtons.Add(new TitleBarButton() {
+                AvailableClickthrough = false,
+                Icon = FontAwesomeIcon.Heart,
+                ShowTooltip = () => ImGuiUtil.ToolTip("Discord"),
+                Click = _ => WindowsApi.OpenUrl("https://discord.gg/BTsHyBzGsN")
             });
 
 #if DEBUG
