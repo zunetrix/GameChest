@@ -14,8 +14,8 @@ namespace GameChest;
 
 /// <summary>Shared registration panel: count header, add/target input, and player table with remove/block buttons.</summary>
 public static class RegistrationPanel {
-    private static bool   _showFullName  = false;
-    private static string _bookingCombo  = string.Empty;
+    private static bool _showFullName = false;
+    private static string _bookingCombo = string.Empty;
 
     public static void Draw(
         string id,
@@ -42,7 +42,7 @@ public static class RegistrationPanel {
 
         ImGui.SameLine();
         using (ImRaii.Disabled(string.IsNullOrWhiteSpace(inputBuffer)))
-        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessnNormal)
+        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessNormal)
             .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonSuccessHovered)
             .Push(ImGuiCol.ButtonActive, Style.Components.ButtonSuccessActive)) {
             if (ImGui.Button($"{Language.Add}##{id}Add")) {
@@ -64,7 +64,7 @@ public static class RegistrationPanel {
         // Booking combo + load selected
         var booking = plugin.Config.PlayerBookingList;
         if (booking.Count > 0) {
-            var names         = booking.Select(p => p.FullName).ToList();
+            var names = booking.Select(p => p.FullName).ToList();
             var selectedCount = booking.Count(p => p.Selected);
             ImGui.SetNextItemWidth(200f * scale);
             if (ImGuiUtil.DrawComboSearch($"###{id}BookingCombo", names, ref _bookingCombo) &&
@@ -76,7 +76,7 @@ public static class RegistrationPanel {
             using (ImRaii.Disabled(selectedCount == 0))
             using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonBlueNormal)
                 .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonBlueHovered)
-                .Push(ImGuiCol.ButtonActive,  Style.Components.ButtonBlueActive)) {
+                .Push(ImGuiCol.ButtonActive, Style.Components.ButtonBlueActive)) {
                 if (ImGui.Button($"Load Selected ({selectedCount})##{id}LoadSelected")) {
                     foreach (var p in booking.Where(p => p.Selected))
                         onAdd(p.FullName);

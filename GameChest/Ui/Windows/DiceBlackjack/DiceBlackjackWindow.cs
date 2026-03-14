@@ -36,7 +36,7 @@ public class DiceBlackjackWindow : Window {
     }
 
     private void DrawControls(DiceBlackjackGame game, DiceBlackjackState state) {
-        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessnNormal)
+        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessNormal)
             .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonSuccessHovered)
             .Push(ImGuiCol.ButtonActive, Style.Components.ButtonSuccessActive)) {
             if (state.Phase is DiceBlackjackPhase.Idle or DiceBlackjackPhase.Finished) {

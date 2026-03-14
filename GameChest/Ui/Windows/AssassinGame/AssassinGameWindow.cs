@@ -35,7 +35,7 @@ public class AssassinGameWindow : Window {
     }
 
     private void DrawControls(AssassinGame game, AssassinGameState state) {
-        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessnNormal)
+        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessNormal)
             .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonSuccessHovered)
             .Push(ImGuiCol.ButtonActive, Style.Components.ButtonSuccessActive)) {
             if (state.Phase is AssassinPhase.Idle or AssassinPhase.Finished) {

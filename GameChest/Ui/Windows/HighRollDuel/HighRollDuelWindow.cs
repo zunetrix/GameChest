@@ -39,7 +39,7 @@ public class HighRollDuelWindow : Window {
     }
 
     private void DrawControls(HighRollDuelGame game, HighRollDuelState state) {
-        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessnNormal)
+        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessNormal)
             .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonSuccessHovered)
             .Push(ImGuiCol.ButtonActive, Style.Components.ButtonSuccessActive)) {
             if (state.Phase == HighRollDuelPhase.Idle || state.Phase == HighRollDuelPhase.Finished) {

@@ -16,7 +16,7 @@ public class FightGameWindow : Window {
     private Plugin Plugin { get; }
 
     private string _manualRegisterName = string.Empty;
-    private string _bookingCombo        = string.Empty;
+    private string _bookingCombo = string.Empty;
 
     public FightGameWindow(Plugin plugin)
         : base("Fight Game###FightGameWindow") {
@@ -51,7 +51,7 @@ public class FightGameWindow : Window {
     private void DrawControls(FightGame fg, FightState state) {
         // Phase-based action button
         if (state.Phase is FightPhase.Idle or FightPhase.Finished) {
-            using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessnNormal)
+            using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessNormal)
                 .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonSuccessHovered)
                 .Push(ImGuiCol.ButtonActive, Style.Components.ButtonSuccessActive)) {
                 if (ImGui.Button("Begin Registration##BeginReg"))
@@ -233,7 +233,7 @@ public class FightGameWindow : Window {
             ImGui.InputTextWithHint("##RegName", "Firstname Lastname[@World]", ref _manualRegisterName, 100);
 
             ImGui.SameLine();
-            using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessnNormal)
+            using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessNormal)
                 .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonSuccessHovered)
                 .Push(ImGuiCol.ButtonActive, Style.Components.ButtonSuccessActive)) {
                 if (ImGui.Button($"{Language.Add}##ManualReg") && !string.IsNullOrWhiteSpace(_manualRegisterName)) {
@@ -252,7 +252,7 @@ public class FightGameWindow : Window {
             // Booking combo + load selected
             var booking = Plugin.Config.PlayerBookingList;
             if (booking.Count > 0) {
-                var names         = booking.Select(p => p.FullName).ToList();
+                var names = booking.Select(p => p.FullName).ToList();
                 var selectedCount = booking.Count(p => p.Selected);
                 ImGui.SetNextItemWidth(200f * ImGuiHelpers.GlobalScale);
                 if (ImGuiUtil.DrawComboSearch("##FgBookingCombo", names, ref _bookingCombo) &&
@@ -264,7 +264,7 @@ public class FightGameWindow : Window {
                 using (ImRaii.Disabled(selectedCount == 0))
                 using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonBlueNormal)
                     .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonBlueHovered)
-                    .Push(ImGuiCol.ButtonActive,  Style.Components.ButtonBlueActive)) {
+                    .Push(ImGuiCol.ButtonActive, Style.Components.ButtonBlueActive)) {
                     if (ImGui.Button($"Load Selected ({selectedCount})##FgLoadSelected")) {
                         foreach (var p in booking.Where(p => p.Selected))
                             fg.TryJoin(p.FullName, JoinSource.Manual);

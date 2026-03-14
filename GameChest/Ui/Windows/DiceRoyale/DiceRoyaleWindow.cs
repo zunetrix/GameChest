@@ -36,7 +36,7 @@ public class DiceRoyaleWindow : Window {
     }
 
     private void DrawControls(DiceRoyaleGame game, DiceRoyaleState state) {
-        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessnNormal)
+        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessNormal)
             .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonSuccessHovered)
             .Push(ImGuiCol.ButtonActive, Style.Components.ButtonSuccessActive)) {
             if (state.Phase is DiceRoyalePhase.Idle or DiceRoyalePhase.Finished) {

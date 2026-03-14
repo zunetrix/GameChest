@@ -13,7 +13,7 @@ public class DeathRollTournamentWindow : Window {
     private Plugin Plugin { get; }
 
     private string _manualPlayerName = string.Empty;
-    private string _bookingCombo     = string.Empty;
+    private string _bookingCombo = string.Empty;
 
     public DeathRollTournamentWindow(Plugin plugin)
         : base("DeathRoll Tournament###DeathRollTournamentWindow") {
@@ -47,7 +47,7 @@ public class DeathRollTournamentWindow : Window {
     private void DrawControls(DeathRollTournamentGame tn, DeathRollTournamentState state) {
         // Phase-based action button
         if (state.Phase is DeathRollTournamentPhase.Idle or DeathRollTournamentPhase.Finished) {
-            using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessnNormal)
+            using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessNormal)
                 .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonSuccessHovered)
                 .Push(ImGuiCol.ButtonActive, Style.Components.ButtonSuccessActive)) {
                 if (ImGui.Button("Begin Registration##TnBeginReg"))
@@ -66,7 +66,7 @@ public class DeathRollTournamentWindow : Window {
                 ImGuiUtil.ToolTip("Need at least 2 players.");
             ImGui.SameLine();
         } else if (state.Phase == DeathRollTournamentPhase.Preparing) {
-            using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessnNormal)
+            using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessNormal)
                 .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonSuccessHovered)
                 .Push(ImGuiCol.ButtonActive, Style.Components.ButtonSuccessActive)) {
                 if (ImGui.Button("Start Tournament##TnStart"))
@@ -206,7 +206,7 @@ public class DeathRollTournamentWindow : Window {
         ImGui.SetNextItemWidth(280f * ImGuiHelpers.GlobalScale);
         ImGui.InputTextWithHint("##TnManualAdd", "Firstname Lastname[@World]", ref _manualPlayerName, 100);
         ImGui.SameLine();
-        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessnNormal)
+        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessNormal)
             .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonSuccessHovered)
             .Push(ImGuiCol.ButtonActive, Style.Components.ButtonSuccessActive)) {
             if (ImGui.Button("Add##TnManualReg") && !string.IsNullOrWhiteSpace(_manualPlayerName)) {
@@ -224,7 +224,7 @@ public class DeathRollTournamentWindow : Window {
         // Booking combo + load selected
         var booking = Plugin.Config.PlayerBookingList;
         if (booking.Count > 0) {
-            var names         = booking.Select(p => p.FullName).ToList();
+            var names = booking.Select(p => p.FullName).ToList();
             var selectedCount = booking.Count(p => p.Selected);
             ImGui.SetNextItemWidth(200f * ImGuiHelpers.GlobalScale);
             if (ImGuiUtil.DrawComboSearch("##TnBookingCombo", names, ref _bookingCombo) &&
@@ -236,7 +236,7 @@ public class DeathRollTournamentWindow : Window {
             using (ImRaii.Disabled(selectedCount == 0))
             using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonBlueNormal)
                 .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonBlueHovered)
-                .Push(ImGuiCol.ButtonActive,  Style.Components.ButtonBlueActive)) {
+                .Push(ImGuiCol.ButtonActive, Style.Components.ButtonBlueActive)) {
                 if (ImGui.Button($"Load Selected ({selectedCount})##TnLoadSelected")) {
                     foreach (var p in booking.Where(p => p.Selected))
                         tn.TryJoin(p.FullName, JoinSource.Manual);
@@ -293,7 +293,7 @@ public class DeathRollTournamentWindow : Window {
             using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Green))
                 ImGui.Text($"\uE05D Match Winner: {PlayerName.Short(state.MatchWinner)}");
             ImGui.Spacing();
-            using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessnNormal)
+            using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessNormal)
                 .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonSuccessHovered)
                 .Push(ImGuiCol.ButtonActive, Style.Components.ButtonSuccessActive)) {
                 if (ImGui.Button("Next Match##TnNext"))

@@ -63,7 +63,7 @@ public class WordGuessQuestionListWindow : Window {
         // Header: count + Add New button
         ImGui.Text($"Questions ({Questions.Count})");
         ImGui.SameLine();
-        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessnNormal)
+        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessNormal)
             .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonSuccessHovered)
             .Push(ImGuiCol.ButtonActive, Style.Components.ButtonSuccessActive)) {
             if (ImGuiUtil.IconButton(FontAwesomeIcon.Plus, "##WqAddNew", "Add New Question")) {

@@ -48,7 +48,7 @@ public class BookingManagerWindow : Window {
             ImGuiInputTextFlags.EnterReturnsTrue);
         ImGui.SameLine();
         using (ImRaii.Disabled(string.IsNullOrWhiteSpace(_inputBuffer)))
-        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessnNormal)
+        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessNormal)
             .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonSuccessHovered)
             .Push(ImGuiCol.ButtonActive, Style.Components.ButtonSuccessActive)) {
             if ((ImGui.Button("Add##BmAdd") || enter) && !string.IsNullOrWhiteSpace(_inputBuffer)) {

@@ -49,7 +49,7 @@ public class PrizeRollWindow : Window {
     private void DrawControls(PrizeRollGame pr, PrizeRollState state) {
         var cfg = Plugin.Config.PrizeRoll;
         using (ImRaii.Disabled(state.IsActive))
-        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessnNormal)
+        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessNormal)
             .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonSuccessHovered)
             .Push(ImGuiCol.ButtonActive, Style.Components.ButtonSuccessActive)) {
             if (ImGui.Button("Start##StartPrize")) {

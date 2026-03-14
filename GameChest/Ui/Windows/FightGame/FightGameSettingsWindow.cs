@@ -164,7 +164,7 @@ public class FightGameSettingsWindow : Window {
                 }
                 ImGui.SameLine();
 
-                using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessnNormal)
+                using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessNormal)
                     .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonSuccessHovered)
                     .Push(ImGuiCol.ButtonActive, Style.Components.ButtonSuccessActive)) {
                     if (ImGui.Button("Apply##ApplyPreset") && _selectedPresetIdx >= 0) {

@@ -44,7 +44,7 @@ public class DeathRollWindow : Window {
     private void DrawControls(DeathRollGame dr, DeathRollState state) {
         // Start
         using (ImRaii.Disabled(state.Phase == DeathRollPhase.Active))
-        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessnNormal)
+        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessNormal)
             .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonSuccessHovered)
             .Push(ImGuiCol.ButtonActive, Style.Components.ButtonSuccessActive)) {
             if (ImGui.Button("Start##DrStart"))

@@ -45,7 +45,7 @@ public class WordGuessWindow : Window {
 
         // Start (enabled when Idle or Done)
         using (ImRaii.Disabled(state.IsActive || noQuestions))
-        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessnNormal)
+        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessNormal)
             .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonSuccessHovered)
             .Push(ImGuiCol.ButtonActive, Style.Components.ButtonSuccessActive)) {
             if (ImGui.Button("Start##WgStart")) wg.Start();

@@ -36,7 +36,7 @@ public class TavernBrawlWindow : Window {
     }
 
     private void DrawControls(TavernBrawlGame game, TavernBrawlState state) {
-        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessnNormal)
+        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessNormal)
             .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonSuccessHovered)
             .Push(ImGuiCol.ButtonActive, Style.Components.ButtonSuccessActive)) {
             if (state.Phase is TavernBrawlPhase.Idle or TavernBrawlPhase.Finished) {

@@ -35,7 +35,7 @@ public class KingOfTheHillWindow : Window {
     }
 
     private void DrawControls(KingOfTheHillGame game, KingOfTheHillState state) {
-        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessnNormal)
+        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessNormal)
             .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonSuccessHovered)
             .Push(ImGuiCol.ButtonActive, Style.Components.ButtonSuccessActive)) {
             if (state.Phase is KingOfTheHillPhase.Idle or KingOfTheHillPhase.Finished) {
