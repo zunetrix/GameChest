@@ -39,28 +39,20 @@ public class HighRollDuelWindow : Window {
     }
 
     private void DrawControls(HighRollDuelGame game, HighRollDuelState state) {
-        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessNormal)
-            .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonSuccessHovered)
-            .Push(ImGuiCol.ButtonActive, Style.Components.ButtonSuccessActive)) {
-            if (state.Phase == HighRollDuelPhase.Idle || state.Phase == HighRollDuelPhase.Finished) {
-                if (ImGui.Button("Begin Registration##HrdBeginReg")) game.BeginRegistration();
-            } else if (state.Phase == HighRollDuelPhase.Registering) {
-                using (ImRaii.Disabled(state.Players.Count < Plugin.Config.HighRollDuel.MinPlayers))
-                    if (ImGui.Button("Start##HrdStart")) game.StartRolling();
-                if (state.Players.Count < Plugin.Config.HighRollDuel.MinPlayers)
-                    ImGuiUtil.ToolTip($"Need at least {Plugin.Config.HighRollDuel.MinPlayers} players.");
-            } else if (state.Phase == HighRollDuelPhase.Rolling) {
-                if (ImGui.Button("Close Round##HrdClose")) game.CloseRound();
-            }
+        if (state.Phase == HighRollDuelPhase.Idle || state.Phase == HighRollDuelPhase.Finished) {
+            if (ImGuiUtil.SuccessButton("Begin Registration##HrdBeginReg")) game.BeginRegistration();
+        } else if (state.Phase == HighRollDuelPhase.Registering) {
+            using (ImRaii.Disabled(state.Players.Count < Plugin.Config.HighRollDuel.MinPlayers))
+                if (ImGuiUtil.SuccessButton("Start##HrdStart")) game.StartRolling();
+            if (state.Players.Count < Plugin.Config.HighRollDuel.MinPlayers)
+                ImGuiUtil.ToolTip($"Need at least {Plugin.Config.HighRollDuel.MinPlayers} players.");
+        } else if (state.Phase == HighRollDuelPhase.Rolling) {
+            if (ImGuiUtil.SuccessButton("Close Round##HrdClose")) game.CloseRound();
         }
 
         ImGui.SameLine();
         using (ImRaii.Disabled(!state.IsActive))
-        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonDangerNormal)
-            .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonDangerHovered)
-            .Push(ImGuiCol.ButtonActive, Style.Components.ButtonDangerActive)) {
-            if (ImGui.Button("Stop##HrdStop")) game.Stop();
-        }
+            if (ImGuiUtil.DangerButton("Stop##HrdStop")) game.Stop();
 
         ImGui.SameLine();
         DrawPhaseBadge(state);
@@ -154,12 +146,8 @@ public class HighRollDuelWindow : Window {
             return;
         }
 
-        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonDangerNormal)
-            .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonDangerHovered)
-            .Push(ImGuiCol.ButtonActive, Style.Components.ButtonDangerActive)) {
-            if (ImGuiUtil.IconButton(FontAwesomeIcon.TrashAlt, "##HrdClearHist", "Ctrl+Click to clear") && ImGui.GetIO().KeyCtrl)
-                game.MatchHistory.Clear();
-        }
+        if (ImGuiUtil.DangerIconButton(FontAwesomeIcon.TrashAlt, "##HrdClearHist", "Ctrl+Click to clear") && ImGui.GetIO().KeyCtrl)
+            game.MatchHistory.Clear();
         ImGui.Spacing();
 
         using var table = ImRaii.Table("##HrdHistTable", 3, ImGuiTableFlags.RowBg | ImGuiTableFlags.NoSavedSettings);

@@ -35,26 +35,18 @@ public class AssassinGameWindow : Window {
     }
 
     private void DrawControls(AssassinGame game, AssassinGameState state) {
-        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessNormal)
-            .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonSuccessHovered)
-            .Push(ImGuiCol.ButtonActive, Style.Components.ButtonSuccessActive)) {
-            if (state.Phase is AssassinPhase.Idle or AssassinPhase.Finished) {
-                if (ImGui.Button("Begin Registration##AgBeginReg")) game.BeginRegistration();
-            } else if (state.Phase == AssassinPhase.Registering) {
-                using (ImRaii.Disabled(state.Players.Count < Plugin.Config.AssassinGame.MinPlayers))
-                    if (ImGui.Button("Assign Targets##AgAssign")) game.AssignTargets();
-                if (state.Players.Count < Plugin.Config.AssassinGame.MinPlayers)
-                    ImGuiUtil.ToolTip($"Need at least {Plugin.Config.AssassinGame.MinPlayers} players.");
-            }
+        if (state.Phase is AssassinPhase.Idle or AssassinPhase.Finished) {
+            if (ImGuiUtil.SuccessButton("Begin Registration##AgBeginReg")) game.BeginRegistration();
+        } else if (state.Phase == AssassinPhase.Registering) {
+            using (ImRaii.Disabled(state.Players.Count < Plugin.Config.AssassinGame.MinPlayers))
+                if (ImGuiUtil.SuccessButton("Assign Targets##AgAssign")) game.AssignTargets();
+            if (state.Players.Count < Plugin.Config.AssassinGame.MinPlayers)
+                ImGuiUtil.ToolTip($"Need at least {Plugin.Config.AssassinGame.MinPlayers} players.");
         }
 
         ImGui.SameLine();
         using (ImRaii.Disabled(!state.IsActive))
-        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonDangerNormal)
-            .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonDangerHovered)
-            .Push(ImGuiCol.ButtonActive, Style.Components.ButtonDangerActive)) {
-            if (ImGui.Button("Stop##AgStop")) game.Stop();
-        }
+            if (ImGuiUtil.DangerButton("Stop##AgStop")) game.Stop();
 
         ImGui.SameLine();
         DrawPhaseBadge(state);
@@ -154,12 +146,8 @@ public class AssassinGameWindow : Window {
             using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Gray)) ImGui.Text("No history yet.");
             return;
         }
-        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonDangerNormal)
-            .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonDangerHovered)
-            .Push(ImGuiCol.ButtonActive, Style.Components.ButtonDangerActive)) {
-            if (ImGuiUtil.IconButton(FontAwesomeIcon.TrashAlt, "##AgClearHist", "Ctrl+Click to clear") && ImGui.GetIO().KeyCtrl)
-                game.MatchHistory.Clear();
-        }
+        if (ImGuiUtil.DangerIconButton(FontAwesomeIcon.TrashAlt, "##AgClearHist", "Ctrl+Click to clear") && ImGui.GetIO().KeyCtrl)
+            game.MatchHistory.Clear();
         ImGui.Spacing();
         using var table = ImRaii.Table("##AgHistTable", 3, ImGuiTableFlags.RowBg | ImGuiTableFlags.NoSavedSettings);
         if (!table) return;

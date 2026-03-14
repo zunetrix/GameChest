@@ -35,26 +35,18 @@ public class KingOfTheHillWindow : Window {
     }
 
     private void DrawControls(KingOfTheHillGame game, KingOfTheHillState state) {
-        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessNormal)
-            .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonSuccessHovered)
-            .Push(ImGuiCol.ButtonActive, Style.Components.ButtonSuccessActive)) {
-            if (state.Phase is KingOfTheHillPhase.Idle or KingOfTheHillPhase.Finished) {
-                if (ImGui.Button("Begin Registration##KothBeginReg")) game.BeginRegistration();
-            } else if (state.Phase == KingOfTheHillPhase.Registering) {
-                using (ImRaii.Disabled(state.Players.Count < Plugin.Config.KingOfTheHill.MinPlayers))
-                    if (ImGui.Button("Start##KothStart")) game.StartRolling();
-            } else if (state.Phase == KingOfTheHillPhase.Rolling) {
-                if (ImGui.Button("Close Round##KothClose")) game.CloseRound();
-            }
+        if (state.Phase is KingOfTheHillPhase.Idle or KingOfTheHillPhase.Finished) {
+            if (ImGuiUtil.SuccessButton("Begin Registration##KothBeginReg")) game.BeginRegistration();
+        } else if (state.Phase == KingOfTheHillPhase.Registering) {
+            using (ImRaii.Disabled(state.Players.Count < Plugin.Config.KingOfTheHill.MinPlayers))
+                if (ImGuiUtil.SuccessButton("Start##KothStart")) game.StartRolling();
+        } else if (state.Phase == KingOfTheHillPhase.Rolling) {
+            if (ImGuiUtil.SuccessButton("Close Round##KothClose")) game.CloseRound();
         }
 
         ImGui.SameLine();
         using (ImRaii.Disabled(!state.IsActive))
-        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonDangerNormal)
-            .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonDangerHovered)
-            .Push(ImGuiCol.ButtonActive, Style.Components.ButtonDangerActive)) {
-            if (ImGui.Button("Stop##KothStop")) game.Stop();
-        }
+            if (ImGuiUtil.DangerButton("Stop##KothStop")) game.Stop();
 
         ImGui.SameLine();
         DrawPhaseBadge(state);
@@ -147,12 +139,8 @@ public class KingOfTheHillWindow : Window {
             using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Gray)) ImGui.Text("No history yet.");
             return;
         }
-        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonDangerNormal)
-            .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonDangerHovered)
-            .Push(ImGuiCol.ButtonActive, Style.Components.ButtonDangerActive)) {
-            if (ImGuiUtil.IconButton(FontAwesomeIcon.TrashAlt, "##KothClearHist", "Ctrl+Click to clear") && ImGui.GetIO().KeyCtrl)
-                game.MatchHistory.Clear();
-        }
+        if (ImGuiUtil.DangerIconButton(FontAwesomeIcon.TrashAlt, "##KothClearHist", "Ctrl+Click to clear") && ImGui.GetIO().KeyCtrl)
+            game.MatchHistory.Clear();
         ImGui.Spacing();
         using var table = ImRaii.Table("##KothHistTable", 3, ImGuiTableFlags.RowBg | ImGuiTableFlags.NoSavedSettings);
         if (!table) return;

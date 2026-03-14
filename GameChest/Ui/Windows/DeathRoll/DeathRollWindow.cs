@@ -44,34 +44,22 @@ public class DeathRollWindow : Window {
     private void DrawControls(DeathRollGame dr, DeathRollState state) {
         // Start
         using (ImRaii.Disabled(state.Phase == DeathRollPhase.Active))
-        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessNormal)
-            .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonSuccessHovered)
-            .Push(ImGuiCol.ButtonActive, Style.Components.ButtonSuccessActive)) {
-            if (ImGui.Button("Start##DrStart"))
+            if (ImGuiUtil.SuccessButton("Start##DrStart"))
                 dr.Start();
-        }
 
         ImGui.SameLine();
 
         // Stop
         using (ImRaii.Disabled(state.Phase != DeathRollPhase.Active))
-        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonDangerNormal)
-            .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonDangerHovered)
-            .Push(ImGuiCol.ButtonActive, Style.Components.ButtonDangerActive)) {
-            if (ImGui.Button("Stop##DrStop"))
+            if (ImGuiUtil.DangerButton("Stop##DrStop"))
                 dr.Stop();
-        }
 
         ImGui.SameLine();
 
         // New Round
         using (ImRaii.Disabled(state.Phase == DeathRollPhase.Idle))
-        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonBlueNormal)
-            .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonBlueHovered)
-            .Push(ImGuiCol.ButtonActive, Style.Components.ButtonBlueActive)) {
-            if (ImGui.Button("New Round##DrNewRound"))
+            if (ImGuiUtil.PrimaryButton("New Round##DrNewRound"))
                 dr.RestartMatch();
-        }
 
         ImGui.SameLine();
 
@@ -189,12 +177,8 @@ public class DeathRollWindow : Window {
             return;
         }
 
-        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonDangerNormal)
-            .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonDangerHovered)
-            .Push(ImGuiCol.ButtonActive, Style.Components.ButtonDangerActive)) {
-            if (ImGuiUtil.IconButton(FontAwesomeIcon.TrashAlt, "##DrClearHistory", "Ctrl+Click to clear history") && ImGui.GetIO().KeyCtrl)
-                dr.MatchHistory.Clear();
-        }
+        if (ImGuiUtil.DangerIconButton(FontAwesomeIcon.TrashAlt, "##DrClearHistory", "Ctrl+Click to clear history") && ImGui.GetIO().KeyCtrl)
+            dr.MatchHistory.Clear();
         ImGui.Spacing();
 
         using var table = ImRaii.Table("##DrHistoryTable", 3,

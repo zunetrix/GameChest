@@ -163,26 +163,16 @@ public class FightGameSettingsWindow : Window {
                     ImGui.EndCombo();
                 }
                 ImGui.SameLine();
-
-                using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessNormal)
-                    .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonSuccessHovered)
-                    .Push(ImGuiCol.ButtonActive, Style.Components.ButtonSuccessActive)) {
-                    if (ImGui.Button("Apply##ApplyPreset") && _selectedPresetIdx >= 0) {
-                        cfg.ApplyPreset(cfg.Presets[_selectedPresetIdx]);
-                        cfg.ActivePresetIndex = _selectedPresetIdx;
-                        Plugin.Config.Save();
-                    }
+                if (ImGuiUtil.SuccessButton("Apply##ApplyPreset") && _selectedPresetIdx >= 0) {
+                    cfg.ApplyPreset(cfg.Presets[_selectedPresetIdx]);
+                    cfg.ActivePresetIndex = _selectedPresetIdx;
+                    Plugin.Config.Save();
                 }
                 ImGui.SameLine();
-
-                using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonDangerNormal)
-                    .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonDangerHovered)
-                    .Push(ImGuiCol.ButtonActive, Style.Components.ButtonDangerActive)) {
-                    if (ImGui.Button("Delete##DeletePreset") && _selectedPresetIdx >= 0 && ImGui.GetIO().KeyCtrl) {
-                        cfg.Presets.RemoveAtSafe(_selectedPresetIdx);
-                        if (_selectedPresetIdx >= cfg.Presets.Count) _selectedPresetIdx = -1;
-                        Plugin.Config.Save();
-                    }
+                if (ImGuiUtil.DangerButton("Delete##DeletePreset") && _selectedPresetIdx >= 0 && ImGui.GetIO().KeyCtrl) {
+                    cfg.Presets.RemoveAtSafe(_selectedPresetIdx);
+                    if (_selectedPresetIdx >= cfg.Presets.Count) _selectedPresetIdx = -1;
+                    Plugin.Config.Save();
                 }
                 ImGuiUtil.ToolTip("Ctrl+Click to delete.");
             }

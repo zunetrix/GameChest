@@ -36,26 +36,18 @@ public class DiceRoyaleWindow : Window {
     }
 
     private void DrawControls(DiceRoyaleGame game, DiceRoyaleState state) {
-        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessNormal)
-            .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonSuccessHovered)
-            .Push(ImGuiCol.ButtonActive, Style.Components.ButtonSuccessActive)) {
-            if (state.Phase is DiceRoyalePhase.Idle or DiceRoyalePhase.Finished) {
-                if (ImGui.Button("Begin Registration##DrBeginReg")) game.BeginRegistration();
-            } else if (state.Phase == DiceRoyalePhase.Registering) {
-                using (ImRaii.Disabled(state.Players.Count < Plugin.Config.DiceRoyale.MinPlayers))
-                    if (ImGui.Button("Start##DrStart")) game.StartRolling();
-            } else if (state.Phase == DiceRoyalePhase.Rolling) {
-                if (ImGui.Button("Close Round##DrClose")) game.CloseRound();
-            }
+        if (state.Phase is DiceRoyalePhase.Idle or DiceRoyalePhase.Finished) {
+            if (ImGuiUtil.SuccessButton("Begin Registration##DrBeginReg")) game.BeginRegistration();
+        } else if (state.Phase == DiceRoyalePhase.Registering) {
+            using (ImRaii.Disabled(state.Players.Count < Plugin.Config.DiceRoyale.MinPlayers))
+                if (ImGuiUtil.SuccessButton("Start##DrStart")) game.StartRolling();
+        } else if (state.Phase == DiceRoyalePhase.Rolling) {
+            if (ImGuiUtil.SuccessButton("Close Round##DrClose")) game.CloseRound();
         }
 
         ImGui.SameLine();
         using (ImRaii.Disabled(!state.IsActive))
-        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonDangerNormal)
-            .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonDangerHovered)
-            .Push(ImGuiCol.ButtonActive, Style.Components.ButtonDangerActive)) {
-            if (ImGui.Button("Stop##DrStop")) game.Stop();
-        }
+            if (ImGuiUtil.DangerButton("Stop##DrStop")) game.Stop();
 
         ImGui.SameLine();
         DrawPhaseBadge(state);
@@ -156,12 +148,8 @@ public class DiceRoyaleWindow : Window {
             using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Gray)) ImGui.Text("No history yet.");
             return;
         }
-        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonDangerNormal)
-            .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonDangerHovered)
-            .Push(ImGuiCol.ButtonActive, Style.Components.ButtonDangerActive)) {
-            if (ImGuiUtil.IconButton(FontAwesomeIcon.TrashAlt, "##DrClearHist", "Ctrl+Click to clear") && ImGui.GetIO().KeyCtrl)
-                game.MatchHistory.Clear();
-        }
+        if (ImGuiUtil.DangerIconButton(FontAwesomeIcon.TrashAlt, "##DrClearHist", "Ctrl+Click to clear") && ImGui.GetIO().KeyCtrl)
+            game.MatchHistory.Clear();
         ImGui.Spacing();
         using var table = ImRaii.Table("##DrHistTable", 3, ImGuiTableFlags.RowBg | ImGuiTableFlags.NoSavedSettings);
         if (!table) return;

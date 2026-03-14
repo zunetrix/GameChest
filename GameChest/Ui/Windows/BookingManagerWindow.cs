@@ -48,14 +48,10 @@ public class BookingManagerWindow : Window {
             ImGuiInputTextFlags.EnterReturnsTrue);
         ImGui.SameLine();
         using (ImRaii.Disabled(string.IsNullOrWhiteSpace(_inputBuffer)))
-        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessNormal)
-            .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonSuccessHovered)
-            .Push(ImGuiCol.ButtonActive, Style.Components.ButtonSuccessActive)) {
-            if ((ImGui.Button("Add##BmAdd") || enter) && !string.IsNullOrWhiteSpace(_inputBuffer)) {
+            if ((ImGuiUtil.SuccessButton("Add##BmAdd") || enter) && !string.IsNullOrWhiteSpace(_inputBuffer)) {
                 TryAdd(_inputBuffer.Trim(), booking);
                 _inputBuffer = string.Empty;
             }
-        }
         ImGui.SameLine();
         if (ImGuiUtil.IconButton(FontAwesomeIcon.Crosshairs, "##BmTarget", "Add targeted player")) {
             var name = GameTargetManager.GetTargetPlayerFullName();
@@ -111,13 +107,9 @@ public class BookingManagerWindow : Window {
 
         ImGui.TableNextColumn();
         if (booking.Count > 0) {
-            using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonDangerNormal)
-                .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonDangerHovered)
-                .Push(ImGuiCol.ButtonActive, Style.Components.ButtonDangerActive)) {
-                if (ImGuiUtil.IconButton(FontAwesomeIcon.Trash, "##BmClear") && ImGui.GetIO().KeyCtrl) {
-                    booking.Clear();
-                    Plugin.Config.Save();
-                }
+            if (ImGuiUtil.DangerIconButton(FontAwesomeIcon.Trash, "##BmClear") && ImGui.GetIO().KeyCtrl) {
+                booking.Clear();
+                Plugin.Config.Save();
             }
             ImGuiUtil.ToolTip("Ctrl+Click to clear all");
         }
@@ -169,11 +161,8 @@ public class BookingManagerWindow : Window {
                 if (ImGuiUtil.IconButton(FontAwesomeIcon.ArrowDown, "##Down", "Move down"))
                     moveDown = i;
             ImGui.SameLine();
-            using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonDangerNormal)
-                .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonDangerHovered)
-                .Push(ImGuiCol.ButtonActive, Style.Components.ButtonDangerActive))
-                if (ImGuiUtil.IconButton(FontAwesomeIcon.Times, "##Rem", "Remove"))
-                    toRemove = i;
+            if (ImGuiUtil.DangerIconButton(FontAwesomeIcon.Times, "##Rem", "Remove"))
+                toRemove = i;
 
             ImGui.PopID();
         }

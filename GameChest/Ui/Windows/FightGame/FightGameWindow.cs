@@ -51,42 +51,26 @@ public class FightGameWindow : Window {
     private void DrawControls(FightGame fg, FightState state) {
         // Phase-based action button
         if (state.Phase is FightPhase.Idle or FightPhase.Finished) {
-            using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessNormal)
-                .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonSuccessHovered)
-                .Push(ImGuiCol.ButtonActive, Style.Components.ButtonSuccessActive)) {
-                if (ImGui.Button("Begin Registration##BeginReg"))
-                    fg.BeginRegistration();
-            }
+            if (ImGuiUtil.SuccessButton("Begin Registration##BeginReg"))
+                fg.BeginRegistration();
             ImGui.SameLine();
         } else if (state.Phase == FightPhase.Registering) {
             var canStart = state.RegisteredFighters.Count == 2;
             using (ImRaii.Disabled(!canStart))
-            using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonBlueNormal)
-                .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonBlueHovered)
-                .Push(ImGuiCol.ButtonActive, Style.Components.ButtonBlueActive)) {
-                if (ImGui.Button("Start Fight##StartFight"))
+                if (ImGuiUtil.PrimaryButton("Start Fight##StartFight"))
                     fg.Start();
-            }
             if (!canStart) ImGuiUtil.ToolTip("Need 2 fighters.");
             ImGui.SameLine();
         }
 
         using (ImRaii.Disabled(!state.IsActive))
-        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonDangerNormal)
-            .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonDangerHovered)
-            .Push(ImGuiCol.ButtonActive, Style.Components.ButtonDangerActive)) {
-            if (ImGui.Button("Stop##StopFight"))
+            if (ImGuiUtil.DangerButton("Stop##StopFight"))
                 fg.Stop();
-        }
 
         if (state.PlayerA != null) {
             ImGui.SameLine();
-            using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonBlueNormal)
-                .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonBlueHovered)
-                .Push(ImGuiCol.ButtonActive, Style.Components.ButtonBlueActive)) {
-                if (ImGui.Button("Restart##RestartMatch"))
-                    fg.RestartMatch();
-            }
+            if (ImGuiUtil.PrimaryButton("Restart##RestartMatch"))
+                fg.RestartMatch();
             ImGuiUtil.ToolTip("Restart match with the same fighters.");
         }
 
@@ -182,12 +166,8 @@ public class FightGameWindow : Window {
             return;
         }
 
-        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonDangerNormal)
-        .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonDangerHovered)
-        .Push(ImGuiCol.ButtonActive, Style.Components.ButtonDangerActive)) {
-            if (ImGuiUtil.IconButton(FontAwesomeIcon.TrashAlt, "##FgClearHistory", "Ctrl+Click to clear history") && ImGui.GetIO().KeyCtrl)
-                fg.MatchHistory.Clear();
-        }
+        if (ImGuiUtil.DangerIconButton(FontAwesomeIcon.TrashAlt, "##FgClearHistory", "Ctrl+Click to clear history") && ImGui.GetIO().KeyCtrl)
+            fg.MatchHistory.Clear();
 
         if (fg.MatchHistory.Count == 0) return;
 
@@ -233,13 +213,9 @@ public class FightGameWindow : Window {
             ImGui.InputTextWithHint("##RegName", "Firstname Lastname[@World]", ref _manualRegisterName, 100);
 
             ImGui.SameLine();
-            using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessNormal)
-                .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonSuccessHovered)
-                .Push(ImGuiCol.ButtonActive, Style.Components.ButtonSuccessActive)) {
-                if (ImGui.Button($"{Language.Add}##ManualReg") && !string.IsNullOrWhiteSpace(_manualRegisterName)) {
-                    fg.TryJoin(_manualRegisterName.Trim(), JoinSource.Manual);
-                    _manualRegisterName = string.Empty;
-                }
+            if (ImGuiUtil.SuccessButton($"{Language.Add}##ManualReg") && !string.IsNullOrWhiteSpace(_manualRegisterName)) {
+                fg.TryJoin(_manualRegisterName.Trim(), JoinSource.Manual);
+                _manualRegisterName = string.Empty;
             }
 
             ImGui.SameLine();
@@ -262,14 +238,10 @@ public class FightGameWindow : Window {
                 }
                 ImGui.SameLine();
                 using (ImRaii.Disabled(selectedCount == 0))
-                using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonBlueNormal)
-                    .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonBlueHovered)
-                    .Push(ImGuiCol.ButtonActive, Style.Components.ButtonBlueActive)) {
-                    if (ImGui.Button($"Load Selected ({selectedCount})##FgLoadSelected")) {
+                    if (ImGuiUtil.PrimaryButton($"Load Selected ({selectedCount})##FgLoadSelected")) {
                         foreach (var p in booking.Where(p => p.Selected))
                             fg.TryJoin(p.FullName, JoinSource.Manual);
                     }
-                }
             }
 
             ImGui.Spacing();
@@ -313,14 +285,11 @@ public class FightGameWindow : Window {
             }
 
             ImGui.TableNextColumn();
-            using (ImRaii.Disabled(!occupied))
-            using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonDangerNormal)
-                .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonDangerHovered)
-                .Push(ImGuiCol.ButtonActive, Style.Components.ButtonDangerActive)) {
-                if (ImGuiUtil.IconButton(FontAwesomeIcon.Times, "##Rem", "Remove"))
+            using (ImRaii.Disabled(!occupied)) {
+                if (ImGuiUtil.DangerIconButton(FontAwesomeIcon.Times, "##Rem", "Remove"))
                     state.RegisteredFighters.RemoveAtSafe(i);
                 ImGui.SameLine();
-                if (ImGuiUtil.IconButton(FontAwesomeIcon.Ban, "##Blk", $"{Language.Block} (Ctrl+Click)")
+                if (ImGuiUtil.DangerIconButton(FontAwesomeIcon.Ban, "##Blk", $"{Language.Block} (Ctrl+Click)")
                     && ImGui.GetIO().KeyCtrl && fighter != null) {
                     var fullName = fighter.FullName;
                     state.RegisteredFighters.RemoveAtSafe(i);

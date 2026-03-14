@@ -47,42 +47,26 @@ public class DeathRollTournamentWindow : Window {
     private void DrawControls(DeathRollTournamentGame tn, DeathRollTournamentState state) {
         // Phase-based action button
         if (state.Phase is DeathRollTournamentPhase.Idle or DeathRollTournamentPhase.Finished) {
-            using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessNormal)
-                .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonSuccessHovered)
-                .Push(ImGuiCol.ButtonActive, Style.Components.ButtonSuccessActive)) {
-                if (ImGui.Button("Begin Registration##TnBeginReg"))
-                    tn.BeginRegistration();
-            }
+            if (ImGuiUtil.SuccessButton("Begin Registration##TnBeginReg"))
+                tn.BeginRegistration();
             ImGui.SameLine();
         } else if (state.Phase == DeathRollTournamentPhase.Registering) {
             using (ImRaii.Disabled(state.RegisteredPlayers.Count < 2))
-            using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonBlueNormal)
-                .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonBlueHovered)
-                .Push(ImGuiCol.ButtonActive, Style.Components.ButtonBlueActive)) {
-                if (ImGui.Button("Close Registration##TnCloseReg"))
+                if (ImGuiUtil.PrimaryButton("Close Registration##TnCloseReg"))
                     tn.CloseRegistration();
-            }
             if (state.RegisteredPlayers.Count < 2)
                 ImGuiUtil.ToolTip("Need at least 2 players.");
             ImGui.SameLine();
         } else if (state.Phase == DeathRollTournamentPhase.Preparing) {
-            using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessNormal)
-                .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonSuccessHovered)
-                .Push(ImGuiCol.ButtonActive, Style.Components.ButtonSuccessActive)) {
-                if (ImGui.Button("Start Tournament##TnStart"))
-                    tn.StartMatch();
-            }
+            if (ImGuiUtil.SuccessButton("Start Tournament##TnStart"))
+                tn.StartMatch();
             ImGui.SameLine();
         }
 
         // Stop / Reset
         using (ImRaii.Disabled(!state.IsActive))
-        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonDangerNormal)
-            .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonDangerHovered)
-            .Push(ImGuiCol.ButtonActive, Style.Components.ButtonDangerActive)) {
-            if (ImGui.Button("Stop##TnStop"))
+            if (ImGuiUtil.DangerButton("Stop##TnStop"))
                 tn.Stop();
-        }
 
         ImGui.SameLine();
 
@@ -187,13 +171,9 @@ public class DeathRollTournamentWindow : Window {
                         ImGui.TableNextColumn();
                         ImGui.Text(player);
                         ImGui.TableNextColumn();
-                        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonDangerNormal)
-                            .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonDangerHovered)
-                            .Push(ImGuiCol.ButtonActive, Style.Components.ButtonDangerActive)) {
-                            if (ImGuiUtil.IconButton(FontAwesomeIcon.Trash, $"##TnDel{i}", "Remove (Ctrl+Click)") &&
-                                ImGui.GetIO().KeyCtrl)
-                                toRemove = player;
-                        }
+                        if (ImGuiUtil.DangerIconButton(FontAwesomeIcon.Trash, $"##TnDel{i}", "Remove (Ctrl+Click)") &&
+                            ImGui.GetIO().KeyCtrl)
+                            toRemove = player;
                     }
                     if (toRemove != null) tn.RemovePlayer(toRemove);
                 }
@@ -206,13 +186,9 @@ public class DeathRollTournamentWindow : Window {
         ImGui.SetNextItemWidth(280f * ImGuiHelpers.GlobalScale);
         ImGui.InputTextWithHint("##TnManualAdd", "Firstname Lastname[@World]", ref _manualPlayerName, 100);
         ImGui.SameLine();
-        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessNormal)
-            .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonSuccessHovered)
-            .Push(ImGuiCol.ButtonActive, Style.Components.ButtonSuccessActive)) {
-            if (ImGui.Button("Add##TnManualReg") && !string.IsNullOrWhiteSpace(_manualPlayerName)) {
-                tn.TryJoin(_manualPlayerName.Trim(), JoinSource.Manual);
-                _manualPlayerName = string.Empty;
-            }
+        if (ImGuiUtil.SuccessButton("Add##TnManualReg") && !string.IsNullOrWhiteSpace(_manualPlayerName)) {
+            tn.TryJoin(_manualPlayerName.Trim(), JoinSource.Manual);
+            _manualPlayerName = string.Empty;
         }
         ImGui.SameLine();
         if (ImGuiUtil.IconButton(FontAwesomeIcon.Crosshairs, "##TnTargetReg", "Register targeted player")) {
@@ -234,14 +210,10 @@ public class DeathRollTournamentWindow : Window {
             }
             ImGui.SameLine();
             using (ImRaii.Disabled(selectedCount == 0))
-            using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonBlueNormal)
-                .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonBlueHovered)
-                .Push(ImGuiCol.ButtonActive, Style.Components.ButtonBlueActive)) {
-                if (ImGui.Button($"Load Selected ({selectedCount})##TnLoadSelected")) {
+                if (ImGuiUtil.PrimaryButton($"Load Selected ({selectedCount})##TnLoadSelected")) {
                     foreach (var p in booking.Where(p => p.Selected))
                         tn.TryJoin(p.FullName, JoinSource.Manual);
                 }
-            }
         }
     }
 
@@ -293,12 +265,8 @@ public class DeathRollTournamentWindow : Window {
             using (ImRaii.PushColor(ImGuiCol.Text, Style.Colors.Green))
                 ImGui.Text($"\uE05D Match Winner: {PlayerName.Short(state.MatchWinner)}");
             ImGui.Spacing();
-            using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessNormal)
-                .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonSuccessHovered)
-                .Push(ImGuiCol.ButtonActive, Style.Components.ButtonSuccessActive)) {
-                if (ImGui.Button("Next Match##TnNext"))
-                    tn.AdvanceToNextMatch();
-            }
+            if (ImGuiUtil.SuccessButton("Next Match##TnNext"))
+                tn.AdvanceToNextMatch();
         } else {
             using (ImRaii.PushColor(ImGuiCol.Text, Style.Components.TextDisabled))
                 ImGui.Text("Forfeit:");
@@ -372,12 +340,8 @@ public class DeathRollTournamentWindow : Window {
             return;
         }
 
-        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonDangerNormal)
-            .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonDangerHovered)
-            .Push(ImGuiCol.ButtonActive, Style.Components.ButtonDangerActive)) {
-            if (ImGuiUtil.IconButton(FontAwesomeIcon.TrashAlt, "##TnClearHistory", "Ctrl+Click to clear history") && ImGui.GetIO().KeyCtrl)
-                tn.MatchHistory.Clear();
-        }
+        if (ImGuiUtil.DangerIconButton(FontAwesomeIcon.TrashAlt, "##TnClearHistory", "Ctrl+Click to clear history") && ImGui.GetIO().KeyCtrl)
+            tn.MatchHistory.Clear();
         ImGui.Spacing();
 
         using var table = ImRaii.Table("##TnHistoryTable", 3,

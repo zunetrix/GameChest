@@ -49,23 +49,15 @@ public class PrizeRollWindow : Window {
     private void DrawControls(PrizeRollGame pr, PrizeRollState state) {
         var cfg = Plugin.Config.PrizeRoll;
         using (ImRaii.Disabled(state.IsActive))
-        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessNormal)
-            .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonSuccessHovered)
-            .Push(ImGuiCol.ButtonActive, Style.Components.ButtonSuccessActive)) {
-            if (ImGui.Button("Start##StartPrize")) {
+            if (ImGuiUtil.SuccessButton("Start##StartPrize")) {
                 pr.Start();
             }
-        }
 
         ImGui.SameLine();
 
         using (ImRaii.Disabled(!state.IsActive))
-        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonDangerNormal)
-            .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonDangerHovered)
-            .Push(ImGuiCol.ButtonActive, Style.Components.ButtonDangerActive)) {
-            if (ImGui.Button("Stop##StopPrize"))
+            if (ImGuiUtil.DangerButton("Stop##StopPrize"))
                 pr.Stop();
-        }
 
         ImGui.SameLine();
 
@@ -218,12 +210,8 @@ public class PrizeRollWindow : Window {
             return;
         }
 
-        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonDangerNormal)
-        .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonDangerHovered)
-        .Push(ImGuiCol.ButtonActive, Style.Components.ButtonDangerActive)) {
-            if (ImGuiUtil.IconButton(FontAwesomeIcon.TrashAlt, "##PrClearHistory", "Ctrl+Click to clear history") && ImGui.GetIO().KeyCtrl)
-                pr.MatchHistory.Clear();
-        }
+        if (ImGuiUtil.DangerIconButton(FontAwesomeIcon.TrashAlt, "##PrClearHistory", "Ctrl+Click to clear history") && ImGui.GetIO().KeyCtrl)
+            pr.MatchHistory.Clear();
         ImGui.Spacing();
 
         using var table = ImRaii.Table("##PrHistoryTable", 6,

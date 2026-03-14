@@ -36,38 +36,30 @@ public class DiceBlackjackWindow : Window {
     }
 
     private void DrawControls(DiceBlackjackGame game, DiceBlackjackState state) {
-        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessNormal)
-            .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonSuccessHovered)
-            .Push(ImGuiCol.ButtonActive, Style.Components.ButtonSuccessActive)) {
-            if (state.Phase is DiceBlackjackPhase.Idle or DiceBlackjackPhase.Finished) {
-                if (ImGui.Button("Begin Registration##DbjBeginReg")) game.BeginRegistration();
-            } else if (state.Phase == DiceBlackjackPhase.Registering) {
-                var canStart = state.Players.Count >= Plugin.Config.DiceBlackjack.MinPlayers;
-                using (ImRaii.Disabled(!canStart))
-                    if (ImGui.Button("Start Game##DbjStart")) game.StartGame();
-                if (!canStart) ImGuiUtil.ToolTip($"Need at least {Plugin.Config.DiceBlackjack.MinPlayers} player(s).");
-            } else if (state.Phase == DiceBlackjackPhase.PlayerTurns) {
-                var canStand = state.CurrentPlayer?.DealCount >= 2;
-                using (ImRaii.Disabled(!canStand))
-                    if (ImGui.Button("Stand##DbjStand")) game.Stand();
-                if (!canStand) ImGuiUtil.ToolTip("Player must receive 2 deal cards first.");
-            } else if (state.Phase == DiceBlackjackPhase.DealerTurn) {
-                var canDraw = state.DealerStatus == PlayerHandStatus.Active;
-                using (ImRaii.Disabled(!canDraw))
-                    if (ImGui.Button("Draw Dealer Card##DbjDraw"))
-                        Chat.SendMessage($"/random {Plugin.Config.DiceBlackjack.MaxRoll}");
-                ImGui.SameLine();
-            }
+        if (state.Phase is DiceBlackjackPhase.Idle or DiceBlackjackPhase.Finished) {
+            if (ImGuiUtil.SuccessButton("Begin Registration##DbjBeginReg")) game.BeginRegistration();
+        } else if (state.Phase == DiceBlackjackPhase.Registering) {
+            var canStart = state.Players.Count >= Plugin.Config.DiceBlackjack.MinPlayers;
+            using (ImRaii.Disabled(!canStart))
+                if (ImGuiUtil.SuccessButton("Start Game##DbjStart")) game.StartGame();
+            if (!canStart) ImGuiUtil.ToolTip($"Need at least {Plugin.Config.DiceBlackjack.MinPlayers} player(s).");
+        } else if (state.Phase == DiceBlackjackPhase.PlayerTurns) {
+            var canStand = state.CurrentPlayer?.DealCount >= 2;
+            using (ImRaii.Disabled(!canStand))
+                if (ImGuiUtil.SuccessButton("Stand##DbjStand")) game.Stand();
+            if (!canStand) ImGuiUtil.ToolTip("Player must receive 2 deal cards first.");
+        } else if (state.Phase == DiceBlackjackPhase.DealerTurn) {
+            var canDraw = state.DealerStatus == PlayerHandStatus.Active;
+            using (ImRaii.Disabled(!canDraw))
+                if (ImGuiUtil.SuccessButton("Draw Dealer Card##DbjDraw"))
+                    Chat.SendMessage($"/random {Plugin.Config.DiceBlackjack.MaxRoll}");
+            ImGui.SameLine();
         }
 
         if (state.Phase == DiceBlackjackPhase.DealerTurn) {
-            using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonBlueNormal)
-                .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonBlueHovered)
-                .Push(ImGuiCol.ButtonActive, Style.Components.ButtonBlueActive)) {
-                var canStand = state.DealerStatus == PlayerHandStatus.Active;
-                using (ImRaii.Disabled(!canStand))
-                    if (ImGui.Button("Dealer Stands##DbjDealerStand")) game.DealerStand();
-            }
+            var canStand = state.DealerStatus == PlayerHandStatus.Active;
+            using (ImRaii.Disabled(!canStand))
+                if (ImGuiUtil.PrimaryButton("Dealer Stands##DbjDealerStand")) game.DealerStand();
             ImGui.SameLine();
         }
 
@@ -75,11 +67,7 @@ public class DiceBlackjackWindow : Window {
             ImGui.SameLine();
 
         using (ImRaii.Disabled(!state.IsActive))
-        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonDangerNormal)
-            .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonDangerHovered)
-            .Push(ImGuiCol.ButtonActive, Style.Components.ButtonDangerActive)) {
-            if (ImGui.Button("Stop##DbjStop")) game.Stop();
-        }
+            if (ImGuiUtil.DangerButton("Stop##DbjStop")) game.Stop();
 
         ImGui.SameLine();
         DrawPhaseBadge(state);

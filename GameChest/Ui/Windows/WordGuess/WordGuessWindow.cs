@@ -45,11 +45,7 @@ public class WordGuessWindow : Window {
 
         // Start (enabled when Idle or Done)
         using (ImRaii.Disabled(state.IsActive || noQuestions))
-        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessNormal)
-            .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonSuccessHovered)
-            .Push(ImGuiCol.ButtonActive, Style.Components.ButtonSuccessActive)) {
-            if (ImGui.Button("Start##WgStart")) wg.Start();
-        }
+            if (ImGuiUtil.SuccessButton("Start##WgStart")) wg.Start();
         if (noQuestions) ImGuiUtil.ToolTip("Enable at least one question in the Question List first.");
 
         // Next / Skip (only when Active)
@@ -63,11 +59,7 @@ public class WordGuessWindow : Window {
 
         // Stop (enabled when Active)
         using (ImRaii.Disabled(!state.IsActive))
-        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonDangerNormal)
-            .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonDangerHovered)
-            .Push(ImGuiCol.ButtonActive, Style.Components.ButtonDangerActive)) {
-            if (ImGui.Button("Stop##WgStop")) wg.Stop();
-        }
+            if (ImGuiUtil.DangerButton("Stop##WgStop")) wg.Stop();
 
         ImGui.SameLine();
         DrawPhaseBadge(state);
@@ -270,13 +262,9 @@ public class WordGuessWindow : Window {
             return;
         }
 
-        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonDangerNormal)
-            .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonDangerHovered)
-            .Push(ImGuiCol.ButtonActive, Style.Components.ButtonDangerActive)) {
-            if (ImGuiUtil.IconButton(FontAwesomeIcon.TrashAlt, "##WgClearHistory", "Ctrl+Click to clear history")
-                && ImGui.GetIO().KeyCtrl)
-                wg.MatchHistory.Clear();
-        }
+        if (ImGuiUtil.DangerIconButton(FontAwesomeIcon.TrashAlt, "##WgClearHistory", "Ctrl+Click to clear history")
+            && ImGui.GetIO().KeyCtrl)
+            wg.MatchHistory.Clear();
         ImGui.Spacing();
 
         for (var i = 0; i < wg.MatchHistory.Count; i++) {

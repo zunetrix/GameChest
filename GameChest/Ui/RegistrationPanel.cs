@@ -42,14 +42,10 @@ public static class RegistrationPanel {
 
         ImGui.SameLine();
         using (ImRaii.Disabled(string.IsNullOrWhiteSpace(inputBuffer)))
-        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessNormal)
-            .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonSuccessHovered)
-            .Push(ImGuiCol.ButtonActive, Style.Components.ButtonSuccessActive)) {
-            if (ImGui.Button($"{Language.Add}##{id}Add")) {
+            if (ImGuiUtil.SuccessButton($"{Language.Add}##{id}Add")) {
                 onAdd(inputBuffer.Trim());
                 inputBuffer = string.Empty;
             }
-        }
         ImGui.SameLine();
         if (ImGuiUtil.IconButton(FontAwesomeIcon.Crosshairs, $"##{id}Target", "Add targeted player")) {
             var name = GameTargetManager.GetTargetPlayerFullName();
@@ -74,14 +70,10 @@ public static class RegistrationPanel {
             }
             ImGui.SameLine();
             using (ImRaii.Disabled(selectedCount == 0))
-            using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonBlueNormal)
-                .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonBlueHovered)
-                .Push(ImGuiCol.ButtonActive, Style.Components.ButtonBlueActive)) {
-                if (ImGui.Button($"Load Selected ({selectedCount})##{id}LoadSelected")) {
+                if (ImGuiUtil.PrimaryButton($"Load Selected ({selectedCount})##{id}LoadSelected")) {
                     foreach (var p in booking.Where(p => p.Selected))
                         onAdd(p.FullName);
                 }
-            }
         }
 
         ImGui.Spacing();
@@ -120,16 +112,12 @@ public static class RegistrationPanel {
             ImGui.Text(_showFullName ? p : PlayerName.Short(p));
 
             ImGui.TableNextColumn();
-            using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonDangerNormal)
-                .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonDangerHovered)
-                .Push(ImGuiCol.ButtonActive, Style.Components.ButtonDangerActive)) {
-                if (ImGuiUtil.IconButton(FontAwesomeIcon.Times, "##Rem", "Remove"))
-                    toRemove = p;
+            if (ImGuiUtil.DangerIconButton(FontAwesomeIcon.Times, "##Rem", "Remove"))
+                toRemove = p;
 
-                ImGui.SameLine();
-                if (ImGuiUtil.IconButton(FontAwesomeIcon.Ban, "##Blk", $"{Language.Block} (Ctrl+Click)") && ImGui.GetIO().KeyCtrl)
-                    toBlock = p;
-            }
+            ImGui.SameLine();
+            if (ImGuiUtil.DangerIconButton(FontAwesomeIcon.Ban, "##Blk", $"{Language.Block} (Ctrl+Click)") && ImGui.GetIO().KeyCtrl)
+                toBlock = p;
 
             ImGui.PopID();
         }

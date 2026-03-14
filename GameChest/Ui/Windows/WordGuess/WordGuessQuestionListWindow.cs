@@ -63,20 +63,16 @@ public class WordGuessQuestionListWindow : Window {
         // Header: count + Add New button
         ImGui.Text($"Questions ({Questions.Count})");
         ImGui.SameLine();
-        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessNormal)
-            .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonSuccessHovered)
-            .Push(ImGuiCol.ButtonActive, Style.Components.ButtonSuccessActive)) {
-            if (ImGuiUtil.IconButton(FontAwesomeIcon.Plus, "##WqAddNew", "Add New Question")) {
-                _isNewItem = true;
-                _selectedIndex = -1;
-                _editQuestion = string.Empty;
-                _editAnswer = string.Empty;
-                _editHint = string.Empty;
-                _editHasHint = false;
-                _editHasTimer = false;
-                _editTimerSecs = 60;
-                _editEnabled = true;
-            }
+        if (ImGuiUtil.SuccessIconButton(FontAwesomeIcon.Plus, "##WqAddNew", "Add New Question")) {
+            _isNewItem = true;
+            _selectedIndex = -1;
+            _editQuestion = string.Empty;
+            _editAnswer = string.Empty;
+            _editHint = string.Empty;
+            _editHasHint = false;
+            _editHasTimer = false;
+            _editTimerSecs = 60;
+            _editEnabled = true;
         }
 
         if (Questions.Count == 0) {
@@ -254,19 +250,15 @@ public class WordGuessQuestionListWindow : Window {
             ImGui.SameLine();
 
             // Delete
-            using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonDangerNormal)
-                .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonDangerHovered)
-                .Push(ImGuiCol.ButtonActive, Style.Components.ButtonDangerActive)) {
-                if (ImGuiUtil.IconButton(FontAwesomeIcon.Trash, "##WqDelete", "Ctrl+Click to delete")
-                    && ImGui.GetIO().KeyCtrl) {
-                    Questions.RemoveAt(_selectedIndex);
-                    Plugin.Config.Save();
-                    _selectedIndex = System.Math.Min(_selectedIndex, Questions.Count - 1);
-                    if (_selectedIndex >= 0) LoadForEdit(Questions[_selectedIndex]);
-                    else { _selectedIndex = -1; }
-                }
-                ImGuiUtil.ToolTip("Ctrl+Click to delete.");
+            if (ImGuiUtil.DangerIconButton(FontAwesomeIcon.Trash, "##WqDelete", "Ctrl+Click to delete")
+                && ImGui.GetIO().KeyCtrl) {
+                Questions.RemoveAt(_selectedIndex);
+                Plugin.Config.Save();
+                _selectedIndex = System.Math.Min(_selectedIndex, Questions.Count - 1);
+                if (_selectedIndex >= 0) LoadForEdit(Questions[_selectedIndex]);
+                else { _selectedIndex = -1; }
             }
+            ImGuiUtil.ToolTip("Ctrl+Click to delete.");
         }
     }
 

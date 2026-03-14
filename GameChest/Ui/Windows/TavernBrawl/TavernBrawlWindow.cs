@@ -36,26 +36,18 @@ public class TavernBrawlWindow : Window {
     }
 
     private void DrawControls(TavernBrawlGame game, TavernBrawlState state) {
-        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonSuccessNormal)
-            .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonSuccessHovered)
-            .Push(ImGuiCol.ButtonActive, Style.Components.ButtonSuccessActive)) {
-            if (state.Phase is TavernBrawlPhase.Idle or TavernBrawlPhase.Finished) {
-                if (ImGui.Button("Begin Registration##TbBeginReg")) game.BeginRegistration();
-            } else if (state.Phase == TavernBrawlPhase.Registering) {
-                using (ImRaii.Disabled(state.Players.Count < Plugin.Config.TavernBrawl.MinPlayers))
-                    if (ImGui.Button("Start##TbStart")) game.StartRolling();
-            } else if (state.Phase == TavernBrawlPhase.Rolling) {
-                if (ImGui.Button("Close Round##TbClose")) game.CloseRound();
-            }
+        if (state.Phase is TavernBrawlPhase.Idle or TavernBrawlPhase.Finished) {
+            if (ImGuiUtil.SuccessButton("Begin Registration##TbBeginReg")) game.BeginRegistration();
+        } else if (state.Phase == TavernBrawlPhase.Registering) {
+            using (ImRaii.Disabled(state.Players.Count < Plugin.Config.TavernBrawl.MinPlayers))
+                if (ImGuiUtil.SuccessButton("Start##TbStart")) game.StartRolling();
+        } else if (state.Phase == TavernBrawlPhase.Rolling) {
+            if (ImGuiUtil.SuccessButton("Close Round##TbClose")) game.CloseRound();
         }
 
         ImGui.SameLine();
         using (ImRaii.Disabled(!state.IsActive))
-        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonDangerNormal)
-            .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonDangerHovered)
-            .Push(ImGuiCol.ButtonActive, Style.Components.ButtonDangerActive)) {
-            if (ImGui.Button("Stop##TbStop")) game.Stop();
-        }
+            if (ImGuiUtil.DangerButton("Stop##TbStop")) game.Stop();
 
         ImGui.SameLine();
         DrawPhaseBadge(state);
@@ -157,12 +149,8 @@ public class TavernBrawlWindow : Window {
             return;
         }
 
-        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonDangerNormal)
-            .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonDangerHovered)
-            .Push(ImGuiCol.ButtonActive, Style.Components.ButtonDangerActive)) {
-            if (ImGuiUtil.IconButton(FontAwesomeIcon.TrashAlt, "##TbClearHist", "Ctrl+Click to clear") && ImGui.GetIO().KeyCtrl)
-                game.MatchHistory.Clear();
-        }
+        if (ImGuiUtil.DangerIconButton(FontAwesomeIcon.TrashAlt, "##TbClearHist", "Ctrl+Click to clear") && ImGui.GetIO().KeyCtrl)
+            game.MatchHistory.Clear();
         ImGui.Spacing();
 
         using var table = ImRaii.Table("##TbHistTable", 3, ImGuiTableFlags.RowBg | ImGuiTableFlags.NoSavedSettings);

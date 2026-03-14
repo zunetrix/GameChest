@@ -73,15 +73,11 @@ public class BlocklistWindow : Window {
                 ImGui.TextUnformatted(entry);
 
                 ImGui.TableNextColumn();
-                using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonDangerNormal)
-                    .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonDangerHovered)
-                    .Push(ImGuiCol.ButtonActive, Style.Components.ButtonDangerActive)) {
-                    if (ImGuiUtil.IconButton(FontAwesomeIcon.Trash, "##del", "Remove")) {
-                        if (ImGui.GetIO().KeyCtrl)
-                            deleteEntry = entry;
-                    }
-                    ImGuiUtil.ToolTip("Ctrl+Click to remove.");
+                if (ImGuiUtil.DangerIconButton(FontAwesomeIcon.Trash, "##del", "Remove")) {
+                    if (ImGui.GetIO().KeyCtrl)
+                        deleteEntry = entry;
                 }
+                ImGuiUtil.ToolTip("Ctrl+Click to remove.");
 
                 ImGui.PopID();
             }
@@ -141,15 +137,11 @@ public class BlocklistWindow : Window {
         }
 
         ImGui.SameLine();
-        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonDangerNormal)
-            .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonDangerHovered)
-            .Push(ImGuiCol.ButtonActive, Style.Components.ButtonDangerActive)) {
-            if (ImGuiUtil.IconButton(FontAwesomeIcon.TrashAlt, "##ClearBlocklistBtn", Language.ConfirmationInstructionTooltip)) {
-                if (ImGui.GetIO().KeyCtrl) {
-                    Plugin.Config.Blocklist.Clear();
-                    Plugin.Config.Save();
-                    Search();
-                }
+        if (ImGuiUtil.DangerIconButton(FontAwesomeIcon.TrashAlt, "##ClearBlocklistBtn", Language.ConfirmationInstructionTooltip)) {
+            if (ImGui.GetIO().KeyCtrl) {
+                Plugin.Config.Blocklist.Clear();
+                Plugin.Config.Save();
+                Search();
             }
         }
 

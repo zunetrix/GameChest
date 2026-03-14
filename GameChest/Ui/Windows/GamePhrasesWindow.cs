@@ -224,15 +224,11 @@ public class GamePhrasesWindow : Window {
                         _previewText = null;
                     }
                     ImGui.SameLine();
-                    using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonDangerNormal)
-                        .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonDangerHovered)
-                        .Push(ImGuiCol.ButtonActive, Style.Components.ButtonDangerActive)) {
-                        if (ImGuiUtil.IconButton(FontAwesomeIcon.Trash, $"##del{origIdx}", "Remove")) {
-                            if (ImGui.GetIO().KeyCtrl)
-                                deleteIdx = origIdx;
-                        }
-                        ImGuiUtil.ToolTip("Ctrl+Click to remove.");
+                    if (ImGuiUtil.DangerIconButton(FontAwesomeIcon.Trash, $"##del{origIdx}", "Remove")) {
+                        if (ImGui.GetIO().KeyCtrl)
+                            deleteIdx = origIdx;
                     }
+                    ImGuiUtil.ToolTip("Ctrl+Click to remove.");
 
                     ImGui.PopID();
                 }
@@ -280,15 +276,11 @@ public class GamePhrasesWindow : Window {
         }
         ImGuiUtil.ToolTip("Play phrases in fixed order instead of randomly.\nDrag rows to reorder.");
         ImGui.SameLine();
-        using (ImRaii.PushColor(ImGuiCol.Button, Style.Components.ButtonDangerNormal)
-            .Push(ImGuiCol.ButtonHovered, Style.Components.ButtonDangerHovered)
-            .Push(ImGuiCol.ButtonActive, Style.Components.ButtonDangerActive)) {
-            if (ImGuiUtil.IconButton(FontAwesomeIcon.Undo, "##ResetDefaults", "Reset to defaults")) {
-                if (ImGui.GetIO().KeyCtrl)
-                    ResetCategoryToDefaults(meta);
-            }
-            ImGuiUtil.ToolTip("Ctrl+Click to reset this category to defaults.");
+        if (ImGuiUtil.DangerIconButton(FontAwesomeIcon.Undo, "##ResetDefaults", "Reset to defaults")) {
+            if (ImGui.GetIO().KeyCtrl)
+                ResetCategoryToDefaults(meta);
         }
+        ImGuiUtil.ToolTip("Ctrl+Click to reset this category to defaults.");
         if (meta.Variables.Length > 0) {
             ImGui.TextDisabled($"Variables:  {string.Join("  ", meta.Variables)}");
         }
