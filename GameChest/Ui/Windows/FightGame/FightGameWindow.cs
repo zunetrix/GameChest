@@ -16,7 +16,8 @@ public class FightGameWindow : Window {
     private Plugin Plugin { get; }
 
     private string _manualRegisterName = string.Empty;
-    private string _bookingCombo = string.Empty;
+    private readonly ImGuiComboSearch _bookingCombo = new();
+    private string _bookingSelected = string.Empty;
 
     public FightGameWindow(Plugin plugin)
         : base("Fight Game###FightGameWindow") {
@@ -231,10 +232,10 @@ public class FightGameWindow : Window {
                 var names = booking.Select(p => p.FullName).ToList();
                 var selectedCount = booking.Count(p => p.Selected);
                 ImGui.SetNextItemWidth(200f * ImGuiHelpers.GlobalScale);
-                if (ImGuiUtil.DrawComboSearch("##FgBookingCombo", names, ref _bookingCombo) &&
-                    !string.IsNullOrEmpty(_bookingCombo)) {
-                    fg.TryJoin(_bookingCombo, JoinSource.Manual);
-                    _bookingCombo = string.Empty;
+                if (_bookingCombo.Draw("##FgBookingCombo", names, ref _bookingSelected) &&
+                    !string.IsNullOrEmpty(_bookingSelected)) {
+                    fg.TryJoin(_bookingSelected, JoinSource.Manual);
+                    _bookingSelected = string.Empty;
                 }
                 ImGui.SameLine();
                 using (ImRaii.Disabled(selectedCount == 0))

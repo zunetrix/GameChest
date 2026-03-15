@@ -13,7 +13,8 @@ public class DeathRollTournamentWindow : Window {
     private Plugin Plugin { get; }
 
     private string _manualPlayerName = string.Empty;
-    private string _bookingCombo = string.Empty;
+    private readonly ImGuiComboSearch _bookingCombo = new();
+    private string _bookingSelected = string.Empty;
 
     public DeathRollTournamentWindow(Plugin plugin)
         : base("DeathRoll Tournament###DeathRollTournamentWindow") {
@@ -203,11 +204,11 @@ public class DeathRollTournamentWindow : Window {
             var names = booking.Select(p => p.FullName).ToList();
             var selectedCount = booking.Count(p => p.Selected);
             ImGui.SetNextItemWidth(200f * ImGuiHelpers.GlobalScale);
-            if (ImGuiUtil.DrawComboSearch("##TnBookingCombo", names, ref _bookingCombo) &&
-                !string.IsNullOrEmpty(_bookingCombo)) {
-                tn.TryJoin(_bookingCombo, JoinSource.Manual);
-                _bookingCombo = string.Empty;
-            }
+            if (_bookingCombo.Draw("##TnBookingCombo", names, ref _bookingSelected) &&
+                !string.IsNullOrEmpty(_bookingSelected)) {
+                tn.TryJoin(_bookingSelected, JoinSource.Manual);
+                _bookingSelected = string.Empty;
+                }
             ImGui.SameLine();
             using (ImRaii.Disabled(selectedCount == 0))
                 if (ImGuiUtil.PrimaryButton($"Load Selected ({selectedCount})##TnLoadSelected")) {

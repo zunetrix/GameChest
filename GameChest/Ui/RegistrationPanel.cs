@@ -15,7 +15,8 @@ namespace GameChest;
 /// <summary>Shared registration panel: count header, add/target input, and player table with remove/block buttons.</summary>
 public static class RegistrationPanel {
     private static bool _showFullName = false;
-    private static string _bookingCombo = string.Empty;
+    private static readonly ImGuiComboSearch _bookingCombo = new();
+    private static string _bookingSelected = string.Empty;
 
     public static void Draw(
         string id,
@@ -63,10 +64,10 @@ public static class RegistrationPanel {
             var names = booking.Select(p => p.FullName).ToList();
             var selectedCount = booking.Count(p => p.Selected);
             ImGui.SetNextItemWidth(200f * scale);
-            if (ImGuiUtil.DrawComboSearch($"###{id}BookingCombo", names, ref _bookingCombo) &&
-                !string.IsNullOrEmpty(_bookingCombo)) {
-                onAdd(_bookingCombo);
-                _bookingCombo = string.Empty;
+            if (_bookingCombo.Draw($"###{id}BookingCombo", names, ref _bookingSelected) &&
+                !string.IsNullOrEmpty(_bookingSelected)) {
+                onAdd(_bookingSelected);
+                _bookingSelected = string.Empty;
             }
             ImGui.SameLine();
             using (ImRaii.Disabled(selectedCount == 0))

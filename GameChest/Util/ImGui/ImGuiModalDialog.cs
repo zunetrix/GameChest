@@ -4,6 +4,8 @@ using System.Numerics;
 using Dalamud.Bindings.ImGui;
 using Dalamud.Interface.Utility;
 
+namespace GameChest;
+
 public class ImGuiModalDialog {
     private readonly string _id;
     private string _title = "Dialog";

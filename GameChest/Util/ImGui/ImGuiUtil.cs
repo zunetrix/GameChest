@@ -9,7 +9,7 @@ using Dalamud.Interface.Components;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 
-using GameChest;
+namespace GameChest;
 
 public static class ImGuiUtil {
 
@@ -99,35 +99,6 @@ public static class ImGuiUtil {
         return ret;
     }
 
-    public static bool DrawComboSearch(string label, IList<string> options, ref string selected, int maxVisible = 8) {
-        bool changed = false;
-        string filter = "";
-        ImGui.PushID(label);
-        if (ImGui.BeginCombo(label, selected, ImGuiComboFlags.HeightLargest)) {
-            ImGui.SetNextItemWidth(-1);
-            ImGui.InputTextWithHint("##search", "Search...", ref filter, 64);
-            var filtered = string.IsNullOrEmpty(filter)
-                ? options
-                : options.Where(x => x.Contains(filter, StringComparison.OrdinalIgnoreCase)).ToList();
-
-            var itemHeight = ImGui.GetTextLineHeightWithSpacing();
-            var visibleRows = Math.Max(3, Math.Min(filtered.Count, maxVisible));
-            {
-                using var child = ImRaii.Child("##cs_list", new Vector2(-1, visibleRows * itemHeight), false);
-                if (child) {
-                    foreach (var option in filtered) {
-                        if (ImGui.Selectable(option, option == selected)) {
-                            selected = option;
-                            changed = true;
-                        }
-                    }
-                }
-            } // EndChild before EndCombo
-            ImGui.EndCombo();
-        }
-        ImGui.PopID();
-        return changed;
-    }
 
     public static void DrawFontawesomeIconOutlined(FontAwesomeIcon icon, Vector4 outlineColor, Vector4 iconColor) {
         var positionOffset = ImGuiHelpers.ScaledVector2(0.0f, 1.0f);
