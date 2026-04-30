@@ -8,7 +8,7 @@ public static class GameTargetManager {
 
     public static string? GetTargetPlayerFullName() {
         var target = DalamudApi.TargetManager.Target;
-        if (target == null || target.ObjectKind != ObjectKind.Player)
+        if (target == null || target.ObjectKind != ObjectKind.Pc)
             return null;
 
         var player = target as IPlayerCharacter;

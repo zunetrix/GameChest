@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 
+using Dalamud.Game.Chat;
 using Dalamud.Game.Text;
-using Dalamud.Game.Text.SeStringHandling;
 
 using GameChest.Extensions;
 
@@ -45,22 +45,22 @@ internal class ChatWatcher : IDisposable {
         DalamudApi.ChatGui.ChatMessage -= OnChatMessage;
     }
 
-    private void OnChatMessage(XivChatType type, int timestamp, ref SeString sender, ref SeString message, ref bool isHandled) {
+    private void OnChatMessage(IHandleableChatMessage message) {
         if (!Plugin.Config.ListenToChatMessages) return;
-        if (isHandled) return;
+        if (message.IsHandled) return;
 
-        var senderName = SanitizeSenderName(sender.ToString());
-        if (!AllowedChatTypes.Contains(type)
-        || !Plugin.Config.ListenedChatTypes.Contains(type)
+        var senderName = SanitizeSenderName(message.Sender.ToString());
+        if (!AllowedChatTypes.Contains(message.LogKind)
+        || !Plugin.Config.ListenedChatTypes.Contains(message.LogKind)
         || (Plugin.Config.IsBlockListActive && Plugin.Config.Blocklist.ContainsPlayer(senderName))
         ) {
             // DalamudApi.PluginLog.Warning($"{senderName} is on the blocklist and will be ignored");
             return;
         }
 
-        var messageString = message.ToString();
+        var messageString = message.Message.ToString();
 
-        Plugin.GameManager.ProcessChatMessage(senderName, messageString, type);
+        Plugin.GameManager.ProcessChatMessage(senderName, messageString, message.LogKind);
     }
 
     private static string SanitizeSenderName(string raw) {
